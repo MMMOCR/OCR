@@ -1,0 +1,32 @@
+on: push
+name: clang-format Code Formatter
+jobs:
+  lint:
+    name: clang-format Code Formatter
+    runs-on: self-hosted
+    steps:
+    - name: Clang Code Formatter
+      uses: MMMOCR/clang-format-action@v1.0.17
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  compile:
+    name: compile-code check
+    runs-on: self-hosted
+    steps:
+    - name: Compile code
+      run: echo "aaa"
+    - name: Compilation failed, create issue
+      if: ${{ failure() }}
+      uses: JasonEtco/create-an-issue@v2
+      id: create-issue
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        assignees: CL0Pinette, {{ payload.sender.login }}
+        update_existing: true
+        search_existing: all
+    - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
+      if: ${{ failure() }}
+      
+
