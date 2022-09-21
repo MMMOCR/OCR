@@ -1,32 +1,27 @@
 on: push
-name: clang-format Code Formatter
+name: test-suite
 jobs:
   lint:
     name: clang-format Code Formatter
     runs-on: self-hosted
     steps:
     - name: Clang Code Formatter
-      uses: MMMOCR/clang-format-action@v1.0.17
+      uses: MMMOCR/clang-format-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  compile:
-    name: compile-code check
-    runs-on: self-hosted
-    steps:
-    - name: Compile code
-      run: echo "aaa"
-    - name: Compilation failed, create issue
-      if: ${{ failure() }}
-      uses: JasonEtco/create-an-issue@v2
-      id: create-issue
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        assignees: CL0Pinette, {{ payload.sender.login }}
-        update_existing: true
-        search_existing: all
-    - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
-      if: ${{ failure() }}
-      
+
+
+## Exemple de test :
+#   compile:                            // identifiant du test
+#    needs: lint                        // si besoin d'une dependance (ils auront tous besoin de compile normalement)
+#    name: compile-code check           // nom du test affiche sur github
+#    runs-on: self-hosted               // ne pas toucher (specifie qu'il faut le lancer sur mon serveur)
+#    steps:                             // defini les etapes du test (on n'en a besoin que d'une seule)
+#    - name: Compile code               // nom de l'etape
+#      uses: MMMOCR/docker-test@master  // ne pas toucher (specifie quelle base utiliser)
+#      env:                             // variable a passer au test (laisser les deux du dessous)
+#        REPO_FULLNAME: MMMOCR/test     // variable pour l'url du repo
+#        WORKFLOW_PATH: compile.sh      // nom du script a lancer (le script doit etre place dans .github)
+     
 
