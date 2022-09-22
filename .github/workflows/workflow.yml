@@ -10,7 +10,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-   test_gui:
+  test_gui:
     needs: lint
     name: test gui
     runs-on: self-hosted
