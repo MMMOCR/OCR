@@ -1,13 +1,7 @@
 #pragma once
 
-#include <gtk/gtk.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <err.h>
-#include <string.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#define SCREEN_WIDTH   1280
+#define SCREEN_HEIGHT  720
+#define ANGLE          15
+#define UNUSED(x) (void)(x)
 
-SDL_Window *sdl_window;
-SDL_Renderer *sdl_renderer;
-void *window_id;

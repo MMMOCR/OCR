@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "/Users/cl0pinette/Documents/EPITA/C/OCR",
+    "file": "gui/interface_rotate.c",
+    "command": "gcc -Wall -Wextra -pedantic -D_THREAD_SAFE -I/nix/store/qgvb1zw38q7q9l52k9dqys6w2hdpnv5g-glib-2.72.3-dev/include -I/nix/store/qgvb1zw38q7q9l52k9dqys6w2hdpnv5g-glib-2.72.3-dev/include/glib-2.0 -I/nix/store/agp4qyd1cm1mciscd1xy9vdwwi43mmgb-glib-2.72.3/lib/glib-2.0/include -I/nix/store/ss6yh4kvh10lalzzvmwcpix3fjndsxw5-gtk+3-3.24.34-dev/include/gtk-3.0 -I/nix/store/9cvd21kri1261a3nm6d7cdapgkqdfc8y-harfbuzz-5.1.0-dev/include/harfbuzz -I/nix/store/jfpjx43h5ng9chzx78w62bia3cim3x4p-SDL2-2.0.22-dev/include/SDL2 -I/nix/store/z3mpqfgqlr6m3lsg92hjlyi1andcpcrr-atk-2.38.0-dev/include/atk-1.0 -I/nix/store/i0c75xwrafff2nl11fn4a0qxv6y760pd-SDL2_image-2.0.5/include/SDL2 -I/nix/store/b5y61kmbyfq9bn5rvnbvzg6p0nwsxx7s-pango-1.50.8-dev/include/pango-1.0 -I/nix/store/f02h9vdvcy5b7x6kxdpzyamq3hgr2fkp-cairo-1.16.0-dev/include/cairo -I/nix/store/wb0dnckq06wkg46hzb0yh3xc4px0ja5k-freetype-2.12.1-dev/include/freetype2 -I/nix/store/wb0dnckq06wkg46hzb0yh3xc4px0ja5k-freetype-2.12.1-dev/include -I/nix/store/969psfpwvx6ipicknybapr7sc334l6ii-gdk-pixbuf-2.42.8-dev/include/gdk-pixbuf-2.0    gui/interface_rotate.c  -o gui/interface_rotate"
+  }
+]

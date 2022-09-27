@@ -1,85 +1,119 @@
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
+#include "interface_rotate.h"
+#include "../utils/rotateutils.h"
 
+static double rotate = 0;
 
-static SDL_Window *sdl_window;
-static SDL_Renderer *sdl_renderer;
-static void *window_id;
+typedef struct gtk_data Gtk_Data;
+struct gtk_data {
+    GtkWidget *widget;
+    char *path;
+    char *orig_path;
+    double *angle;
+};
 
-int
-idle (void *ud)
+void
+rotate_left( GtkWidget *widget, gpointer *data )
 {
-  if(!sdl_window) {
-    printf("creating SDL window for window id %p\n", window_id);
-    sdl_window = SDL_CreateWindowFrom(window_id);
-    if (sdl_window == NULL) {
-      printf("error");
-      return 0;
-    }
-    printf("sdl_window=%p\n", (void *)sdl_window);
-    if(!sdl_window) {
-      printf("%s\n", SDL_GetError());
-    }
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
-    printf("sdl_renderer=%p\n", (void *)sdl_renderer);
-    if(!sdl_renderer) {
-      printf("%s\n", SDL_GetError());
-    }
-  } else {
-    SDL_SetRenderDrawColor(sdl_renderer, 255, 0, 0, 255);
-    SDL_RenderClear(sdl_renderer);
-    SDL_RenderPresent(sdl_renderer);
-  }
+    UNUSED(widget);
+    SDL_Surface *new_image;
+    printf("%s\n", ((Gtk_Data *)data)->path);
+    SDL_Surface *image = load_image(((Gtk_Data *)data)->orig_path);
+    rotate -= ANGLE;
+    new_image = rotate_image(image, rotate);
+    IMG_SavePNG(new_image, ((Gtk_Data *)data)->path);
+    SDL_FreeSurface(image);
+    // SDL_FreeSurface(new_image);
+    gtk_image_clear((GtkImage *)((Gtk_Data *)data)->widget);
+    gtk_image_set_from_file((GtkImage *)((Gtk_Data *)data)->widget, ((Gtk_Data *)data)->path);
 
-  return 1;
 }
 
+void
+rotate_right( GtkWidget *widget, gpointer *data )
+{
+    UNUSED(widget);
+    printf("%s\n", ((Gtk_Data *)data)->path);
+    SDL_Surface *image = load_image(((Gtk_Data *)data)->orig_path);
+    rotate += ANGLE;
+    SDL_Surface *new_image = rotate_image(image, rotate);
+    IMG_SavePNG(new_image, ((Gtk_Data *)data)->path);
+    SDL_FreeSurface(image);
+    SDL_FreeSurface(new_image);
+    gtk_image_clear((GtkImage *)((Gtk_Data *)data)->widget);
+    gtk_image_set_from_file((GtkImage *)((Gtk_Data *)data)->widget, ((Gtk_Data *)data)->path);
+    
+}
+
+void
+destroy(GtkWidget* widget, gpointer data)
+{
+    UNUSED(widget);
+    UNUSED(data);
+    gtk_main_quit();
+}
 
 int
 main ( int argc, char **argv)
 {
-    GtkWindow *gtk_window;
-    GtkWidget *gtk_da;
-    void *gdk_window;
-
+    GtkWidget *window;
+    GtkWidget *button_left;
+    GtkWidget *button_right;
+    GtkWidget *image;
+    GtkWidget *box;
+    char name[] = "/tmp/fileXXXXXX";
+    int fd = mkstemp(name);
+    close(fd);
+    char *temp = name;
+    Gtk_Data data_to_pass;
 
     if (argc != 2){
       printf("Usage: %s path_to_image\n", argv[0]);
       return 1;
     }
 
-    gtk_init (&argc , &argv);
- 
-    //init window and set title
-    gtk_window = (GtkWindow*)gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(gtk_window, "pikalul");
+    gtk_init(&argc, &argv);
 
-    // connect close window
-    g_signal_connect(gtk_window,  "delete-event", gtk_main_quit, NULL);
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    box = gtk_box_new (FALSE, 0);
+    g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
 
-    // create drawing area and show
-    gtk_da = gtk_drawing_area_new();
-    gtk_container_add(GTK_CONTAINER(gtk_window), gtk_da);
-    gtk_widget_show_all(GTK_WIDGET(gtk_window));
+    button_left = gtk_button_new_with_label("<Left");
+    button_right = gtk_button_new_with_label("Right>");
+    image = gtk_image_new_from_file(argv[1]);
 
-    // get window socket id
-    gdk_window = gtk_widget_get_window(GTK_WIDGET(gtk_da));
-    window_id = (void*)(intptr_t)GDK_WINDOW_XID(gdk_window);
-
-    printf("pointer window id: %p\n", window_id);
-
-    // init sdl and connect to gtk
-
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0) {
-        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+    if (!temp) {
+        printf("ALED\n");
         return 1;
     }
 
-    g_idle_add(&idle, 0);
+    SDL_Surface *image_temp = load_image(argv[1]);
+    IMG_SavePNG(image_temp, temp);
+    SDL_FreeSurface(image_temp);
 
+
+    data_to_pass.widget = image;
+    data_to_pass.path = temp;
+    data_to_pass.orig_path = argv[1];
+
+    snprintf(data_to_pass.path, strlen(temp)+1, "%s", temp);
+
+    g_signal_connect (button_left, "clicked", G_CALLBACK (rotate_left), (gpointer)&data_to_pass);
+    g_signal_connect (button_right, "clicked", G_CALLBACK (rotate_right), (gpointer)&data_to_pass);
+
+    gtk_container_add ((GtkContainer *)box, button_left);
+    gtk_container_add ((GtkContainer *)box, button_right);
+    gtk_container_add ((GtkContainer *)box, image);
+
+    gtk_container_add (GTK_CONTAINER (window), box);
+
+    gtk_widget_show_all(window);
     gtk_main();
 
     return 0;

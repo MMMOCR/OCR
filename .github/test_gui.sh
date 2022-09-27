@@ -1,1 +1,1 @@
-make test
+make gui/interface_rotate
