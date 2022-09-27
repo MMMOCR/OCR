@@ -2,7 +2,7 @@
 
 CC = gcc
 
-PACKAGES= gtk+-3.0 sdl2 SDL2_Image gdk-3.0 gdk-x11-3.0
+PACKAGES= gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
 CFLAGS = -Wall -Wextra -pedantic $(shell pkg-config $(PACKAGES) --cflags)
 LDLIBS = $(shell pkg-config $(PACKAGES) --libs) -lm

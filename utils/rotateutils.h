@@ -4,7 +4,7 @@
 SDL_Surface *
 load_image(char file[]);
 
-static inline Uint8 *
+Uint8 *
 pixel_ref(SDL_Surface *surf, unsigned x, unsigned y);
 
 Uint32
