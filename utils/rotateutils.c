@@ -62,9 +62,9 @@ rotate_image(SDL_Surface *image, double angle)
   double half_image_h = image_h / 2;
   size_t max_edge;
 
-  
   image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ABGR8888, 0);
-  rotated_surface = SDL_ConvertSurfaceFormat(rotated_surface, SDL_PIXELFORMAT_ABGR8888, 0);
+  rotated_surface =
+    SDL_ConvertSurfaceFormat(rotated_surface, SDL_PIXELFORMAT_ABGR8888, 0);
   SDL_LockSurface(image);
   angle = angle * 2 * PI / 360;
 
@@ -72,7 +72,8 @@ rotate_image(SDL_Surface *image, double angle)
 
   rotated_surface = SDL_CreateRGBSurface(0, max_edge, max_edge, 32, 0, 0, 0, 0);
 
-  fill_surface(rotated_surface, SDL_MapRGB(rotated_surface->format, 255, 255, 255));
+  fill_surface(rotated_surface,
+               SDL_MapRGB(rotated_surface->format, 255, 255, 255));
 
   for (size_t i = 0; i < max_edge + (max_edge - image_h) / 2; i++) {
     for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
