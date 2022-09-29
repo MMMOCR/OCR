@@ -30,6 +30,7 @@ rotate_left(GtkWidget *widget, gpointer *data)
   rotate -= ANGLE;
   new_image = rotate_image(image, rotate);
   IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
+  printf("%s\n", ((Gtk_Data *)data)->path);
   SDL_FreeSurface(image);
   SDL_FreeSurface(new_image);
   gtk_image_clear((GtkImage *) ((Gtk_Data *) data)->widget);
@@ -70,8 +71,13 @@ main(int argc, char **argv)
   GtkWidget *box;
   char name[] = "/tmp/fileXXXXXX";
   int fd = mkstemp(name);
+  printf("%s\n", name);
+  printf("%p\n", name);
   close(fd);
-  char *temp = name;
+  char *temp = calloc(16,1);
+  snprintf(temp, 16, "%s", name);
+  printf("%p\n", temp);
+  printf("%s\n", temp);
   Gtk_Data data_to_pass;
 
   if (argc != 2) {
@@ -102,8 +108,6 @@ main(int argc, char **argv)
   data_to_pass.path = temp;
   data_to_pass.orig_path = argv[1];
 
-  snprintf(data_to_pass.path, strlen(temp) + 1, "%s", temp);
-
   g_signal_connect(button_left, "clicked", G_CALLBACK(rotate_left),
                    (gpointer) &data_to_pass);
   g_signal_connect(button_right, "clicked", G_CALLBACK(rotate_right),
@@ -127,6 +131,8 @@ main(int argc, char **argv)
 
   gtk_widget_show_all(window);
   gtk_main();
+
+  free(temp);
 
   return 0;
 }
