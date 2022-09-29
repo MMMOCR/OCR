@@ -18,27 +18,18 @@ load_image(char file[])
   return image;
 }
 
-static inline Uint32 *
-pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
+unsigned int
+get_pixel(SDL_Surface *surface, size_t x, size_t y)
 {
-  unsigned int *pixels = surf->pixels;
-  return pixels[y * surf->w + x];
-}
-
-Uint32
-get_pixel(SDL_Surface *surface, unsigned x, unsigned y)
-{
-  Uint32 *p = pixel_ref(surface, x, y);
-
-  return *p;
+  unsigned int *pixels = surface->pixels;
+  return pixels[y * surface->w + x];
 }
 
 void
-put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
+change_pixel(SDL_Surface *surface, size_t x, size_t y, Uint32 pixel)
 {
-  Uint32 *p = pixel_ref(surface, x, y);
-
-  *p = pixel;
+  unsigned int *pixels = surface->pixels;
+  pixels[y * surface->w + x] = pixel;
 }
 
 void
@@ -49,7 +40,7 @@ fill_surface(SDL_Surface *surface, Uint32 pixel)
 
   for (size_t i = 0; i < surface_w; i++) {
     for (size_t j = 0; j < surface_h; j++) {
-      put_pixel(surface, i, j, pixel);
+      change_pixel(surface, i, j, pixel);
     }
   }
 }
@@ -63,7 +54,6 @@ rotate_image(SDL_Surface *image, double angle)
   char name[] = "/tmp/fileXXXXXX";
   int fd = mkstemp(name);
   close(fd);
-  char *SAVED_IMG_NAME_R = name;
   long int x = 0;
   long int y = 0;
   int image_w = image->w;
@@ -72,6 +62,9 @@ rotate_image(SDL_Surface *image, double angle)
   double half_image_h = image_h / 2;
   size_t max_edge;
 
+  
+  image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ABGR8888, 0);
+  rotated_surface = SDL_ConvertSurfaceFormat(rotated_surface, SDL_PIXELFORMAT_ABGR8888, 0);
   SDL_LockSurface(image);
   angle = angle * 2 * PI / 360;
 
@@ -79,7 +72,7 @@ rotate_image(SDL_Surface *image, double angle)
 
   rotated_surface = SDL_CreateRGBSurface(0, max_edge, max_edge, 32, 0, 0, 0, 0);
 
-  fill_surface(rotated_surface, SDL_MapRGB(rotated_surface->format, 0, 0, 0));
+  fill_surface(rotated_surface, SDL_MapRGB(rotated_surface->format, 255, 255, 255));
 
   for (size_t i = 0; i < max_edge + (max_edge - image_h) / 2; i++) {
     for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
@@ -94,7 +87,7 @@ rotate_image(SDL_Surface *image, double angle)
       pixel = get_pixel(image, x, y);
       SDL_GetRGB(pixel, image->format, &r, &g, &b);
       pixel = SDL_MapRGB(rotated_surface->format, r, g, b);
-      put_pixel(rotated_surface, j, i, pixel);
+      change_pixel(rotated_surface, j, i, pixel);
     }
   }
 
