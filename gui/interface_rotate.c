@@ -30,7 +30,7 @@ rotate_left(GtkWidget *widget, gpointer *data)
   rotate -= ANGLE;
   new_image = rotate_image(image, rotate);
   IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
-  printf("%s\n", ((Gtk_Data *)data)->path);
+  printf("%s\n", ((Gtk_Data *) data)->path);
   SDL_FreeSurface(image);
   SDL_FreeSurface(new_image);
   gtk_image_clear((GtkImage *) ((Gtk_Data *) data)->widget);
@@ -74,7 +74,7 @@ main(int argc, char **argv)
   printf("%s\n", name);
   printf("%p\n", name);
   close(fd);
-  char *temp = calloc(16,1);
+  char *temp = calloc(16, 1);
   snprintf(temp, 16, "%s", name);
   printf("%p\n", temp);
   printf("%s\n", temp);

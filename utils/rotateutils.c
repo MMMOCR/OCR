@@ -18,7 +18,7 @@ load_image(char file[])
   return image;
 }
 
-static inline Uint32*
+static inline Uint32 *
 pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
 {
   unsigned int *pixels = surf->pixels;
