@@ -120,23 +120,22 @@ rotate_image(SDL_Surface *image, double angle)
 
   fill_surface(rotated_surface, SDL_MapRGB(rotated_surface->format, 0, 0, 0));
 
-    for (size_t i = 0; i < max_edge + (max_edge - image_h) / 2; i++) {
-      for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
-	x = round((j - half_image_w - (max_edge - image_w)/2) * cos(angle) -
-	          (i - half_image_h - (max_edge - image_h)/2) * sin(angle)) +
-	  half_image_w;
-	y = round((j - half_image_w - (max_edge - image_w)/2) * sin(angle) +
-	          (i - half_image_h - (max_edge - image_h)/2) * cos(angle)) +
-	  half_image_h;
-	if (x < 0 || x > image_w) { continue; }
-	if (y < 0 || y > image_h) { continue; }
-	pixel = get_pixel(image, x, y);
-	SDL_GetRGB(pixel, image->format, &r, &g, &b);
-	pixel = SDL_MapRGB(rotated_surface->format, r, g, b);
-	put_pixel(rotated_surface, j,
-	          i, pixel);
-      }
+  for (size_t i = 0; i < max_edge + (max_edge - image_h) / 2; i++) {
+    for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
+      x = round((j - half_image_w - (max_edge - image_w) / 2) * cos(angle) -
+                (i - half_image_h - (max_edge - image_h) / 2) * sin(angle)) +
+        half_image_w;
+      y = round((j - half_image_w - (max_edge - image_w) / 2) * sin(angle) +
+                (i - half_image_h - (max_edge - image_h) / 2) * cos(angle)) +
+        half_image_h;
+      if (x < 0 || x > image_w) { continue; }
+      if (y < 0 || y > image_h) { continue; }
+      pixel = get_pixel(image, x, y);
+      SDL_GetRGB(pixel, image->format, &r, &g, &b);
+      pixel = SDL_MapRGB(rotated_surface->format, r, g, b);
+      put_pixel(rotated_surface, j, i, pixel);
     }
+  }
 
   SDL_SaveBMP(rotated_surface, SAVED_IMG_NAME_R);
   return rotated_surface;

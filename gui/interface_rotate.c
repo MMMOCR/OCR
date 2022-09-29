@@ -120,8 +120,7 @@ main(int argc, char **argv)
   IMG_SavePNG(new_image, data_to_pass.path);
   SDL_FreeSurface(k_image);
   gtk_image_clear((GtkImage *) data_to_pass.widget);
-  gtk_image_set_from_file((GtkImage *) data_to_pass.widget,
-                          data_to_pass.path);
+  gtk_image_set_from_file((GtkImage *) data_to_pass.widget, data_to_pass.path);
   SDL_FreeSurface(new_image);
 
   gtk_container_add(GTK_CONTAINER(window), box);
