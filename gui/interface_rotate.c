@@ -26,13 +26,12 @@ rotate_left(GtkWidget *widget, gpointer *data)
 {
   UNUSED(widget);
   SDL_Surface *new_image;
-  printf("%s\n", ((Gtk_Data *) data)->path);
   SDL_Surface *image = load_image(((Gtk_Data *) data)->orig_path);
   rotate -= ANGLE;
   new_image = rotate_image(image, rotate);
   IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
   SDL_FreeSurface(image);
-  // SDL_FreeSurface(new_image);
+  SDL_FreeSurface(new_image);
   gtk_image_clear((GtkImage *) ((Gtk_Data *) data)->widget);
   gtk_image_set_from_file((GtkImage *) ((Gtk_Data *) data)->widget,
                           ((Gtk_Data *) data)->path);
@@ -42,7 +41,6 @@ void
 rotate_right(GtkWidget *widget, gpointer *data)
 {
   UNUSED(widget);
-  printf("%s\n", ((Gtk_Data *) data)->path);
   SDL_Surface *image = load_image(((Gtk_Data *) data)->orig_path);
   rotate += ANGLE;
   SDL_Surface *new_image = rotate_image(image, rotate);
@@ -114,6 +112,17 @@ main(int argc, char **argv)
   gtk_container_add((GtkContainer *) box, button_left);
   gtk_container_add((GtkContainer *) box, button_right);
   gtk_container_add((GtkContainer *) box, image);
+
+  SDL_Surface *new_image;
+  printf("%s\n", data_to_pass.path);
+  SDL_Surface *k_image = load_image(data_to_pass.orig_path);
+  new_image = rotate_image(k_image, rotate);
+  IMG_SavePNG(new_image, data_to_pass.path);
+  SDL_FreeSurface(k_image);
+  gtk_image_clear((GtkImage *) data_to_pass.widget);
+  gtk_image_set_from_file((GtkImage *) data_to_pass.widget,
+                          data_to_pass.path);
+  SDL_FreeSurface(new_image);
 
   gtk_container_add(GTK_CONTAINER(window), box);
 
