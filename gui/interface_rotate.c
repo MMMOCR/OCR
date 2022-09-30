@@ -30,7 +30,6 @@ rotate_left(GtkWidget *widget, gpointer *data)
   rotate -= ANGLE;
   new_image = rotate_image(image, rotate);
   IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
-  printf("%s\n", ((Gtk_Data *) data)->path);
   SDL_FreeSurface(image);
   SDL_FreeSurface(new_image);
   gtk_image_clear((GtkImage *) ((Gtk_Data *) data)->widget);
