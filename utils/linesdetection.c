@@ -112,7 +112,7 @@ detect_line(int *pixels, long int w, long int h, SDL_PixelFormat *format)
       }
     }
   }
-  
+
   printf("aaaaa : %lu, size: %lu\n", mat[424 * ANGLE + 89], max_size);
 
   int kl = 0;
