@@ -18,4 +18,3 @@ draw_line(int *pixels,
 
 long int *
 detect_lines(int *pixels, long int w, long int h, SDL_PixelFormat *format);
-
