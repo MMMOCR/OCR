@@ -7,6 +7,7 @@
 void
 draw_line(int *pixels,
           long int w,
+          long int h,
           long int x1,
           long int y1,
           long int x2,
@@ -55,7 +56,7 @@ draw_line(int *pixels,
   y = y1;
 
   for (i = 0; i < maxmove; ++i) {
-    pixels[y * w + x] = color;
+    if (x >= 0 && x < w && y >= 0 && y < h) pixels[y * w + x] = color;
     if (d < 0) {
       d += dinc1;
       x += xinc1;
@@ -73,9 +74,9 @@ detect_line(int *pixels, long int w, long int h, SDL_PixelFormat *format)
 {
   long unsigned int diag;
   long unsigned int *mat;
-  long unsigned int k;
+  long int k;
   long unsigned int max_size;
-  long unsigned int x0, y0, x1, y1, x2, y2;
+  long int x0, y0, x1, y1, x2, y2;
   float m, n;
   Uint8 r, g, b;
 
@@ -96,37 +97,50 @@ detect_line(int *pixels, long int w, long int h, SDL_PixelFormat *format)
   for (size_t j = 0; j < (size_t) h; j++) {
     for (size_t i = 0; i < (size_t) w; i++) {
       SDL_GetRGB(pixels[j * w + i], format, &r, &g, &b);
+      if (j == 420 && i == 278) { printf("%i\n", r); }
       if (r == 0 && g == 0 && b == 0) {
 	for (size_t theta = 0; theta < ANGLE; theta++) {
-	  k = (long unsigned int) ((double) j * sin((double) theta * PI / 180) +
-	                           (double) i * cos((double) theta * PI / 180));
+	  k = (long unsigned int) ((double) j * cos((double) theta * PI / 180) +
+	                           (double) i * sin((double) theta * PI / 180));
+	  if (j == 420 && i == 278) {
+	    printf("%lu, %lu, %lu, %lu\n", i, j, k, theta);
+	    // printf("%i\n", r);
+	  }
 	  // printf("%lu, %lu, %lu, %lu\n", i, j, k, theta);
-	  if (k < max_size) { mat[k * ANGLE + theta] += 1; }
+	  if (ABS(k) < max_size) { mat[k * ANGLE + theta] += 1; }
 	}
       }
     }
   }
+  
+  printf("aaaaa : %lu, size: %lu\n", mat[424 * ANGLE + 89], max_size);
 
   int kl = 0;
-  for (size_t i = 0; i < max_size; i++) {
+  for (size_t i = 1; i < max_size; i++) {
     for (size_t j = 0; j < ANGLE; j++) {
-      if (mat[i * ANGLE + j] > 600) {
+      if (mat[i * ANGLE + j] > 400) {
 	// printf("mat[%lu][%lu] = %lu\n", i, j, mat[i * ANGLE + j]);
-	m = cos(j * PI / 180);
-	n = sin(j * PI / 180);
+	m = sin(j * PI / 180);
+	n = cos(j * PI / 180);
 	x0 = m * i;
 	y0 = n * i;
 	x1 = x0 + 1000 * (-n);
 	y1 = y0 + 1000 * (m);
 	x2 = x0 - 1000 * (-n);
-	y2 = x0 - 1000 * (m);
-	if (kl < 50) {
-	  printf("k: %lu, m: %f, n: %f, theta: %lu, x0: %lu, y0: %lu, x1: %lu, "
-	         "y1: %lu, x2: %lu, y2: %lu\n",
+	y2 = y0 - 1000 * (m);
+	if (x2 < 10 && y2 < 10) {
+
+	  printf("k: %lu, m: %f, n: %f, rho: %lu, theta: %lu, x0: %li, y0: "
+	         "%li, x1: %li, y1: %li, x2: %li, y2: %li\n",
+	         mat[i * ANGLE + j], m, n, i, j, x0, y0, x1, y1, x2, y2);
+	}
+	if (i == 424 && j == 89) { // kl < 50 ){
+	  printf("k: %lu, m: %f, n: %f, theta: %lu, x0: %li, y0: %li, x1: %li, "
+	         "y1: %li, x2: %li, y2: %li\n",
 	         mat[i * ANGLE + j], m, n, j, x0, y0, x1, y1, x2, y2);
 	  kl += 1;
 	}
-	draw_line(pixels, w, x1, y1, x2, y2, SDL_MapRGB(format, 255, 0, 0));
+	draw_line(pixels, w, h, x1, y1, x2, y2, SDL_MapRGB(format, 255, 0, 0));
       }
     }
   }
