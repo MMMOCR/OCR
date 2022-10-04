@@ -1,11 +1,10 @@
 #include "solver.h"
-
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
 
 int
-IsBoardValid(char board[])
+is_board_valid(char board[])
 {
     char testvertical[90] = { 0 };
     char testsquares[90] = { 0 };
@@ -64,49 +63,49 @@ IsBoardValid(char board[])
 }
 
 int
-IsSolved(char board[])
+is_solved(char board[])
 {
     for (int i = 0; i < 9; i++) {
 	for (int j = 0; j < 9; j++) {
 	    if (board[i * 9 + j] == 0) { return 0; }
 	}
     }
-    return IsBoardValid(board);
+    return is_board_valid(board);
 }
 
 int
-Solve(char board[])
+solve(char board[])
 {
-    if (IsSolved(board) == 1) { return 1; }
+    if (is_solved(board) == 1) { return 1; }
     for (int i = 0; i < 9; i++) {
 	for (int j = 0; j < 9; j++) {
 	    if (board[i * 9 + j] == 0) {
 		while (board[i * 9 + j] < 9) {
 		    board[i * 9 + j] += 1;
-		    if (IsBoardValid(board) == 1) {
-			if (Solve(board) == 1) { return 1; }
+		    if (is_board_valid(board) == 1) {
+			if (solve(board) == 1) { return 1; }
 		    }
 		}
 		board[i * 9 + j] = 0;
 		return 0;
 	    }
-	    if (i == 8 && j == 8 && IsSolved(board) == 1) { return 1; }
+	    if (i == 8 && j == 8 && is_solved(board) == 1) { return 1; }
 	}
     }
     return 0;
 }
 
 char*
-Solver(char board[])
+solver(char board[])
 {
-    Solve(board);
+    solve(board);
     return board;
 }
 
 int
-main(int argc, char const* argv[])
+main(int argc, char *argv[])
 {
     if (argc != 2) errx(1, " ");
-    printf("%s\n", Solver(argv[1]));
+    printf("%s\n", solver(argv[1]));
     return 0;
 }

@@ -1,8 +1,10 @@
 #pragma once
 
 int
-IsBoardValid(char board[]);
+is_board_valid(char board[]);
 int
-IsSolved(char board[]);
+is_solved(char board[]);
 int
-Solve(char board[]);
+solve(char board[]);
+char*
+solver(char board[]);
