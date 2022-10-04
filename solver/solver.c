@@ -1,4 +1,5 @@
 #include "solver.h"
+
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -103,7 +104,7 @@ solver(char board[])
 }
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
     if (argc != 2) errx(1, " ");
     printf("%s\n", solver(argv[1]));
