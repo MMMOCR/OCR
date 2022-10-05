@@ -5,21 +5,21 @@
 #include <stdio.h>
 
 int
-is_board_valid(char board[])
+is_board_valid(int board[])
 {
-    char testvertical[90] = { 0 };
-    char testsquares[90] = { 0 };
+    int testvertical[90] = { 0 };
+    int testsquares[90] = { 0 };
     for (size_t i = 0; i < 9; i++) {
-	char testhorizontal[10] = { 0 };
+	int testhorizontal[10] = { 0 };
 	for (size_t j = 0; j < 9; j++) {
 	    if (board[i * 9 + j] != 0) {
-		if (testvertical[j * 9 + (int) (board[i * 9 + j] - 48)] == 0) {
-		    testvertical[j * 9 + (int) (board[i * 9 + j] - 48)] = 1;
+		if (testvertical[j * 9 + board[i * 9 + j] ] == 0) {
+		    testvertical[j * 9 + board[i * 9 + j] ] = 1;
 		} else {
 		    return 0;
 		}
-		if (testhorizontal[(int) (board[i * 9 + j] - 48)] == 0) {
-		    testhorizontal[(int) (board[i * 9 + j] - 48)] = 1;
+		if (testhorizontal[board[i * 9 + j]] == 0) {
+		    testhorizontal[board[i * 9 + j]] = 1;
 		} else {
 		    return 0;
 		}
@@ -51,9 +51,9 @@ is_board_valid(char board[])
 		    }
 		}
 
-		if (testsquares[index * 9 + (int) (board[i * 9 + j] - 48)] ==
+		if (testsquares[index * 9 + board[i * 9 + j]] ==
 		    0) {
-		    testsquares[index * 9 + (int) (board[i * 9 + j] - 48)] = 1;
+		    testsquares[index * 9 + board[i * 9 + j]] = 1;
 		} else {
 		    return 0;
 		}
@@ -64,7 +64,7 @@ is_board_valid(char board[])
 }
 
 int
-is_solved(char board[])
+is_solved(int board[])
 {
     for (int i = 0; i < 9; i++) {
 	for (int j = 0; j < 9; j++) {
@@ -75,7 +75,7 @@ is_solved(char board[])
 }
 
 int
-solve(char board[])
+solve(int board[])
 {
     if (is_solved(board) == 1) { return 1; }
     for (int i = 0; i < 9; i++) {
@@ -96,17 +96,28 @@ solve(char board[])
     return 0;
 }
 
-char*
-solver(char board[])
+int*
+solver(int board[])
 {
     solve(board);
+	// for (size_t i = 0; i < 80; i++)
+	// {
+	// 	board[i] += 0x30;
+	// }
     return board;
 }
 
 int
 main(int argc, char* argv[])
 {
-    if (argc != 2) errx(1, " ");
-    printf("%s\n", solver(argv[1]));
+    if (argc != 2) errx(1, "suce\n");
+	int board2[] = {4 ,0, 8, 0, 7, 0, 0, 5, 2, 0, 0, 0,9,0,0,1,0,7,0,0,6,0,0,0,8,0,0,0,0,0,0,5,0,0,0,6,5,0,4,0,0,0,0,0,8,0,8,0,2,0,7,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,3,0,0,0,2,1,3,0,5,9,0,0};
+	int board[] = { 0, 0, 0, 5, 0, 0, 0, 4, 8, 6, 0, 2, 0, 9, 4, 0, 0, 0, 0, 4, 5, 0, 0, 0, 6, 0, 0, 0, 7, 4, 9, 3, 8, 1, 6, 0, 8, 2, 1, 6, 4, 0, 3, 5, 0,9, 0, 0, 0, 0, 0, 8, 7, 0,2, 0, 0, 0, 0, 0, 4, 0, 0,0, 1, 0, 0, 8, 5, 0, 0, 6, 0, 0, 0, 4, 7, 0, 9, 0, 1};
+	printf("%ls\n", solver(board2));
+	for (size_t i = 0; i < 81; i++)
+	{
+		printf("%i", board2[i]);
+	}
+	
     return 0;
 }
