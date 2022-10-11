@@ -2,24 +2,23 @@
 
 #include "../utils/rotateutils.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_surface.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_render.h>
+#include <SDL_surface.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 static double rotate = 0;
 
-typedef struct gtk_data Gtk_Data;
-struct gtk_data
+typedef struct
 {
     GtkWidget *widget;
     char *path;
     char *orig_path;
     double *angle;
-};
+} Gtk_Data;
 
 void
 rotate_left(GtkWidget *widget, gpointer *data)
@@ -71,11 +70,9 @@ main(int argc, char **argv)
     char name[] = "/tmp/fileXXXXXX";
     int fd = mkstemp(name);
     printf("%s\n", name);
-    printf("%p\n", name);
     close(fd);
     char *temp = calloc(16, 1);
     snprintf(temp, 16, "%s", name);
-    printf("%p\n", temp);
     printf("%s\n", temp);
     Gtk_Data data_to_pass;
 

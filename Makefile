@@ -30,8 +30,11 @@ utils/linesdetection: utils/linesdetection.c utils/linesdetection.h utils/rotate
 	$(CC) -o utils/linesdetection utils/linesdetection.c utils/rotateutils.o $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
 
 test: utils/linesdetection
-#	./utils/linesdetection ~/Documents/1615279962287.png
 	./utils/linesdetection ./images/ocr-$(IMG).$(EXT)
+#	./utils/linesdetection ~/Documents/1615279962287.png
+
+test_gui: gui/interface_rotate
+	./gui/interface_rotate ./images/ocr-1.png
 
 clean:
 	rm -rf utils/linesdetection
