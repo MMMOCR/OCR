@@ -6,20 +6,25 @@
 #define ANGLE 360
 #define PI 3.14159265358979323846
 #define ABS(_x) _x > 0 ? _x : -_x
-#define ORIENT(deg, rotate) (deg % 180 < 90 && deg % 180 > -90) ? moy >= 0 ? 0 : 1 : moy >= 0 ? 1 : 0
-#define TRIGO(rad, deg) (deg % 180 < 46 || (deg + 46) % 180 < 46) ? cos(rad) : sin(rad)
+#define ORIENT(deg, rotate) \
+    (deg % 180 < 90 && deg % 180 > -90) ? moy >= 0 ? 0 : 1 : moy >= 0 ? 1 : 0
+#define TRIGO(rad, deg) \
+    (deg % 180 < 46 || (deg + 46) % 180 < 46) ? cos(rad) : sin(rad)
 #define TRIGOINV(rad, deg) (deg % 180 < 46) ? sin(rad) : cos(rad)
-#define DIFF(deg, modulo) (deg % modulo < 44) ? deg % modulo : (deg % modulo) - 90
-#define DIAG(x, y) sqrt(x * x + y * y)
+#define DIFF(deg, modulo) \
+    (deg % modulo < 44) ? deg % modulo : (deg % modulo) - 90
+#define DIAG(x, y) sqrt(x *x + y * y)
 #define ISVERT(x) (x % 180 < 20 || ((x + 20) % 180) < 20) ? 1 : 0
 #define MAX(a, b) a > b ? a : b
 
-typedef struct {
+typedef struct
+{
     long int *array;
     size_t len;
 } Points_Array;
 
-typedef struct {
+typedef struct
+{
     long int *horizontal;
     long int *vertical;
     size_t count_h;
