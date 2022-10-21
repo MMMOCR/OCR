@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SDL_pixels.h"
-#include "SDL_stdinc.h"
-#include "SDL_surface.h"
+#include <stddef.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #define ANGLE 360
 #define PI 3.14159265358979323846
 #define ABS(_x) _x > 0 ? _x : -_x

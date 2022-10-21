@@ -1,14 +1,14 @@
 # Makefile
 
-CC := gcc
+CC ?= gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
 DEPS := $($(shell find . *.c):%.c=%.h)
 
-CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags)
+CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 -fsanitize=address
 CPPFLAGS := -MMD
-LDLIBS := $(shell pkg-config $(PACKAGES) --libs) -lm 
+LDLIBS := $(shell pkg-config $(PACKAGES) --libs) -lm
 LDFLAGS :=
 
 IMG ?= 2

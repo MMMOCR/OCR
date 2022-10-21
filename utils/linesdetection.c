@@ -121,7 +121,7 @@ detect_lines_and_rotate(int *pixels,
 
     for (size_t i = 1; i < max_size; i++) {
 	for (size_t j = 0; j < ANGLE; j++) {
-	    if (mat[i * ANGLE + j] > (unsigned long int) (w + h) / 4) {
+	    if (mat[i * ANGLE + j] > (unsigned long int) (w + h) / 7) {
 		m = sin(j * PI / 180);
 		n = cos(j * PI / 180);
 		x0 = m * i;
@@ -227,6 +227,7 @@ detect_lines_and_rotate(int *pixels,
 
     return surface;
 }
+
 Points_Array *
 detect_lines(SDL_Surface *surface)
 {
@@ -303,7 +304,7 @@ detect_lines(SDL_Surface *surface)
       format->Gmask, format->Bmask, format->Amask);
 
     IMG_SavePNG(end_surface, "./test5.png");
-    SDL_FreeSurface(end_surface);
+    // SDL_FreeSurface(end_surface);
     SDL_UnlockSurface(surface);
     // SDL_FreeSurface(surface);
 
@@ -318,26 +319,26 @@ sort_array(Points_Array *arr)
     Sorted_Points_Array *sorted_arr = calloc(1, sizeof(Sorted_Points_Array));
     sorted_arr->horizontal = calloc(arr->len, sizeof(long int));
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));
-    for (size_t i = 0; i < arr->len; i += 2) {
-	if (ISVERT(arr->array[i + 1])) {
-	    sorted_arr->vertical[(sorted_arr->count_v)++] = arr->array[i];
-	    sorted_arr->vertical[(sorted_arr->count_v)++] = arr->array[i + 1];
-	} else {
-	    sorted_arr->horizontal[(sorted_arr->count_h)++] = arr->array[i];
-	    sorted_arr->horizontal[(sorted_arr->count_h)++] = arr->array[i + 1];
-	}
+    for (size_t i = 0; i < arr->len; i+=2) {
+        if (ISVERT(arr->array[i+1])) {
+            sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
+            sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i+1];
+        }
+        else {
+            sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
+            sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i+1];
+        }
     }
 
     if (realloc(sorted_arr->vertical, sorted_arr->count_v) == 0) {
-	return NULL;
+        return NULL;
     }
-    if (realloc(sorted_arr->horizontal,
-                sizeof(long int) * sorted_arr->count_h) == 0) {
-	return NULL;
+    if (realloc(sorted_arr->horizontal, sorted_arr->count_h) == 0) {
+        return NULL;
     }
 
     for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-	printf("%li, %li\n", sorted_arr->horizontal[i],
+        printf("%li, %li\n", sorted_arr->horizontal[i],
 	       sorted_arr->horizontal[i + 1]);
     }
 
@@ -348,10 +349,12 @@ sort_array(Points_Array *arr)
 	       sorted_arr->vertical[i + 1]);
     }
 
+    free(arr->array);
     free(arr);
 
     return sorted_arr;
 }
+
 
 int
 main(int argc, char **argv)
@@ -360,11 +363,16 @@ main(int argc, char **argv)
     Sorted_Points_Array *sorted_arr;
 
     if (argc != 2) {
-	printf("Usage: %s path_to_image\n", argv[0]);
-	return 1;
+        printf("Usage: %s <path_to_image>\n", argv[0]);
+        return 1;
     }
 
     SDL_Surface *image_temp = IMG_Load(argv[1]);
+
+    if (image_temp == NULL) {
+        printf("Image %s is not valid\n", argv[1]);
+        return 1;
+    }
 
     image_temp =
       SDL_ConvertSurfaceFormat(image_temp, SDL_PIXELFORMAT_RGB888, 0);
@@ -376,7 +384,16 @@ main(int argc, char **argv)
 
     arr = detect_lines(image_temp);
 
+    for (size_t i = 0; i < arr->len; i+=2) {
+        printf("%li, %li\n", arr->array[i], arr->array[i+1]);
+    }
+
+    printf("puuuuuuuute\n");
+
     sorted_arr = sort_array(arr);
+    if (!sorted_arr) {
+        return 1;
+    }
 
     SDL_LockSurface(image_temp);
 
@@ -385,16 +402,16 @@ main(int argc, char **argv)
     pixels = image_temp->pixels;
 
     for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-	m = sin(sorted_arr->horizontal[i + 1] * PI / 180);
-	n = cos(sorted_arr->horizontal[i + 1] * PI / 180);
-	x0 = m * sorted_arr->horizontal[i];
-	y0 = n * sorted_arr->horizontal[i];
-	x1 = x0 + 2 * image_temp->w * (-n);
-	y1 = y0 + 2 * image_temp->h * (m);
-	x2 = x0 - 2 * image_temp->w * (-n);
-	y2 = y0 - 2 * image_temp->h * (m);
-	draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
-	          SDL_MapRGB(image_temp->format, 0, 255, 0));
+        m = sin(sorted_arr->horizontal[i + 1] * PI / 180);
+        n = cos(sorted_arr->horizontal[i + 1] * PI / 180);
+        x0 = m * sorted_arr->horizontal[i];
+        y0 = n * sorted_arr->horizontal[i];
+        x1 = x0 + 2 * image_temp->w * (-n);
+        y1 = y0 + 2 * image_temp->h * (m);
+        x2 = x0 - 2 * image_temp->w * (-n);
+        y2 = y0 - 2 * image_temp->h * (m);
+        draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
+	        SDL_MapRGB(image_temp->format, 0, 255, 0));
     }
 
     for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
@@ -411,9 +428,6 @@ main(int argc, char **argv)
     }
     IMG_SavePNG(image_temp, "./test6.png");
     SDL_UnlockSurface(image_temp);
-    // for (size_t i = 0; i < arr->len; i+=2) {
-    //     printf("%li, %li\n", arr->array[i], arr->array[i+1]);
-    // }
 
     SDL_FreeSurface(image_temp);
 
