@@ -319,26 +319,25 @@ sort_array(Points_Array *arr)
     Sorted_Points_Array *sorted_arr = calloc(1, sizeof(Sorted_Points_Array));
     sorted_arr->horizontal = calloc(arr->len, sizeof(long int));
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));
-    for (size_t i = 0; i < arr->len; i+=2) {
-        if (ISVERT(arr->array[i+1])) {
-            sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
-            sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i+1];
-        }
-        else {
-            sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
-            sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i+1];
-        }
+    for (size_t i = 0; i < arr->len; i += 2) {
+	if (ISVERT(arr->array[i + 1])) {
+	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
+	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
+	} else {
+	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
+	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i + 1];
+	}
     }
 
     if (realloc(sorted_arr->vertical, sorted_arr->count_v) == 0) {
-        return NULL;
+	return NULL;
     }
     if (realloc(sorted_arr->horizontal, sorted_arr->count_h) == 0) {
-        return NULL;
+	return NULL;
     }
 
     for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-        printf("%li, %li\n", sorted_arr->horizontal[i],
+	printf("%li, %li\n", sorted_arr->horizontal[i],
 	       sorted_arr->horizontal[i + 1]);
     }
 
@@ -355,7 +354,6 @@ sort_array(Points_Array *arr)
     return sorted_arr;
 }
 
-
 int
 main(int argc, char **argv)
 {
@@ -363,15 +361,15 @@ main(int argc, char **argv)
     Sorted_Points_Array *sorted_arr;
 
     if (argc != 2) {
-        printf("Usage: %s <path_to_image>\n", argv[0]);
-        return 1;
+	printf("Usage: %s <path_to_image>\n", argv[0]);
+	return 1;
     }
 
     SDL_Surface *image_temp = IMG_Load(argv[1]);
 
     if (image_temp == NULL) {
-        printf("Image %s is not valid\n", argv[1]);
-        return 1;
+	printf("Image %s is not valid\n", argv[1]);
+	return 1;
     }
 
     image_temp =
@@ -384,16 +382,14 @@ main(int argc, char **argv)
 
     arr = detect_lines(image_temp);
 
-    for (size_t i = 0; i < arr->len; i+=2) {
-        printf("%li, %li\n", arr->array[i], arr->array[i+1]);
+    for (size_t i = 0; i < arr->len; i += 2) {
+	printf("%li, %li\n", arr->array[i], arr->array[i + 1]);
     }
 
     printf("puuuuuuuute\n");
 
     sorted_arr = sort_array(arr);
-    if (!sorted_arr) {
-        return 1;
-    }
+    if (!sorted_arr) { return 1; }
 
     SDL_LockSurface(image_temp);
 
@@ -402,16 +398,16 @@ main(int argc, char **argv)
     pixels = image_temp->pixels;
 
     for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-        m = sin(sorted_arr->horizontal[i + 1] * PI / 180);
-        n = cos(sorted_arr->horizontal[i + 1] * PI / 180);
-        x0 = m * sorted_arr->horizontal[i];
-        y0 = n * sorted_arr->horizontal[i];
-        x1 = x0 + 2 * image_temp->w * (-n);
-        y1 = y0 + 2 * image_temp->h * (m);
-        x2 = x0 - 2 * image_temp->w * (-n);
-        y2 = y0 - 2 * image_temp->h * (m);
-        draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
-	        SDL_MapRGB(image_temp->format, 0, 255, 0));
+	m = sin(sorted_arr->horizontal[i + 1] * PI / 180);
+	n = cos(sorted_arr->horizontal[i + 1] * PI / 180);
+	x0 = m * sorted_arr->horizontal[i];
+	y0 = n * sorted_arr->horizontal[i];
+	x1 = x0 + 2 * image_temp->w * (-n);
+	y1 = y0 + 2 * image_temp->h * (m);
+	x2 = x0 - 2 * image_temp->w * (-n);
+	y2 = y0 - 2 * image_temp->h * (m);
+	draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
+	          SDL_MapRGB(image_temp->format, 0, 255, 0));
     }
 
     for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
