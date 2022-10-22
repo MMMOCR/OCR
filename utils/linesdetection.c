@@ -132,19 +132,18 @@ detect_lines_and_rotate(int *pixels,
 		y2 = y0 - 2 * h * (m);
 		// draw_line(pixels, w, h, x1, y1, x2, y2,
 		//     SDL_MapRGB(format, 255, 0, 0));
-        if (arr->len <= counter) {
-            arr->len += 400;
-            arr->array = realloc(arr->array, sizeof(long int) * arr->len);
-            if (!arr->array) {
-                return NULL;
-            }
-        }
+		if (arr->len <= counter) {
+		    arr->len += 400;
+		    arr->array =
+		      realloc(arr->array, sizeof(long int) * arr->len);
+		    if (!arr->array) { return NULL; }
+		}
 		arr->array[counter++] = i;
 		arr->array[counter++] = j;
 	    }
 	}
     }
-    
+
     arr->array = realloc(arr->array, sizeof(long int) * counter);
     if (!arr->array) { return NULL; }
     arr->len = counter;
@@ -300,19 +299,18 @@ detect_lines(SDL_Surface *surface)
 		y2 = y0 - 2 * h * (m);
 		// draw_line(pixels, w, h, x1, y1, x2, y2,
 		//     SDL_MapRGB(format, 0, 255, 0));
-        if (arr->len <= counter) {
-            arr->len += 800;
-            arr->array = realloc(arr->array, arr->len * sizeof(long int));
-            if (!arr->array) {
-                return NULL;
-            }
-        }
+		if (arr->len <= counter) {
+		    arr->len += 800;
+		    arr->array =
+		      realloc(arr->array, arr->len * sizeof(long int));
+		    if (!arr->array) { return NULL; }
+		}
 		arr->array[counter++] = i;
 		arr->array[counter++] = j;
 	    }
 	}
     }
-    
+
     arr->array = realloc(arr->array, sizeof(long int) * counter);
     if (!arr->array) { return NULL; }
     arr->len = counter;
@@ -341,32 +339,34 @@ sort_array(Points_Array *arr)
 	if (ISVERT(arr->array[i + 1])) {
 	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
 	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
-	} else if (ISHOR(arr->array[i+1])) {
+	} else if (ISHOR(arr->array[i + 1])) {
 	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
 	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i + 1];
 	}
     }
-    
-    sorted_arr->vertical = realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
+
+    sorted_arr->vertical =
+      realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
     if (!sorted_arr->vertical) {
 	return NULL;
 
-    sorted_arr->horizontal = realloc(sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
-    if (!sorted_arr->horizontal){}
+	sorted_arr->horizontal = realloc(
+	  sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
+	if (!sorted_arr->horizontal) {}
 	return NULL;
     }
 
     /*
     for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-	printf("%li, %li\n", sorted_arr->horizontal[i],
-	       sorted_arr->horizontal[i + 1]);
+        printf("%li, %li\n", sorted_arr->horizontal[i],
+               sorted_arr->horizontal[i + 1]);
     }
 
     printf("pute\n");
 
     for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
-	printf("%li, %li\n", sorted_arr->vertical[i],
-	       sorted_arr->vertical[i + 1]);
+        printf("%li, %li\n", sorted_arr->vertical[i],
+               sorted_arr->vertical[i + 1]);
     }
 
     */
@@ -374,48 +374,55 @@ sort_array(Points_Array *arr)
 }
 
 int
-parametricIntersect(double r1, double t1, double r2, double t2, long int *x, long int *y) {
-    double ct1=cosf(t1 * PI /180);
-    double st1=sinf(t1 * PI / 180);
-    double ct2=cosf(t2 * PI / 180);
-    double st2=sinf(t2 * PI / 180);
-    double d=ct1*st2-st1*ct2; // determinant de la matrice
-    if(d!=0.0f) {   
-        *x=(long int)((st2*r1-st1*r2)/d);
-        *y=(long int)((-ct2*r1+ct1*r2)/d);
-        return(1);
+parametricIntersect(double r1,
+                    double t1,
+                    double r2,
+                    double t2,
+                    long int *x,
+                    long int *y)
+{
+    double ct1 = cosf(t1 * PI / 180);
+    double st1 = sinf(t1 * PI / 180);
+    double ct2 = cosf(t2 * PI / 180);
+    double st2 = sinf(t2 * PI / 180);
+    double d = ct1 * st2 - st1 * ct2; // determinant de la matrice
+    if (d != 0.0f) {
+	*x = (long int) ((st2 * r1 - st1 * r2) / d);
+	*y = (long int) ((-ct2 * r1 + ct1 * r2) / d);
+	return (1);
     } else { // lignes paralelles
-        return(0);
+	return (0);
     }
 }
 
 Points_Array *
-get_intersection_points(Sorted_Points_Array * array, long int w, long int h) {
+get_intersection_points(Sorted_Points_Array *array, long int w, long int h)
+{
     Points_Array *intersect_arr = calloc(1, sizeof(Points_Array));
-    intersect_arr->array = calloc(w*h, sizeof(long int));
+    intersect_arr->array = calloc(w * h, sizeof(long int));
     long int x, y;
     size_t counter = 0;
 
-    for (size_t i = 0; i < array->count_h; i+=2) {
-        for (size_t j = 0; j < array->count_v; j+=2) {
-            if (parametricIntersect(array->horizontal[i], array->horizontal[i+1], array->vertical[j], array->vertical[j+1], &x, &y)) {
-                if (x >= 0 && x < w && y >= 0 && y < h) {
-                    intersect_arr->array[counter++] = x;
-                    intersect_arr->array[counter++] = y;
-                }
-            }
-        }
+    for (size_t i = 0; i < array->count_h; i += 2) {
+	for (size_t j = 0; j < array->count_v; j += 2) {
+	    if (parametricIntersect(
+	          array->horizontal[i], array->horizontal[i + 1],
+	          array->vertical[j], array->vertical[j + 1], &x, &y)) {
+		if (x >= 0 && x < w && y >= 0 && y < h) {
+		    intersect_arr->array[counter++] = x;
+		    intersect_arr->array[counter++] = y;
+		}
+	    }
+	}
     }
 
     intersect_arr->len = counter;
-    intersect_arr->array = realloc(intersect_arr->array, sizeof(long int) * counter);
-    if (!intersect_arr->array) {
-        return NULL;
-    }
+    intersect_arr->array =
+      realloc(intersect_arr->array, sizeof(long int) * counter);
+    if (!intersect_arr->array) { return NULL; }
 
     return intersect_arr;
 }
-
 
 int
 main(int argc, char **argv)
@@ -454,57 +461,55 @@ main(int argc, char **argv)
 
     sorted_arr = sort_array(arr);
     if (!sorted_arr) { return 1; }
-    
-    intersect_arr = get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
-    if (!intersect_arr) { return 1; }
 
+    intersect_arr =
+      get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
+    if (!intersect_arr) { return 1; }
 
     SDL_LockSurface(image_temp);
 
-/*
-    float m, n;
-    int x0, y0, x1, y1, x2, y2;
-    pixels = image_temp->pixels;
+    /*
+        float m, n;
+        int x0, y0, x1, y1, x2, y2;
+        pixels = image_temp->pixels;
 
-    for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-    printf("r: %lu,theta: %lu\n", sorted_arr->horizontal[i], sorted_arr->horizontal[i+1]);
-	m = sin(sorted_arr->horizontal[i + 1] * PI / 180);
-	n = cos(sorted_arr->horizontal[i + 1] * PI / 180);
-	x0 = m * sorted_arr->horizontal[i];
-	y0 = n * sorted_arr->horizontal[i];
-	x1 = x0 + 2 * image_temp->w * (-n);
-	y1 = y0 + 2 * image_temp->h * (m);
-	x2 = x0 - 2 * image_temp->w * (-n);
-	y2 = y0 - 2 * image_temp->h * (m);
-	draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
-	          SDL_MapRGB(image_temp->format, 0, 255, 0));
-    }
-
-    for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
-	m = sin(sorted_arr->vertical[i + 1] * PI / 180);
-	n = cos(sorted_arr->vertical[i + 1] * PI / 180);
-	x0 = m * sorted_arr->vertical[i];
-	y0 = n * sorted_arr->vertical[i];
-	x1 = x0 + 2 * image_temp->w * (-n);
-	y1 = y0 + 2 * image_temp->h * (m);
-	x2 = x0 - 2 * image_temp->w * (-n);
-	y2 = y0 - 2 * image_temp->h * (m);
-	draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
-	          SDL_MapRGB(image_temp->format, 255, 0, 0));
-    }
-*/
-
-    for (size_t i = 0; i < intersect_arr->len; i+=2) {
-        for (int j = -2; j <= 2; j++) {
-            for (int k = -2; k <= 2; k++) {
-                change_pixel(image_temp, intersect_arr->array[i], intersect_arr->array[i+1], SDL_MapRGB(image_temp->format, 255,255,0));
-            }
+        for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
+        printf("r: %lu,theta: %lu\n", sorted_arr->horizontal[i],
+       sorted_arr->horizontal[i+1]); m = sin(sorted_arr->horizontal[i + 1] * PI
+       / 180); n = cos(sorted_arr->horizontal[i + 1] * PI / 180); x0 = m *
+       sorted_arr->horizontal[i]; y0 = n * sorted_arr->horizontal[i]; x1 = x0 +
+       2 * image_temp->w * (-n); y1 = y0 + 2 * image_temp->h * (m); x2 = x0 - 2
+       * image_temp->w * (-n); y2 = y0 - 2 * image_temp->h * (m);
+            draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
+                      SDL_MapRGB(image_temp->format, 0, 255, 0));
         }
+
+        for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
+            m = sin(sorted_arr->vertical[i + 1] * PI / 180);
+            n = cos(sorted_arr->vertical[i + 1] * PI / 180);
+            x0 = m * sorted_arr->vertical[i];
+            y0 = n * sorted_arr->vertical[i];
+            x1 = x0 + 2 * image_temp->w * (-n);
+            y1 = y0 + 2 * image_temp->h * (m);
+            x2 = x0 - 2 * image_temp->w * (-n);
+            y2 = y0 - 2 * image_temp->h * (m);
+            draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
+                      SDL_MapRGB(image_temp->format, 255, 0, 0));
+        }
+    */
+
+    for (size_t i = 0; i < intersect_arr->len; i += 2) {
+	for (int j = -2; j <= 2; j++) {
+	    for (int k = -2; k <= 2; k++) {
+		change_pixel(image_temp, intersect_arr->array[i],
+		             intersect_arr->array[i + 1],
+		             SDL_MapRGB(image_temp->format, 255, 255, 0));
+	    }
+	}
     }
 
     IMG_SavePNG(image_temp, "./test6.png");
     SDL_UnlockSurface(image_temp);
-
 
     free(intersect_arr->array);
     free(intersect_arr);

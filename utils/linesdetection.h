@@ -15,8 +15,11 @@
     (deg % modulo < 44) ? deg % modulo : (deg % modulo) - 90
 #define DIAG(x, y) sqrt(x *x + y * y)
 #define ISVERT(x) (x % 180 < 20 || ((x + 20) % 180) < 20) ? 1 : 0
-#define ISHOR(x) (((x % 180) < 110 && (x % 180) > 70 ) ||( ((x + 20) % 180) < \
-            110 && ((x + 20) % 180) > 70)) ? 1 : 0
+#define ISHOR(x)                                        \
+    (((x % 180) < 110 && (x % 180) > 70) ||             \
+     (((x + 20) % 180) < 110 && ((x + 20) % 180) > 70)) \
+      ? 1                                               \
+      : 0
 #define MAX(a, b) a > b ? a : b
 
 typedef struct
