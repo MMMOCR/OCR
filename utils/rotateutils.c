@@ -88,8 +88,8 @@ rotate_image(SDL_Surface *image, double angle)
 	              (i - half_image_h - (double) (max_edge - image_h) / 2) *
 	                cos(angle)) +
 	      half_image_h;
-	    if (x < 0 || x > image_w) { continue; }
-	    if (y < 0 || y > image_h) { continue; }
+	    if (x < 0 || x >= image_w) { continue; }
+	    if (y < 0 || y >= image_h) { continue; }
 	    if (x == 0 && y == 0) {
 		printf("COOOORRRRRDDDSSS : %li, %li\n", j, i);
 	    }
