@@ -332,14 +332,15 @@ detect_lines(SDL_Surface *surface)
 Sorted_Points_Array *
 sort_array(Points_Array *arr)
 {
-    char flag = 0;
+    char flag;
     Sorted_Points_Array *sorted_arr = calloc(1, sizeof(Sorted_Points_Array));
     sorted_arr->horizontal = calloc(arr->len, sizeof(long int));
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));
     for (size_t i = 0; i < arr->len; i += 2) {
 	if (ISVERT(arr->array[i + 1])) {
+        flag = 0;
 	    for (size_t j = 0; j < sorted_arr->count_v; j += 2) {
-		if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8)) {
+		if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8) && arr->array[i+1] == sorted_arr->vertical[j+1]) {
 		    flag = 1;
 		}
 	    }
@@ -348,8 +349,9 @@ sort_array(Points_Array *arr)
 		sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
 	    }
 	} else if (ISHOR(arr->array[i + 1])) {
+        flag = 0;
 	    for (size_t j = 0; j < sorted_arr->count_h; j += 2) {
-		if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8)) {
+		if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8) && MAXDIFF(arr->array[i+1], sorted_arr->horizontal[j+1], 3)) {
 		    flag = 1;
 		}
 	    }
@@ -480,7 +482,7 @@ main(int argc, char **argv)
 
     SDL_LockSurface(image_temp);
 
-    /*
+    // /*
         float m, n;
         int x0, y0, x1, y1, x2, y2;
         pixels = image_temp->pixels;
@@ -508,7 +510,7 @@ main(int argc, char **argv)
             draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
                       SDL_MapRGB(image_temp->format, 255, 0, 0));
         }
-    */
+    // */
 
     intersect_arr =
       get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
@@ -516,6 +518,7 @@ main(int argc, char **argv)
 
     for (size_t i = 0; i < intersect_arr->len; i += 2) {
 	for (int j = -2; j <= 2; j++) {
+        printf("x: %li, y: %li\n", intersect_arr->array[i], intersect_arr->array[i+1]);
 	    for (int k = -2; k <= 2; k++) {
 		change_pixel(image_temp, intersect_arr->array[i],
 		             intersect_arr->array[i + 1],

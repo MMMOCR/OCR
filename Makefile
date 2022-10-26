@@ -6,9 +6,18 @@ PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
 DEPS := $($(shell find . *.c):%.c=%.h)
 
+ifneq ($(OS),Windows_NT)
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		LIBS := --libs-only-l
+    endif
+endif
+
+LIBS ?= --libs
+
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
 CPPFLAGS := -MMD
-LDLIBS := $(shell pkg-config $(PACKAGES) --libs-only-l) -lm
+LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
 IMG ?= 2
