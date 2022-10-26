@@ -21,7 +21,8 @@
       ? 1                                               \
       : 0
 #define MAX(a, b) a > b ? a : b
-#define MAXDIFF(x, y, n) (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (x - y) <= n)) ? 1 : 0
+#define MAXDIFF(x, y, n) \
+    (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (x - y) <= n)) ? 1 : 0
 
 typedef struct
 {

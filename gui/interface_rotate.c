@@ -77,8 +77,8 @@ main(int argc, char **argv)
     Gtk_Data data_to_pass;
 
     if (argc != 2) {
-	printf("Usage: %s path_to_image\n", argv[0]);
-	return 1;
+        printf("Usage: %s path_to_image\n", argv[0]);
+        return 1;
     }
 
     gtk_init(&argc, &argv);
@@ -92,8 +92,8 @@ main(int argc, char **argv)
     image = gtk_image_new_from_file(argv[1]);
 
     if (!temp) {
-	printf("ALED\n");
-	return 1;
+        printf("ALED\n");
+        return 1;
     }
 
     SDL_Surface *image_temp = load_image(argv[1]);

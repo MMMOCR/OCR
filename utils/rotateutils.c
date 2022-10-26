@@ -39,9 +39,9 @@ fill_surface(SDL_Surface *surface, Uint32 pixel)
     size_t surface_h = surface->h;
 
     for (size_t i = 0; i < surface_w; i++) {
-	for (size_t j = 0; j < surface_h; j++) {
-	    change_pixel(surface, i, j, pixel);
-	}
+        for (size_t j = 0; j < surface_h; j++) {
+            change_pixel(surface, i, j, pixel);
+        }
     }
 }
 
@@ -77,27 +77,27 @@ rotate_image(SDL_Surface *image, double angle)
                  SDL_MapRGB(rotated_surface->format, 255, 255, 255));
 
     for (size_t i = 0; i < max_edge + (max_edge - image_h) / 2; i++) {
-	for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
-	    x = round((j - half_image_w - (double) (max_edge - image_w) / 2) *
-	                cos(angle) -
-	              (i - half_image_h - (double) (max_edge - image_h) / 2) *
-	                sin(angle)) +
-	      half_image_w;
-	    y = round((j - half_image_w - (double) (max_edge - image_w) / 2) *
-	                sin(angle) +
-	              (i - half_image_h - (double) (max_edge - image_h) / 2) *
-	                cos(angle)) +
-	      half_image_h;
-	    if (x < 0 || x >= image_w) { continue; }
-	    if (y < 0 || y >= image_h) { continue; }
-	    if (x == 0 && y == 0) {
-		printf("COOOORRRRRDDDSSS : %li, %li\n", j, i);
-	    }
-	    pixel = get_pixel(image, x, y);
-	    SDL_GetRGB(pixel, image->format, &r, &g, &b);
-	    pixel = SDL_MapRGB(rotated_surface->format, r, g, b);
-	    change_pixel(rotated_surface, j, i, pixel);
-	}
+        for (size_t j = 0; j < max_edge + (max_edge - image_w) / 2; j++) {
+            x = round((j - half_image_w - (double) (max_edge - image_w) / 2) *
+                        cos(angle) -
+                      (i - half_image_h - (double) (max_edge - image_h) / 2) *
+                        sin(angle)) +
+              half_image_w;
+            y = round((j - half_image_w - (double) (max_edge - image_w) / 2) *
+                        sin(angle) +
+                      (i - half_image_h - (double) (max_edge - image_h) / 2) *
+                        cos(angle)) +
+              half_image_h;
+            if (x < 0 || x >= image_w) { continue; }
+            if (y < 0 || y >= image_h) { continue; }
+            if (x == 0 && y == 0) {
+                printf("COOOORRRRRDDDSSS : %li, %li\n", j, i);
+            }
+            pixel = get_pixel(image, x, y);
+            SDL_GetRGB(pixel, image->format, &r, &g, &b);
+            pixel = SDL_MapRGB(rotated_surface->format, r, g, b);
+            change_pixel(rotated_surface, j, i, pixel);
+        }
     }
 
     SDL_UnlockSurface(image);
