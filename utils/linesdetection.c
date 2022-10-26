@@ -407,6 +407,7 @@ clean_array(Points_Array *arr)
         }
     }
     arr->len = l;
+    arr->array = realloc(arr->array, arr->len * sizeof(long int));
 }
 
 void
@@ -549,7 +550,7 @@ main(int argc, char **argv)
     SDL_UnlockSurface(image_temp);
 
     clean_array(intersect_arr);
-    if (!intersect_arr) {
+    if (!intersect_arr || !intersect_arr->array) {
         printf("Error in clean_array\n");
         return 1;
     }
