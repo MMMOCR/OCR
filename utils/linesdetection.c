@@ -340,8 +340,9 @@ sort_array(Points_Array *arr)
         if (ISVERT(arr->array[i + 1])) {
             flag = 0;
             for (size_t j = 0; j < sorted_arr->count_v; j += 2) {
-                if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8) &&
-                    arr->array[i + 1] == sorted_arr->vertical[j + 1]) {
+                if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 12) &&
+                    MAXDIFF(arr->array[i + 1], sorted_arr->horizontal[j + 1],
+                            12)) {
                     flag = 1;
                 }
             }
@@ -352,9 +353,9 @@ sort_array(Points_Array *arr)
         } else if (ISHOR(arr->array[i + 1])) {
             flag = 0;
             for (size_t j = 0; j < sorted_arr->count_h; j += 2) {
-                if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8) &&
+                if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 12) &&
                     MAXDIFF(arr->array[i + 1], sorted_arr->horizontal[j + 1],
-                            3)) {
+                            12)) {
                     flag = 1;
                 }
             }
@@ -524,9 +525,9 @@ main(int argc, char **argv)
     if (!intersect_arr) { return 1; }
 
     for (size_t i = 0; i < intersect_arr->len; i += 2) {
+        printf("x: %li, y: %li\n", intersect_arr->array[i],
+               intersect_arr->array[i + 1]);
         for (int j = -2; j <= 2; j++) {
-            printf("x: %li, y: %li\n", intersect_arr->array[i],
-                   intersect_arr->array[i + 1]);
             for (int k = -2; k <= 2; k++) {
                 change_pixel(image_temp, intersect_arr->array[i],
                              intersect_arr->array[i + 1],
