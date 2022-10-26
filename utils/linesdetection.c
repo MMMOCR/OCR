@@ -356,10 +356,11 @@ sort_array(Points_Array *arr)
             if (!flag) {
                 sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
                 sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
-            }
-            else {
-                sorted_arr->vertical[2*index] = (sorted_arr->vertical[2*index] + arr->array[i]) /2;
-                sorted_arr->vertical[2*index + 1] = (sorted_arr->vertical[2*index + 1] + arr->array[i + 1]) /2;
+            } else {
+                sorted_arr->vertical[2 * index] =
+                  (sorted_arr->vertical[2 * index] + arr->array[i]) / 2;
+                sorted_arr->vertical[2 * index + 1] =
+                  (sorted_arr->vertical[2 * index + 1] + arr->array[i + 1]) / 2;
             }
         } else if (ISHOR(arr->array[i + 1])) {
             flag = 0;
@@ -375,12 +376,14 @@ sort_array(Points_Array *arr)
             }
             if (!flag) {
                 sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
-                sorted_arr->horizontal[sorted_arr->count_h++] = 
-                        arr->array[i + 1];
-            }
-            else {
-                sorted_arr->horizontal[2*index] = (sorted_arr->horizontal[2*index] + arr->array[i]) /2;
-                sorted_arr->horizontal[2*index + 1] = (sorted_arr->horizontal[2*index + 1] + arr->array[i + 1]) /2;
+                sorted_arr->horizontal[sorted_arr->count_h++] =
+                  arr->array[i + 1];
+            } else {
+                sorted_arr->horizontal[2 * index] =
+                  (sorted_arr->horizontal[2 * index] + arr->array[i]) / 2;
+                sorted_arr->horizontal[2 * index + 1] =
+                  (sorted_arr->horizontal[2 * index + 1] + arr->array[i + 1]) /
+                  2;
             }
         }
     }
@@ -465,68 +468,67 @@ get_intersection_points(Sorted_Points_Array *array, long int w, long int h)
 }
 
 void
-clean_array(Points_Array * arr)
+clean_array(Points_Array *arr)
 {
     size_t l = 0;
     size_t k;
-    for (size_t i = 0; i < arr->len; i+=2) {
-        if (arr->array[i] == 0){
+    for (size_t i = 0; i < arr->len; i += 2) {
+        if (arr->array[i] == 0) {
             k = i + 2;
             while (k < arr->len && arr->array[k] == 0) {
-                k+=2;
+                k += 2;
             }
-            if (k == arr->len) {
-                break;
-            }
+            if (k == arr->len) { break; }
             arr->array[i] = arr->array[k];
-            arr->array[i+1] = arr->array[k+1];
+            arr->array[i + 1] = arr->array[k + 1];
             arr->array[k] = 0;
-            arr->array[k+1] = 0;
-            l+=2;
-        }
-        else {
-            l+=2;
+            arr->array[k + 1] = 0;
+            l += 2;
+        } else {
+            l += 2;
         }
     }
     arr->len = l;
 }
 
 void
-split_image(SDL_Surface * image, Points_Array * intersect_arr)
+split_image(SDL_Surface *image, Points_Array *intersect_arr)
 {
-    for (size_t i = 0; i < intersect_arr->len; i+=2) {
-        printf("%li, %li\n", intersect_arr->array[i], intersect_arr->array[i+1]);
+    for (size_t i = 0; i < intersect_arr->len; i += 2) {
+        printf("%li, %li\n", intersect_arr->array[i],
+               intersect_arr->array[i + 1]);
     }
     SDL_Rect r1;
     SDL_Rect r2;
-    SDL_Surface * surf;
+    SDL_Surface *surf;
     long int x1, y1, x2, y3;
-    char path[12] = {'.','/','c','_', 0, '_', 0, '.', 'p', 'n', 'g', 0};
+    char path[12] = { '.', '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
     // printf("%i, %li, %li, %li\n", image->);
     r2.x = 0;
     r2.y = 0;
     for (size_t i = 0; i < 9; i++) {
-        for (size_t j = 0; j < 18; j+=2) {
+        for (size_t j = 0; j < 18; j += 2) {
             x1 = intersect_arr->array[i * 20 + j + 1];
             y1 = intersect_arr->array[i * 20 + j];
             x2 = intersect_arr->array[i * 20 + j + 2 + 1];
             y3 = intersect_arr->array[(i + 1) * 20 + j];
-            printf("%li, %li\n", x2-x1, y3-y1);
-            surf = SDL_CreateRGBSurfaceWithFormat(0,x2-x1,y3-y1,32,image->format->format);
+            printf("%li, %li\n", x2 - x1, y3 - y1);
+            surf = SDL_CreateRGBSurfaceWithFormat(0, x2 - x1, y3 - y1, 32,
+                                                  image->format->format);
             r1.x = x1;
             r1.y = y1;
-            r1.w = x2-x1;
-            r1.h = y3-y1;
+            r1.w = x2 - x1;
+            r1.h = y3 - y1;
             r2.w = r1.w;
             r2.h = r1.h;
             SDL_LockSurface(surf);
-            if (!SDL_BlitSurface(image, &r1, surf, NULL)){
+            if (!SDL_BlitSurface(image, &r1, surf, NULL)) {
                 printf("%s\n", SDL_GetError());
                 return;
             }
-            path[4] = i+0x30;
-            path[6] = j/2+0x30;
-            printf("%s\n",path);
+            path[4] = i + 0x30;
+            path[6] = j / 2 + 0x30;
+            printf("%s\n", path);
             IMG_SavePNG(surf, path);
             SDL_UnlockSurface(surf);
         }
@@ -607,20 +609,21 @@ main(int argc, char **argv)
       get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
     if (!intersect_arr) { return 1; }
 
-    for (size_t i = 0; i < intersect_arr->len; i+=2) {
-        if (intersect_arr->array[i] == 0) {
-            continue;
-        }
-        for (size_t j = i + 2; j < intersect_arr->len; j+=2) {
-            if (intersect_arr->array[j] == 0) {
-                continue;
-            }
+    for (size_t i = 0; i < intersect_arr->len; i += 2) {
+        if (intersect_arr->array[i] == 0) { continue; }
+        for (size_t j = i + 2; j < intersect_arr->len; j += 2) {
+            if (intersect_arr->array[j] == 0) { continue; }
             if (MAXDIFF(intersect_arr->array[i], intersect_arr->array[j], 20)) {
-                if (MAXDIFF(intersect_arr->array[i+1], intersect_arr->array[j+1], 20)) {
-                    intersect_arr->array[i] = (intersect_arr->array[i] + intersect_arr->array[j]) /2;
-                    intersect_arr->array[i+1] = (intersect_arr->array[i+1] + intersect_arr->array[j+1]) /2;
+                if (MAXDIFF(intersect_arr->array[i + 1],
+                            intersect_arr->array[j + 1], 20)) {
+                    intersect_arr->array[i] =
+                      (intersect_arr->array[i] + intersect_arr->array[j]) / 2;
+                    intersect_arr->array[i + 1] =
+                      (intersect_arr->array[i + 1] +
+                       intersect_arr->array[j + 1]) /
+                      2;
                     intersect_arr->array[j] = 0;
-                    intersect_arr->array[j+1] = 0;
+                    intersect_arr->array[j + 1] = 0;
                 }
             }
         }
@@ -635,7 +638,6 @@ main(int argc, char **argv)
             }
         }
     }
-
 
     IMG_SavePNG(image_temp, "./test6.png");
     SDL_UnlockSurface(image_temp);
