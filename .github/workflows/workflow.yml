@@ -32,9 +32,9 @@ jobs:
     steps:
     - name: setup docker
       run: echo "#### Installing software"
-        | apt update
-        | apt install git -y
-        | echo "#### Software installed"
+        && apt update
+        && apt install git -y
+        && echo "#### Software installed"
       env:
         REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: push.sh
