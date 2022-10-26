@@ -33,7 +33,7 @@ jobs:
     - name: setup docker
       run: echo "#### Installing software"
         | apt update
-        | apt install git
+        | apt install git -y
         | echo "#### Software installed"
       env:
         REPO_FULLNAME: MMMOCR/OCR
