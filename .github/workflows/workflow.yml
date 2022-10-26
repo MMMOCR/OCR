@@ -46,7 +46,7 @@ jobs:
         REPO_FULLNAME: MMMOCR/OCR
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git push to mirror
-      run: git push mirror --all
+      run: GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push mirror --all
       env:
         REPO_FULLNAME: MMMOCR/OCR
         REMOTE_URL: ${{ secrets.REMOTE }}
