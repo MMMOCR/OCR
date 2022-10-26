@@ -30,6 +30,14 @@ jobs:
       volumes:
         - /home/cl0pinette/.ssh:/github/home/.ssh
     steps:
+    - name: setup docker
+      run: echo "#### Installing software"
+        | apt install git
+        | echo "#### Software installed"
+      env:
+        REPO_FULLNAME: MMMOCR/OCR
+        WORKFLOW_PATH: push.sh
+        REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git remote add
       run: echo "#### Adding remote"
         | git remote remove mirror
