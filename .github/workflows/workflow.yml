@@ -40,9 +40,7 @@ jobs:
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git remote add
       run: echo "#### Adding remote"
-        && if ! git config remote.faraway.url > /dev/null; then
-              git remote add mirror "$REMOTE_URL"
-           fi
+        && if ! git config remote.faraway.url > /dev/null; then git remote add mirror "$REMOTE_URL"; fi
         && echo "#### Remote added"
       env:
         REPO_FULLNAME: MMMOCR/OCR
