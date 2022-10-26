@@ -34,8 +34,6 @@ jobs:
       run: echo "#### Installing software"
         && apt update
         && apt install git -y
-        && ssh-keyscan git.cri.epita.fr >> /github/home/known_hosts
-        && echo -e "Hostname git.cri.epita.fr\nIdentityFile /github/home/.ssh/id_ed25519" > /github/home/.ssh/config
         && echo "#### Software installed"
       env:
         REPO_FULLNAME: MMMOCR/OCR
