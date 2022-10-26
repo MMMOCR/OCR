@@ -14,15 +14,15 @@
 #define DIFF(deg, modulo) \
     (deg % modulo < 44) ? deg % modulo : (deg % modulo) - 90
 #define DIAG(x, y) sqrt(x *x + y * y)
-#define ISVERT(x) (x % 180 < 20 || ((x + 20) % 180) < 20) ? 1 : 0
+#define ISVERT(x) (x % 180 < 10 || ((x + 10) % 180) < 10) ? 1 : 0
 #define ISHOR(x)                                        \
-    (((x % 180) < 110 && (x % 180) > 70) ||             \
-     (((x + 20) % 180) < 110 && ((x + 20) % 180) > 70)) \
+    (((x % 180) < 100 && (x % 180) > 80) ||             \
+     (((x + 10) % 180) < 100 && ((x + 10) % 180) > 80)) \
       ? 1                                               \
       : 0
 #define MAX(a, b) a > b ? a : b
 #define MAXDIFF(x, y, n) \
-    (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (x - y) <= n)) ? 1 : 0
+    (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
 typedef struct
 {
