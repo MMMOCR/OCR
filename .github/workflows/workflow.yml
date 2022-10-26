@@ -18,9 +18,20 @@ jobs:
     - name: test gui
       uses: MMMOCR/docker-test@master
       env:
-        REPO_FULLNAME: MMMOCR/test
+        REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: test_gui.sh
- 
+        
+  push_other_remote:
+    needs: lint
+    name: push remote
+    runs-on: self-hosted
+    steps:
+    - name: push
+      uses: MMMOCR/docker-test@master
+      env:
+        REPO_FULLNAME: MMMOCR/OCR
+        WORKFLOW_PATH: push.sh
+        REMOTE_URL: ${{ secrets.REMOTE }}
 
 ## Exemple de test :
 #   compile:                            // identifiant du test
