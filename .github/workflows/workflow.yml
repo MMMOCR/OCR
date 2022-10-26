@@ -32,6 +32,7 @@ jobs:
     steps:
     - name: setup docker
       run: echo "#### Installing software"
+        | apt update
         | apt install git
         | echo "#### Software installed"
       env:
