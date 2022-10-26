@@ -338,25 +338,26 @@ sort_array(Points_Array *arr)
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));
     for (size_t i = 0; i < arr->len; i += 2) {
 	if (ISVERT(arr->array[i + 1])) {
-        for (size_t j = 0; j < sorted_arr->count_v; j+=2) {
-            if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8)){
-                flag = 1;
-            }
-        }
-        if (!flag){
-	        sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
-    	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
-        }
+	    for (size_t j = 0; j < sorted_arr->count_v; j += 2) {
+		if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8)) {
+		    flag = 1;
+		}
+	    }
+	    if (!flag) {
+		sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
+		sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
+	    }
 	} else if (ISHOR(arr->array[i + 1])) {
-        for (size_t j = 0; j < sorted_arr->count_h; j+=2) {
-            if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8)){
-                flag = 1;
-            }
-        }
-        if (!flag){
-	        sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
-    	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i + 1];
-        }
+	    for (size_t j = 0; j < sorted_arr->count_h; j += 2) {
+		if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8)) {
+		    flag = 1;
+		}
+	    }
+	    if (!flag) {
+		sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
+		sorted_arr->horizontal[sorted_arr->count_h++] =
+		  arr->array[i + 1];
+	    }
 	}
     }
 
@@ -424,9 +425,9 @@ get_intersection_points(Sorted_Points_Array *array, long int w, long int h)
 	          array->horizontal[i], array->horizontal[i + 1],
 	          array->vertical[j], array->vertical[j + 1], &x, &y)) {
 		if (x >= 0 && x < w && y >= 0 && y < h) {
-    		    intersect_arr->array[counter++] = x;
-	    	    intersect_arr->array[counter++] = y;
-            }
+		    intersect_arr->array[counter++] = x;
+		    intersect_arr->array[counter++] = y;
+		}
 	    }
 	}
     }
