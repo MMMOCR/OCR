@@ -40,7 +40,7 @@ jobs:
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git setup
       run: echo "#### Setting up git";
-        if ! git config remote.mirror.url > /dev/null; then git remote add mirror "$REMOTE_URL"; fi
+        if ! git config remote.mirror.url > /dev/null; then git remote add mirror "$REMOTE_URL"; fi;
         git config --global --add --bool push.autoSetupRemote true;
         if git config remote.origin.url > /dev/null; then git remote remove origin; fi;
         git remote add origin git@github.com:$REPO_FULLNAME.git;
