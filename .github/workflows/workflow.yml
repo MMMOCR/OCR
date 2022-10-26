@@ -35,10 +35,10 @@ jobs:
         && apt update
         && apt install git -y
         && ssh-keyscan git.cri.epita.fr >> /github/home/known_hosts
+        && echo -e "Hostname git.cri.epita.fr\nIdentityFile /github/home/.ssh/id_ed25519"
         && echo "#### Software installed"
       env:
         REPO_FULLNAME: MMMOCR/OCR
-        WORKFLOW_PATH: push.sh
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git remote add
       run: echo "#### Adding remote"
@@ -46,7 +46,6 @@ jobs:
         && echo "#### Remote added"
       env:
         REPO_FULLNAME: MMMOCR/OCR
-        WORKFLOW_PATH: push.sh
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git push to mirror
       run: echo "#### Pushing to remote"
@@ -54,7 +53,6 @@ jobs:
         && echo "#### Pushed to mirror"
       env:
         REPO_FULLNAME: MMMOCR/OCR
-        WORKFLOW_PATH: push.sh
         REMOTE_URL: ${{ secrets.REMOTE }}
 
 ## Exemple de test :
