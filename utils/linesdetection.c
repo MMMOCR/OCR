@@ -332,16 +332,31 @@ detect_lines(SDL_Surface *surface)
 Sorted_Points_Array *
 sort_array(Points_Array *arr)
 {
+    char flag = 0;
     Sorted_Points_Array *sorted_arr = calloc(1, sizeof(Sorted_Points_Array));
     sorted_arr->horizontal = calloc(arr->len, sizeof(long int));
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));
     for (size_t i = 0; i < arr->len; i += 2) {
 	if (ISVERT(arr->array[i + 1])) {
-	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
-	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
+        for (size_t j = 0; j < sorted_arr->count_v; j+=2) {
+            if (MAXDIFF(arr->array[i], sorted_arr->vertical[j], 8)){
+                flag = 1;
+            }
+        }
+        if (!flag){
+	        sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i];
+    	    sorted_arr->vertical[sorted_arr->count_v++] = arr->array[i + 1];
+        }
 	} else if (ISHOR(arr->array[i + 1])) {
-	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
-	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i + 1];
+        for (size_t j = 0; j < sorted_arr->count_h; j+=2) {
+            if (MAXDIFF(arr->array[i], sorted_arr->horizontal[j], 8)){
+                flag = 1;
+            }
+        }
+        if (!flag){
+	        sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i];
+    	    sorted_arr->horizontal[sorted_arr->count_h++] = arr->array[i + 1];
+        }
 	}
     }
 
@@ -386,9 +401,9 @@ parametricIntersect(double r1,
     double ct2 = cosf(t2 * PI / 180);
     double st2 = sinf(t2 * PI / 180);
     double d = ct1 * st2 - st1 * ct2; // determinant de la matrice
-    if (d != 0.0f) {
-	*x = (long int) ((st2 * r1 - st1 * r2) / d);
-	*y = (long int) ((-ct2 * r1 + ct1 * r2) / d);
+    if (ABS(d) >= 0.1f) {
+	*y = (long int) ((st2 * r1 - st1 * r2) / d);
+	*x = (long int) ((-ct2 * r1 + ct1 * r2) / d);
 	return (1);
     } else { // lignes paralelles
 	return (0);
@@ -409,9 +424,9 @@ get_intersection_points(Sorted_Points_Array *array, long int w, long int h)
 	          array->horizontal[i], array->horizontal[i + 1],
 	          array->vertical[j], array->vertical[j + 1], &x, &y)) {
 		if (x >= 0 && x < w && y >= 0 && y < h) {
-		    intersect_arr->array[counter++] = x;
-		    intersect_arr->array[counter++] = y;
-		}
+    		    intersect_arr->array[counter++] = x;
+	    	    intersect_arr->array[counter++] = y;
+            }
 	    }
 	}
     }
@@ -462,10 +477,6 @@ main(int argc, char **argv)
     sorted_arr = sort_array(arr);
     if (!sorted_arr) { return 1; }
 
-    intersect_arr =
-      get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
-    if (!intersect_arr) { return 1; }
-
     SDL_LockSurface(image_temp);
 
     /*
@@ -497,6 +508,10 @@ main(int argc, char **argv)
                       SDL_MapRGB(image_temp->format, 255, 0, 0));
         }
     */
+
+    intersect_arr =
+      get_intersection_points(sorted_arr, image_temp->w, image_temp->h);
+    if (!intersect_arr) { return 1; }
 
     for (size_t i = 0; i < intersect_arr->len; i += 2) {
 	for (int j = -2; j <= 2; j++) {
