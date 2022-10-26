@@ -41,17 +41,17 @@ jobs:
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git remote add
       run: echo "#### Adding remote"
-        | git remote remove mirror
-        | git remote add mirror "$REMOTE_URL"
-        | echo "#### Remote added"
+        && git remote remove mirror
+        && git remote add mirror "$REMOTE_URL"
+        && echo "#### Remote added"
       env:
         REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: push.sh
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git push to mirror
       run: echo "#### Pushing to remote"
-        | git push mirror
-        | echo "#### Pushed to mirror"
+        && git push mirror --all
+        && echo "#### Pushed to mirror"
       env:
         REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: push.sh
