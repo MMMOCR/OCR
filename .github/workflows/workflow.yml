@@ -26,7 +26,7 @@ jobs:
     name: push remote
     runs-on: self-hosted
     container:
-      image: debian:11.5.0
+      image: debian:bullseye-slim
       options: -v ~/.ssh:/github/home/.ssh
     steps:
     - name: git remote add
