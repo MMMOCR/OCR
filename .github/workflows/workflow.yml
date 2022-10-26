@@ -27,8 +27,7 @@ jobs:
     runs-on: self-hosted
     container:
       image: debian:11.5.0
-      volumes:
-        - ${{ secrets.PATH }}:/github/home/.ssh
+      options: -v ${{ secrets.PATH }}:/github/home/.ssh
     steps:
     - name: git remote add
       run: echo "#### Adding remote"
