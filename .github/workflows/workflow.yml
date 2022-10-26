@@ -25,11 +25,24 @@ jobs:
     needs: lint
     name: push remote
     runs-on: self-hosted
+    container:
+      image: debian:11.5.0
+      volumes:
+        - ${{ secrets.PATH }}:/github/home/.ssh
     steps:
-    - name: push
-      uses: MMMOCR/docker-ssh@master
-      with:
-        remote_path: ${{ secrets.PATH }}
+    - name: git remote add
+      run: echo "#### Adding remote"
+        | git remote remove mirror
+        | git remote add mirror "$REMOTE_URL"
+        | echo "#### Remote added"
+      env:
+        REPO_FULLNAME: MMMOCR/OCR
+        WORKFLOW_PATH: push.sh
+        REMOTE_URL: ${{ secrets.REMOTE }}
+    - name: git push to mirror
+      run: echo "#### Pushing to remote"
+        | git push mirror
+        | echo "#### Pushed to mirror"
       env:
         REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: push.sh
