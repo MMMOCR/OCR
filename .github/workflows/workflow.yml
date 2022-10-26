@@ -10,7 +10,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
+  test_gui:
+    needs: lint
+    name: test gui
+    runs-on: self-hosted
+    steps:
+    - name: test gui
+      uses: MMMOCR/docker-test@master
+      env:
+        REPO_FULLNAME: MMMOCR/test
+        WORKFLOW_PATH: test_gui.sh
+ 
 
 ## Exemple de test :
 #   compile:                            // identifiant du test
