@@ -165,75 +165,11 @@ detect_lines_and_rotate(int *pixels,
     surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB8888, 0);
     if (moy != 0) { surface = rotate_image(surface, -moy); }
 
-    //    long int last_w = w;
-    //    long int last_h = h;
-    //    diag = DIAG(w, h);
-    //    pixels = surface->pixels;
-    //    w = surface->w;
-    //    h = surface->h;
-    //
-    //    double ratio = (double)DIAG(w, h) / (double)DIAG(last_w, last_h);
-    //    double trigo_angle, temp2;
-    //
-    //
-    //    long int y = (double)last_w /2 + cos (moy * PI / 180) * (-
-    //    (double)last_w / 2) + sin(moy * PI /180) * (- (double)last_h / 2) +
-    //    (double)(w - last_w) /2; long int x = (double)last_h /2 - sin (moy *
-    //    PI / 180) * (- (double)last_w / 2) + cos(moy * PI /180) * (-
-    //    (double)last_h / 2) + (double)(h - last_h) /2;
-    //
-    //    // printf("bbbbbbbbbb %li, %li, %f\n", x, y, ratio);
-    //
-    //    // printf("%i, %i\n", (int) moy % 90, (int) (moy +1) %90);
-    //
-    //    y -= (((int)moy % 90 < 1 && (int)moy % 90 > -1)) ? 0 : 15;
-    //    x += (((int)moy % 90 < 1 && (int)moy % 90 > -1)) ? 0 : 15;
-    //
-    //    // printf("bbbbbbbbbb %li, %li, %f, %i\n", x, y, ratio, (int)moy);
-    //
-    //    for (size_t i = 0; i < (size_t) arr->len; i += 2) {
-    //        // printf("%li, %f, %li\n", arr->array[i+1],
-    //        cos(sin(arr->array[i+1] * PI / 180)), arr->array[i]); trigo_angle
-    //        = TRIGO(arr->array[i+1] * PI / 180, arr->array[i+1]); trigo_angle
-    //        = ABS(trigo_angle);
-    //        // printf("%i\n", (int)arr->array[i+1] % 180);
-    //        if (ORIENT((int)arr->array[i+1], moy)) {
-    //            // printf("aaaaaaa: %li, %li, %f, %f\n", arr->array[i+1], w,
-    //            (double)last_w/ trigo_angle, trigo_angle); temp2 = x; //
-    //            ((double)w - (double) last_w / temp); // + 100;
-    //        }
-    //        else {
-    //            temp2 = y; //((double)h - (double) last_h /temp); // - 90;
-    //        }
-    //
-    //
-    //        // printf("angle: %li, temp2: %f\n", arr->array[i+1], temp2);
-    //
-    //
-    //
-    //        // printf("%li, decal: %f\n", arr->array[i], temp2 );
-    //        arr->array[i] = (double)arr->array[i] + temp2; // / temp/2 ;
-    //    	arr->array[i + 1] -= (long int)moy;
-    //    }
-    //
-    //    for (size_t i = 0; i < arr->len; i+=2) {
-    // 	m = sin(arr->array[i+1] * PI / 180);
-    // 	n = cos(arr->array[i+1] * PI / 180);
-    // 	x0 = m * arr->array[i];
-    // 	y0 = n * arr->array[i];
-    // 	x1 = x0 + w * (-n);
-    // 	y1 = y0 + h * (m);
-    // 	x2 = x0 - w * (-n);
-    // 	y2 = y0 - h * (m);
-    //        draw_line(pixels, w, h, x1, y1, x2, y2,
-    // 	          SDL_MapRGB(format, 0, 255, 0));
-    // }
-
     IMG_SavePNG(surface, "./test3.png");
 
+    free(arr->array);
+    free(arr);
     free(mat);
-
-    // printf("%lu\n", arr->len);
 
     return surface;
 }
@@ -389,30 +325,16 @@ sort_array(Points_Array *arr)
     }
 
     sorted_arr->vertical =
-      realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
+        realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
     if (!sorted_arr->vertical) {
         return NULL;
-
-        sorted_arr->horizontal = realloc(
-          sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
-        if (!sorted_arr->horizontal) {}
+    }
+    sorted_arr->horizontal = 
+        realloc(sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
+    if (!sorted_arr->horizontal) {
         return NULL;
     }
 
-    /*
-    for (size_t i = 0; i < sorted_arr->count_h; i += 2) {
-        printf("%li, %li\n", sorted_arr->horizontal[i],
-               sorted_arr->horizontal[i + 1]);
-    }
-
-    printf("pute\n");
-
-    for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
-        printf("%li, %li\n", sorted_arr->vertical[i],
-               sorted_arr->vertical[i + 1]);
-    }
-
-    */
     return sorted_arr;
 }
 
@@ -494,43 +416,30 @@ clean_array(Points_Array *arr)
 void
 split_image(SDL_Surface *image, Points_Array *intersect_arr)
 {
-    for (size_t i = 0; i < intersect_arr->len; i += 2) {
-        printf("%li, %li\n", intersect_arr->array[i],
-               intersect_arr->array[i + 1]);
-    }
-    SDL_Rect r1;
-    SDL_Rect r2;
     SDL_Surface *surf;
-    long int x1, y1, x2, y3;
+    long unsigned int x1, y1, x2, y3;
+    int * pixels = image->pixels;
+    int * pixels_2;
     char path[12] = { '.', '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
-    // printf("%i, %li, %li, %li\n", image->);
-    r2.x = 0;
-    r2.y = 0;
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 18; j += 2) {
             x1 = intersect_arr->array[i * 20 + j + 1];
             y1 = intersect_arr->array[i * 20 + j];
             x2 = intersect_arr->array[i * 20 + j + 2 + 1];
             y3 = intersect_arr->array[(i + 1) * 20 + j];
-            printf("%li, %li\n", x2 - x1, y3 - y1);
             surf = SDL_CreateRGBSurfaceWithFormat(0, x2 - x1, y3 - y1, 32,
                                                   image->format->format);
-            r1.x = x1;
-            r1.y = y1;
-            r1.w = x2 - x1;
-            r1.h = y3 - y1;
-            r2.w = r1.w;
-            r2.h = r1.h;
-            SDL_LockSurface(surf);
-            if (!SDL_BlitSurface(image, &r1, surf, NULL)) {
-                printf("%s\n", SDL_GetError());
-                return;
+            pixels_2 = surf->pixels;
+            for (size_t k = y1; k < y3; k++) {
+                for (size_t l = x1; l < x2; l++) {
+                    pixels_2[(k-y1) * surf->w + (l-x1)] = pixels[k * image->w + l];
+                }
             }
             path[4] = i + 0x30;
             path[6] = j / 2 + 0x30;
-            printf("%s\n", path);
             IMG_SavePNG(surf, path);
             SDL_UnlockSurface(surf);
+            SDL_FreeSurface(surf);
         }
     }
 }
@@ -643,6 +552,10 @@ main(int argc, char **argv)
     SDL_UnlockSurface(image_temp);
 
     clean_array(intersect_arr);
+    if (!intersect_arr) {
+        printf("Error in clean_array\n");
+        return 1;
+    }
 
     split_image(image_temp, intersect_arr);
 
