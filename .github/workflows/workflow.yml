@@ -50,7 +50,7 @@ jobs:
         if git config remote.origin.url > /dev/null; then git remote remove origin; fi;
         git remote add origin git@github.com:$REPO_FULLNAME.git;
         git fetch --all;
-        git push mirror --all; 
+        git push --all mirror; 
       env:
         REPO_FULLNAME: MMMOCR/OCR
         REMOTE_URL: ${{ secrets.REMOTE }}
