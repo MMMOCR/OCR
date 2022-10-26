@@ -46,9 +46,7 @@ jobs:
         REPO_FULLNAME: MMMOCR/OCR
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git push to mirror
-      run: echo "#### Pushing to remote"
-        && git push mirror --all
-        && echo "#### Pushed to mirror"
+      run: git push mirror --all
       env:
         REPO_FULLNAME: MMMOCR/OCR
         REMOTE_URL: ${{ secrets.REMOTE }}
