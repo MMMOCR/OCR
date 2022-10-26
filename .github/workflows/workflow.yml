@@ -41,7 +41,6 @@ jobs:
         REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git remote add
       run: echo "#### Adding remote"
-        && git remote remove mirror
         && git remote add mirror "$REMOTE_URL"
         && echo "#### Remote added"
       env:
