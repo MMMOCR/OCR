@@ -26,7 +26,7 @@ jobs:
     name: push remote
     runs-on: self-hosted
     container:
-      image: debian:bullseye-slim
+      image: debian:bullseye
       volumes:
         - /home/cl0pinette/.ssh:/github/home/.ssh
     steps:
