@@ -48,7 +48,7 @@ jobs:
     - name: git push to mirror
       run: export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /github/home/.ssh/id_ed25519" ; 
         if git config remote.origin.url > /dev/null; then git remote remove origin; fi;
-        git remote add origin https://x-access-token:$GITHUB_TOKEN@github.com/$REPO_FULLNAME.git;
+        git remote add origin git@github.com/$REPO_FULLNAME.git;
         git fetch --all;
         git push mirror --all; 
       env:
