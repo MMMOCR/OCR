@@ -325,15 +325,11 @@ sort_array(Points_Array *arr)
     }
 
     sorted_arr->vertical =
-        realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
-    if (!sorted_arr->vertical) {
-        return NULL;
-    }
-    sorted_arr->horizontal = 
-        realloc(sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
-    if (!sorted_arr->horizontal) {
-        return NULL;
-    }
+      realloc(sorted_arr->vertical, sizeof(long int) * sorted_arr->count_v);
+    if (!sorted_arr->vertical) { return NULL; }
+    sorted_arr->horizontal =
+      realloc(sorted_arr->horizontal, sizeof(long int) * sorted_arr->count_h);
+    if (!sorted_arr->horizontal) { return NULL; }
 
     return sorted_arr;
 }
@@ -418,8 +414,8 @@ split_image(SDL_Surface *image, Points_Array *intersect_arr)
 {
     SDL_Surface *surf;
     long unsigned int x1, y1, x2, y3;
-    int * pixels = image->pixels;
-    int * pixels_2;
+    int *pixels = image->pixels;
+    int *pixels_2;
     char path[12] = { '.', '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 18; j += 2) {
@@ -432,7 +428,8 @@ split_image(SDL_Surface *image, Points_Array *intersect_arr)
             pixels_2 = surf->pixels;
             for (size_t k = y1; k < y3; k++) {
                 for (size_t l = x1; l < x2; l++) {
-                    pixels_2[(k-y1) * surf->w + (l-x1)] = pixels[k * image->w + l];
+                    pixels_2[(k - y1) * surf->w + (l - x1)] =
+                      pixels[k * image->w + l];
                 }
             }
             path[4] = i + 0x30;
