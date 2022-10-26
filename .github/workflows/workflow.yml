@@ -27,7 +27,8 @@ jobs:
     runs-on: self-hosted
     container:
       image: debian:bullseye-slim
-      options: -v ~/.ssh:/github/home/.ssh
+      volumes:
+        - /home/cl0pinette/.ssh:/github/home/.ssh
     steps:
     - name: git remote add
       run: echo "#### Adding remote"
