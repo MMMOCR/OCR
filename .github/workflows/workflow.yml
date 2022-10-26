@@ -51,7 +51,7 @@ jobs:
     - name: git push to mirror
       run: export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /github/home/.ssh/id_ed25519" ; 
         git fetch --all;
-        for branch in `git branch -r`; do git push mirror $branch; done;
+        for branch in `git branch -r`; do git switch $branch && git push mirror; done;
         git push --all mirror; 
       env:
         REPO_FULLNAME: MMMOCR/OCR
