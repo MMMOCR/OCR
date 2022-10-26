@@ -28,11 +28,12 @@ jobs:
     steps:
     - name: push
       uses: MMMOCR/docker-ssh@master
+      with:
+        remote_path: ${{ secrets.PATH }}
       env:
         REPO_FULLNAME: MMMOCR/OCR
         WORKFLOW_PATH: push.sh
         REMOTE_URL: ${{ secrets.REMOTE }}
-        REMOTE_PATH: ${{ secrets.PATH }}
 
 ## Exemple de test :
 #   compile:                            // identifiant du test
