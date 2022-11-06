@@ -90,7 +90,7 @@ load_array(FILE* file, double array[], size_t len)
     for (size_t i = 0; i < len; i++) {
         read = getline(&line, &slen, file);
         if (read != -1) {
-            array[i] = (double) atoi(line);
+            array[i] = (double) atof(line);
         } else {
             errx(EXIT_FAILURE, "the model you are trying to load is no good");
         }
@@ -106,8 +106,7 @@ load_2darray(FILE* file, double* array, size_t x, size_t y)
         for (size_t j = 0; j < x; j++) {
             read = getline(&line, &len, file);
             if (read != -1) {
-                printf("%lu,%lu\n", i, j);
-                array[i * x + j] = (double) atoi(line);
+                array[i * x + j] = (double) atof(line);
             } else {
                 errx(EXIT_FAILURE,
                      "the model you are trying to load is no good");
