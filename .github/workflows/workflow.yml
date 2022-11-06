@@ -43,7 +43,7 @@ jobs:
     - name: git push to mirror
       run: export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /github/home/.ssh/id_ed25519" ; 
         git fetch --all;
-        for branch in `git branch -r`; do if (echo $branch | grep origin); then git switch ${branch#origin/} && git push mirror; fi; done;
+        for branch in `git branch -r`; do if (echo $branch | grep origin); then git switch ${branch#origin/} && git pull origin ${branch#origin/} && git push mirror; fi; done;
         git push --all mirror; 
       env:
         REPO_FULLNAME: MMMOCR/OCR
