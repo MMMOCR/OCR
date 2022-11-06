@@ -31,8 +31,11 @@ OBJS := utils/rotateutils.o
 DEPS := $(OBJS:%.o=%.d)
 DEPS += $(OUT:%=%.d)
 
+utils/linesdetection: utils/rotateutils.o
+gui/interface_rotate: utils/rotateutils.o
+
 $(OUT):
-	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $(shell cat $(@:%=%.dep)) $(LDLIBS) $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(^:%.h=) $(LDLIBS) $(LDFLAGS) -o $@
 
 $(OBJ):
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
