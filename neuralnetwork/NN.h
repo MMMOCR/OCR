@@ -7,4 +7,3 @@
 #define outputNb 1 // for XOR we only have 1 bit of output
 #define trainingSetsNb 4
 #define learningRate 0.1 // The bigger, the faster, the less precise
-#define epochNb 100000000
