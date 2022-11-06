@@ -237,50 +237,50 @@ image_utils(char* filename)
     SDL_Quit();
 }
 
-// int
-// main(int argc, char** argv)
-// {
-//     int h;
-//     int w;
-//     if (argc != 2) errx(EXIT_FAILURE, "Usage: image-file");
-//
-//     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s",
-//     SDL_GetError());
-//
-//     SDL_Window* window =
-//       SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
-//                        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-//     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
-//
-//     SDL_Renderer* renderer =
-//       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-//     if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
-//
-//     SDL_Surface* colored_surface = load_image(argv[1]);
-//
-//     h = colored_surface->h;
-//     w = colored_surface->w;
-//     SDL_SetWindowSize(window, w, h);
-//
-//     SDL_Texture* texture =
-//       SDL_CreateTextureFromSurface(renderer, colored_surface);
-//
-//     surface_to_grayscale(colored_surface);
-//
-//     int threshold = treshold(colored_surface->w * colored_surface->h,
-//                              colored_surface->pixels, 0);
-//
-//     back_to_black(colored_surface, threshold);
-//
-//     SDL_Texture* grayscale_texture =
-//       SDL_CreateTextureFromSurface(renderer, colored_surface);
-//
-//     SDL_FreeSurface(colored_surface);
-//
-//     event_loop(renderer, texture, grayscale_texture);
-//
-//     SDL_DestroyRenderer(renderer);
-//     SDL_DestroyWindow(window);
-//     SDL_Quit();
-//     return EXIT_SUCCESS;
-// }
+int
+main(int argc, char** argv)
+{
+    int h;
+    int w;
+    if (argc != 2) errx(EXIT_FAILURE, "Usage: image-file");
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s",
+    SDL_GetError());
+
+    SDL_Window* window =
+      SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
+                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Renderer* renderer =
+      SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* colored_surface = load_image(argv[1]);
+
+    h = colored_surface->h;
+    w = colored_surface->w;
+    SDL_SetWindowSize(window, w, h);
+
+    SDL_Texture* texture =
+      SDL_CreateTextureFromSurface(renderer, colored_surface);
+
+    surface_to_grayscale(colored_surface);
+
+    int threshold = treshold(colored_surface->w * colored_surface->h,
+                             colored_surface->pixels, 0);
+
+    back_to_black(colored_surface, threshold);
+
+    SDL_Texture* grayscale_texture =
+      SDL_CreateTextureFromSurface(renderer, colored_surface);
+
+    SDL_FreeSurface(colored_surface);
+
+    event_loop(renderer, texture, grayscale_texture);
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return EXIT_SUCCESS;
+}

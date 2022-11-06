@@ -83,9 +83,7 @@ detect_lines_and_rotate(int *pixels,
     long unsigned int *mat;
     long int k;
     long unsigned int max_size;
-    long int x0, y0, x1, y1, x2, y2;
     size_t counter = 0;
-    float m, n;
     Uint8 r, g, b;
     SDL_Surface *surface;
     Points_Array *arr = calloc(1, sizeof(Points_Array));
@@ -123,16 +121,6 @@ detect_lines_and_rotate(int *pixels,
     for (size_t i = 1; i < max_size; i++) {
         for (size_t j = 0; j < ANGLE; j++) {
             if (mat[i * ANGLE + j] > (unsigned long int) (w + h) / 7) {
-                m = sin(j * PI / 180);
-                n = cos(j * PI / 180);
-                x0 = m * i;
-                y0 = n * i;
-                x1 = x0 + 2 * w * (-n);
-                y1 = y0 + 2 * h * (m);
-                x2 = x0 - 2 * w * (-n);
-                y2 = y0 - 2 * h * (m);
-                // draw_line(pixels, w, h, x1, y1, x2, y2,
-                //     SDL_MapRGB(format, 255, 0, 0));
                 if (arr->len <= counter) {
                     arr->len += 400;
                     arr->array =
@@ -185,9 +173,7 @@ detect_lines(SDL_Surface *surface)
     long unsigned int *mat;
     long int k;
     long unsigned int max_size;
-    long int x0, y0, x1, y1, x2, y2;
     size_t counter = 0;
-    float m, n;
     Uint8 r, g, b;
     SDL_Surface *end_surface;
     Points_Array *arr = calloc(1, sizeof(Points_Array));
@@ -226,16 +212,6 @@ detect_lines(SDL_Surface *surface)
     for (size_t i = 1; i < max_size; i++) {
         for (size_t j = 0; j < ANGLE; j++) {
             if (mat[i * ANGLE + j] > (unsigned long int) (w + h) / 7) {
-                m = sin(j * PI / 180);
-                n = cos(j * PI / 180);
-                x0 = m * i;
-                y0 = n * i;
-                x1 = x0 + 2 * w * (-n);
-                y1 = y0 + 2 * h * (m);
-                x2 = x0 - 2 * w * (-n);
-                y2 = y0 - 2 * h * (m);
-                // draw_line(pixels, w, h, x1, y1, x2, y2,
-                //     SDL_MapRGB(format, 0, 255, 0));
                 if (arr->len <= counter) {
                     arr->len += 800;
                     arr->array =
@@ -272,7 +248,7 @@ sort_array(Points_Array *arr)
     char flag;
     size_t index;
     float m, n;
-    long unsigned int x0, y0, x1, y1;
+    long int x0, y0, x1, y1;
     Sorted_Points_Array *sorted_arr = calloc(1, sizeof(Sorted_Points_Array));
     sorted_arr->horizontal = calloc(arr->len, sizeof(long int));
     sorted_arr->vertical = calloc(arr->len, sizeof(long int));

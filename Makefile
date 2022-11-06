@@ -1,10 +1,8 @@
 # Makefile
 
-CC ?= gcc
+CC := gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
-
-DEPS := $($(shell find . *.c):%.c=%.h)
 
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
@@ -20,37 +18,41 @@ CPPFLAGS := -MMD
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
-IMG ?= 2
-
 ifeq ($(DEBUG), 1)
 	CFLAGS += -g3
+	CFLAGS += -fsanitize=address
+	LDFLAGS += -fsanitize=address
 endif
 
-IMG ?= 2
-EXT ?= png
+IMG ?= 5
+EXT ?= jpeg
 
-utils/rotateutils.o: utils/rotateutils.c utils/rotateutils.h
-	$(CC) -o utils/rotateutils.o -c utils/rotateutils.c $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+OUT := utils/linesdetection utils/imageutils gui/interface_rotate
+OBJS := utils/rotateutils.o
 
-gui/interface_rotate: gui/interface_rotate.c gui/interface_rotate.h utils/rotateutils.o 
-	$(CC) -o gui/interface_rotate gui/interface_rotate.c utils/rotateutils.o $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+all: $(OUT)
 
-utils/linesdetection: utils/linesdetection.c utils/linesdetection.h utils/rotateutils.o
-	$(CC) -o utils/linesdetection utils/linesdetection.c utils/rotateutils.o $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+gui/interface_rotate utils/linesdetection: utils/rotateutils.o
 
-test: utils/linesdetection
-	./utils/linesdetection ./images/ocr-$(IMG).$(EXT)
-#	./utils/linesdetection ~/Documents/1615279962287.png
+.SECONDEXPANSION:
+$(OUT):
+	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
+
+$(OBJ):
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
+
+test_linedetection: utils/linesdetection
+	./$< ./images/ocr-$(IMG).$(EXT)
 
 test_gui: gui/interface_rotate
-	./gui/interface_rotate ./images/ocr-1.png
+	./$< ./images/ocr-1.png
+
+test_imageutils: utils/imageutils
+	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
 
 clean:
-	rm -rf utils/linesdetection
-	rm -rf gui/interface_rotate
-	rm -rf utils/imageutils.o
+	rm -rf $(OUT)
+	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
 
-.PHONY: test clean
-
--include $(DEPS)
+.PHONY: clean test_gui test_linedetection test_imageutils
