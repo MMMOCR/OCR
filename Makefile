@@ -14,7 +14,7 @@ endif
 LIBS ?= --libs
 
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
-CPPFLAGS := -MMD
+CPPFLAGS := 
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
@@ -30,12 +30,14 @@ EXT ?= jpeg
 OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver neuralnetwork/NN
 OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
+DEPS := $(OUT:%=%.d)
+DEPS += $(OBJS:%.o=%.d)
+
 all: $(OUT)
 
 gui/interface_rotate utils/linesdetection: utils/rotateutils.o
 neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
-.SECONDEXPANSION:
 $(OUT):
 	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
 
@@ -56,7 +58,9 @@ test_solver: solver/solver
 
 clean:
 	rm -rf $(OUT)
+	rm -rf $(OBJS:%.o:%)
 	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
+	rm -rf $(DEPS:%.d=%.dSYM)
 
-.PHONY: clean test_gui test_linedetection test_imageutils test_solver
+.PHONY: clean test_gui test_linedetection test_imageutils test_solver all
