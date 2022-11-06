@@ -7,4 +7,5 @@ save_model(double hiddenLayer[],
            double hidddenLayerBias[],
            double outputLayerBias[],
            double hiddenWeights[][hiddenNodesNb],
-           double outputWeights[][outputNb]);
+           double outputWeights[][outputNb],
+           char *filename);
