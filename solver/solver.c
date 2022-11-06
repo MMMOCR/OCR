@@ -3,6 +3,11 @@
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define WIDTH 9
+#define HEIGHT 9
 
 int
 is_board_valid(int board[])
@@ -95,35 +100,74 @@ solve(int board[])
     return 0;
 }
 
-int*
-solver(int board[])
+int
+extract_path(char *path, int *board) {
+    char *line;
+    size_t rsize;
+    ssize_t readbytes;
+    int index;
+    FILE *file;
+
+    if ((file = fopen(path, "r")) == NULL) {
+        return 0;
+    }
+
+    index = 0;
+    readbytes = 0;
+    while ((readbytes = getline(&line, &rsize, file)) != -1) {
+        for (ssize_t i = 0; i < readbytes; i++) {
+            char c = line[i];
+            if (c == '.') {
+                board[index++] = 0;
+            } else if (c >= '1' && c <= '9') {
+                board[index++] = c - '0';
+            }
+        }
+    }
+
+    return 1;
+}
+
+int
+save_result(char *path, int *board)
 {
-    solve(board);
-    // for (size_t i = 0; i < 80; i++)
-    // {
-    // 	board[i] += 0x30;
-    // }
-    return board;
+    FILE *file;
+    char *savepath;
+
+    savepath = malloc(strlen(path) + 7);
+    strcpy(savepath, path);
+    strcat(savepath, ".result");
+
+    if ((file = fopen(savepath, "w")) == NULL) {
+        return 0;
+    }
+
+    for (int i = 0; i < WIDTH * HEIGHT; ++i) {
+        if (i > 0)
+            if (i % 9 == 0) {
+                fprintf(file, "\n");
+            } else if (i % 3 == 0) {
+                fprintf(file, " ");
+            }
+
+        fprintf(file, "%d", board[i]);
+    }
+
+    fprintf(file, "\n");
+    fclose(file);
+    return 1;
 }
 
 int
 main(int argc, char* argv[])
 {
-    if (argc != 2) errx(1, "suce\n");
-    int board2[] = { 4, 0, 8, 0, 7, 0, 0, 5, 2, 0, 0, 0, 9, 0, 0, 1, 0,
-                     7, 0, 0, 6, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 5, 0, 0,
-                     0, 6, 5, 0, 4, 0, 0, 0, 0, 0, 8, 0, 8, 0, 2, 0, 7,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0,
-                     0, 3, 0, 0, 0, 2, 1, 3, 0, 5, 9, 0, 0 };
-    int board[] = { 0, 0, 0, 5, 0, 0, 0, 4, 8, 6, 0, 2, 0, 9, 4, 0, 0,
-                    0, 0, 4, 5, 0, 0, 0, 6, 0, 0, 0, 7, 4, 9, 3, 8, 1,
-                    6, 0, 8, 2, 1, 6, 4, 0, 3, 5, 0, 9, 0, 0, 0, 0, 0,
-                    8, 7, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 8,
-                    5, 0, 0, 6, 0, 0, 0, 4, 7, 0, 9, 0, 1 };
-    printf("%ls\n", solver(board2));
-    for (size_t i = 0; i < 81; i++) {
-        printf("%i", board2[i]);
-    }
+    if (argc != 2) errx(1, "filename\n");
+    int *board = malloc(sizeof(int) * (WIDTH * HEIGHT));
 
+    if (!extract_path(argv[1], board)) errx(1, "cannot open file\n");
+    if (!solve(board)) errx(1, "cannot solve file\n");
+    if (!save_result(argv[1], board)) errx(1, "cannot save file\n");
+
+    free(board);
     return 0;
 }
