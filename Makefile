@@ -4,8 +4,6 @@ CC ?= gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
-DEPS := $($(shell find . *.c):%.c=%.h)
-
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
@@ -24,25 +22,23 @@ ifeq ($(DEBUG), 1)
 	CFLAGS += -g3
 endif
 
-IMG ?= 2
-EXT ?= png
+IMG ?= 5
+EXT ?= jpeg
 
 OUT := utils/linesdetection utils/imageutils gui/interface_rotate
+OBJS := utils/rotateutils.o
 
-$(OUT): $(OUT:%:%.c) utils/rotateutils.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
+DEPS := $(OBJS:%.o=%.d)
+DEPS += $(OUT:%=%.d)
 
-utils/rotateutils.o: utils/rotateutils.c utils/rotateutils.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< $(LDLIBS) $(LDFLAGS) -o $@
+$(OUT):
+	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $(shell cat $(@:%=%.dep)) $(LDLIBS) $(LDFLAGS) -o $@
 
-gui/interface_rotate: gui/interface_rotate.c gui/interface_rotate.h utils/rotateutils.o 
-	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDLIBS) $(LDFLAGS) -o $@
-
-utils/imageutils: utils/imageutils.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDLIBS) $(LDFLAGS) -o $@
+$(OBJ):
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
 
 test_linedetection: utils/linesdetection
-	./$< ./images/ocr-5.jpeg
+	./$< ./images/ocr-$(IMG).$(EXT)
 
 test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
@@ -52,7 +48,7 @@ test_imageutils: utils/imageutils
 
 clean:
 	rm -rf $(OUT)
-	rm -rf $(OUT:%:%.o)
+	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
 
 .PHONY: clean test_gui test_linedetection test_imageutils
