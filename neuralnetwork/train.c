@@ -80,9 +80,9 @@ train(char* path, int epochNb)
                    training_inputs[i][0], training_inputs[i][1], outputLayer[0],
                    training_outputs[i][0]);
 
-            // Retropropagation inplem
+            // Retropropagation implem
 
-            // Compute chnage in output weights
+            // Compute change in output weights
 
             double deltaOutput[outputNb];
             for (int j = 0; j < outputNb; j++) {
@@ -90,7 +90,7 @@ train(char* path, int epochNb)
                 deltaOutput[j] = error * dSigmoid(outputLayer[j]);
             }
 
-            // COmpute change in hidden weights
+            // Compute change in hidden weights
             double deltaHidden[hiddenNodesNb];
             for (int j = 0; j < hiddenNodesNb; j++) {
                 double error = 0.0f;

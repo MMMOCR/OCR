@@ -1,4 +1,4 @@
 #pragma once
 
 void
-job();
+job(char* path, char* sinput);
