@@ -65,8 +65,8 @@ load_model(double hiddenLayer[],
            double outputLayer[],
            double hiddenLayerBias[],
            double outputLayerBias[],
-           double** hiddenWeights,
-           double** outputWeights,
+           double* hiddenWeights,
+           double* outputWeights,
            char* path)
 {
     FILE* file = fopen(path, "r");
@@ -97,7 +97,7 @@ load_array(FILE* file, double array[], size_t len)
     }
 }
 void
-load_2darray(FILE* file, double** array, size_t x, size_t y)
+load_2darray(FILE* file, double*array, size_t x, size_t y)
 {
     char* line = NULL;
     size_t len = 0;
@@ -107,7 +107,7 @@ load_2darray(FILE* file, double** array, size_t x, size_t y)
             read = getline(&line, &len, file);
             if (read != -1) {
                 printf("%lu,%lu\n", i, j);
-                array[i][j] = (double) atoi(line);
+                array[i * x + j] = (double) atoi(line);
             } else {
                 errx(EXIT_FAILURE,
                      "the model you are trying to load is no good");

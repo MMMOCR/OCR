@@ -17,17 +17,17 @@ job(char* path, char* sinput)
     double hiddenLayerBias[hiddenNodesNb];
     double outputLayerBias[outputNb];
 
-    double hiddenWeights[inputNb][hiddenNodesNb];
-    double outputWeights[hiddenNodesNb][outputNb];
+    double hiddenWeights[inputNb * hiddenNodesNb];
+    double outputWeights[hiddenNodesNb * outputNb];
 
     load_model(hiddenLayer, outputLayer, hiddenLayerBias, outputLayerBias,
-               (double**) hiddenWeights, (double**) outputWeights, path);
+               (double*) hiddenWeights, (double*) outputWeights, path);
 
     for (int j = 0; j < hiddenNodesNb; j++) {
         double activation = hiddenLayerBias[j];
 
         for (int k = 0; k < inputNb; k++) {
-            activation += inputs[k] * hiddenWeights[k][j];
+            activation += inputs[k] * hiddenWeights[k * hiddenNodesNb + j];
         }
 
         // /!\ function used on the hidden layer must be called in a way
@@ -38,7 +38,7 @@ job(char* path, char* sinput)
     for (int j = 0; j < outputNb; j++) {
         double activation = outputLayerBias[j];
         for (int k = 0; k < hiddenNodesNb; k++) {
-            activation += hiddenLayer[k] * outputWeights[k][j];
+            activation += hiddenLayer[k] * outputWeights[k * outputNb + j];
         }
 
         // /!\ function used on the output layer must be called in a way
@@ -46,6 +46,6 @@ job(char* path, char* sinput)
         outputLayer[j] = sigmoid(activation);
     }
 
-    printf("I think the result of %g XOR %g is: %g\n", inputs[0], inputs[1],
+    printf("I think the result of %c XOR %c is: %g\n", (char)inputs[0], (char)inputs[1],
            outputLayer[0]);
 }
