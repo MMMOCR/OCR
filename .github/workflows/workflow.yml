@@ -26,18 +26,10 @@ jobs:
     name: push remote
     runs-on: self-hosted
     container:
-      image: debian:bullseye
+      image: localhost/cl0pinette/git:latest
       volumes:
         - /home/cl0pinette/.ssh:/github/home/.ssh
     steps:
-    - name: setup docker
-      run: echo "#### Installing software"
-        && apt update
-        && apt install git -y
-        && echo "#### Software installed"
-      env:
-        REPO_FULLNAME: MMMOCR/OCR
-        REMOTE_URL: ${{ secrets.REMOTE }}
     - name: git setup
       run: echo "#### Setting up git";
         if ! git config remote.mirror.url > /dev/null; then git remote add mirror "$REMOTE_URL"; fi;
