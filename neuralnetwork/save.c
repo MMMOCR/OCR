@@ -97,7 +97,7 @@ load_array(FILE* file, double array[], size_t len)
     }
 }
 void
-load_2darray(FILE* file, double*array, size_t x, size_t y)
+load_2darray(FILE* file, double* array, size_t x, size_t y)
 {
     char* line = NULL;
     size_t len = 0;

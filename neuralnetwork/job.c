@@ -46,6 +46,6 @@ job(char* path, char* sinput)
         outputLayer[j] = sigmoid(activation);
     }
 
-    printf("I think the result of %c XOR %c is: %g\n", (char)inputs[0], (char)inputs[1],
-           outputLayer[0]);
+    printf("I think the result of %c XOR %c is: %g\n", (char) inputs[0],
+           (char) inputs[1], outputLayer[0]);
 }
