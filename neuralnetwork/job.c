@@ -9,7 +9,7 @@
 void
 job(char* path, char* sinput)
 {
-    double inputs[] = { sinput[0] - 48, sinput[1] - 48};
+    double inputs[] = { sinput[0] - 48, sinput[1] - 48 };
 
     double hiddenLayer[hiddenNodesNb];
     double outputLayer[outputNb];
@@ -46,6 +46,6 @@ job(char* path, char* sinput)
         outputLayer[j] = sigmoid(activation);
     }
 
-    printf("I think the result of %c XOR %c is: %g\n", (char) inputs[0]+48,
-           (char) inputs[1]+48, outputLayer[0]);
+    printf("I think the result of %c XOR %c is: %g\n", (char) inputs[0] + 48,
+           (char) inputs[1] + 48, outputLayer[0]);
 }
