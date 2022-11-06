@@ -2,4 +2,4 @@
 #include "NN.h"
 
 void
-train(char* path);
+train(char* path, int epochNb);

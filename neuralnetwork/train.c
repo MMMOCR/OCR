@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdio.h>
 void
-train(char* path, size_t epochNb)
+train(char* path, int epochNb)
 {
 
     double hiddenLayer[hiddenNodesNb];
