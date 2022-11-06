@@ -1,11 +1,13 @@
 #include "save.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
+
 #include "NN.h"
 #include "string.h"
-#include <time.h>
+
 #include <err.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void
 save_model(double hiddenLayer[],
@@ -16,15 +18,15 @@ save_model(double hiddenLayer[],
            double outputWeights[][outputNb],
            char* path)
 {
-    (void)hiddenWeights;
-    (void)outputLayer;
-    (void)outputLayerBias;
-    (void)hidddenLayerBias;
-    (void)outputWeights;
+    (void) hiddenWeights;
+    (void) outputLayer;
+    (void) outputLayerBias;
+    (void) hidddenLayerBias;
+    (void) outputWeights;
     FILE* fptr;
-    int length = snprintf( NULL, 0, "%ld", time(NULL) );
-    char* str = malloc( length + 1 );
-    snprintf( str, length + 1, "%ld", time(NULL) );
+    int length = snprintf(NULL, 0, "%ld", time(NULL));
+    char* str = malloc(length + 1);
+    snprintf(str, length + 1, "%ld", time(NULL));
     fptr = fopen(strcat(path, str), "w");
     free(str);
 
@@ -41,6 +43,6 @@ save_model(double hiddenLayer[],
 void
 load_model(char* path)
 {
-    FILE *file = fopen(path, "r");
+    FILE* file = fopen(path, "r");
     fclose(file);
 }
