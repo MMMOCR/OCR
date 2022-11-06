@@ -26,7 +26,7 @@ rotate_left(GtkWidget *widget, gpointer *data)
     UNUSED(widget);
     SDL_Surface *new_image;
     SDL_Surface *image = load_image(((Gtk_Data *) data)->orig_path);
-    rotate -= ANGLE;
+    rotate += ANGLE;
     new_image = rotate_image(image, rotate);
     IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
     SDL_FreeSurface(image);
@@ -41,7 +41,7 @@ rotate_right(GtkWidget *widget, gpointer *data)
 {
     UNUSED(widget);
     SDL_Surface *image = load_image(((Gtk_Data *) data)->orig_path);
-    rotate += ANGLE;
+    rotate -= ANGLE;
     SDL_Surface *new_image = rotate_image(image, rotate);
     IMG_SavePNG(new_image, ((Gtk_Data *) data)->path);
     SDL_FreeSurface(image);

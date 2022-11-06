@@ -20,8 +20,6 @@ CPPFLAGS := -MMD
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
-IMG ?= 2
-
 ifeq ($(DEBUG), 1)
 	CFLAGS += -g3
 endif
@@ -29,28 +27,34 @@ endif
 IMG ?= 2
 EXT ?= png
 
+OUT := utils/linesdetection utils/imageutils gui/interface_rotate
+
+$(OUT): $(OUT:%:%.c) utils/rotateutils.o
+	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
+
 utils/rotateutils.o: utils/rotateutils.c utils/rotateutils.h
-	$(CC) -o utils/rotateutils.o -c utils/rotateutils.c $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< $(LDLIBS) $(LDFLAGS) -o $@
 
 gui/interface_rotate: gui/interface_rotate.c gui/interface_rotate.h utils/rotateutils.o 
-	$(CC) -o gui/interface_rotate gui/interface_rotate.c utils/rotateutils.o $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDLIBS) $(LDFLAGS) -o $@
 
-utils/linesdetection: utils/linesdetection.c utils/linesdetection.h utils/rotateutils.o
-	$(CC) -o utils/linesdetection utils/linesdetection.c utils/rotateutils.o $(CFLAGS) $(CPPFLAGS) $(LDLIBS) $(LDFLAGS)
+utils/imageutils: utils/imageutils.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDLIBS) $(LDFLAGS) -o $@
 
-test: utils/linesdetection
-	./utils/linesdetection ./images/ocr-$(IMG).$(EXT)
-#	./utils/linesdetection ~/Documents/1615279962287.png
+test_linedetection: utils/linesdetection
+	./$< ./images/ocr-5.jpeg
 
 test_gui: gui/interface_rotate
-	./gui/interface_rotate ./images/ocr-1.png
+	./$< ./images/ocr-1.png
+
+test_imageutils: utils/imageutils
+	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
 
 clean:
-	rm -rf utils/linesdetection
-	rm -rf gui/interface_rotate
-	rm -rf utils/imageutils.o
+	rm -rf $(OUT)
+	rm -rf $(OUT:%:%.o)
 	rm -rf $(DEPS)
 
-.PHONY: test clean
+.PHONY: clean test_gui test_linedetection test_imageutils
 
 -include $(DEPS)
