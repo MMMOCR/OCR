@@ -101,16 +101,15 @@ solve(int board[])
 }
 
 int
-extract_path(char *path, int *board) {
+extract_path(char *path, int *board)
+{
     char *line;
     size_t rsize;
     ssize_t readbytes;
     int index;
     FILE *file;
 
-    if ((file = fopen(path, "r")) == NULL) {
-        return 0;
-    }
+    if ((file = fopen(path, "r")) == NULL) { return 0; }
 
     index = 0;
     readbytes = 0;
@@ -138,9 +137,7 @@ save_result(char *path, int *board)
     strcpy(savepath, path);
     strcat(savepath, ".result");
 
-    if ((file = fopen(savepath, "w")) == NULL) {
-        return 0;
-    }
+    if ((file = fopen(savepath, "w")) == NULL) { return 0; }
 
     for (int i = 0; i < WIDTH * HEIGHT; ++i) {
         if (i > 0)
@@ -159,7 +156,7 @@ save_result(char *path, int *board)
 }
 
 int
-main(int argc, char* argv[])
+main(int argc, char *argv[])
 {
     if (argc != 2) errx(1, "filename\n");
     int *board = malloc(sizeof(int) * (WIDTH * HEIGHT));
