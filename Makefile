@@ -27,12 +27,13 @@ endif
 IMG ?= 5
 EXT ?= jpeg
 
-OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver
-OBJS := utils/rotateutils.o
+OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver neuralnetwork/NN
+OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
 all: $(OUT)
 
 gui/interface_rotate utils/linesdetection: utils/rotateutils.o
+neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
 .SECONDEXPANSION:
 $(OUT):
