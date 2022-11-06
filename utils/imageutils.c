@@ -32,63 +32,63 @@ treshold(long int len, Uint32* pixels, int override_treshold)
     Uint8 val = 0;
 
     for (size_t i = 0; i <= 255; i++)
-	histogram[i] = 0;
+        histogram[i] = 0;
 
     if (override_treshold != 0) {
-	treshold = override_treshold;
+        treshold = override_treshold;
     } else {
-	for (int i = 0; i < len; i++) {
-	    int pixel = pixels[i];
-	    val = pixel >> 16 & 0xff;
-	    histogram[val]++;
-	}
-	for (size_t i = 0; i <= 255; i++) {
-	    for (size_t j = 0; j <= 255; j++) {
-		if (j < i) {
-		    pbg += histogram[j];
-		    if (histogram[j] != 0) sumbg += j * histogram[j];
-		} else {
-		    pfg += histogram[j];
-		    if (histogram[j] != 0) sumfg += j * histogram[j];
-		}
-	    }
-	    if (pbg == 0 || pfg == 0) {
-		vars[i] = 0;
-		continue;
-	    }
-	    wbg = (float) pbg / (float) len;
-	    wfg = (float) pfg / (float) len;
-	    meanbg = (float) sumbg / (float) pbg;
-	    meanfg = (float) sumfg / (float) pfg;
-	    for (size_t j = 0; j <= 255; j++) {
-		if (j < i) {
-		    if (histogram[j] != 0)
-			sumvarbg += histogram[j] * (float) (j - meanbg) *
-			  (float) (j - meanbg);
-		} else {
-		    if (histogram[j] != 0)
-			sumvarfg += histogram[j] * (float) (j - meanfg) *
-			  (float) (j - meanfg);
-		}
-	    }
-	    varbg = (float) sumvarbg / (float) pbg;
-	    varfg = (float) sumvarfg / (float) pfg;
-	    var = wbg * (float) varbg + wfg * (float) varfg;
-	    vars[i] = var;
-	    pbg = 0;
-	    pfg = 0;
-	    sumbg = 0;
-	    sumfg = 0;
-	    sumvarbg = 0;
-	    sumvarfg = 0;
-	}
-	var_max = vars[22];
-	for (size_t i = 1; i <= 254; i++) {
-	    if (vars[i] < var_max && vars[i] != 0) {
-		treshold = i;
-		var_max = vars[i];
-	    }
-	}
+        for (int i = 0; i < len; i++) {
+            int pixel = pixels[i];
+            val = pixel >> 16 & 0xff;
+            histogram[val]++;
+        }
+        for (size_t i = 0; i <= 255; i++) {
+            for (size_t j = 0; j <= 255; j++) {
+                if (j < i) {
+                    pbg += histogram[j];
+                    if (histogram[j] != 0) sumbg += j * histogram[j];
+                } else {
+                    pfg += histogram[j];
+                    if (histogram[j] != 0) sumfg += j * histogram[j];
+                }
+            }
+            if (pbg == 0 || pfg == 0) {
+                vars[i] = 0;
+                continue;
+            }
+            wbg = (float) pbg / (float) len;
+            wfg = (float) pfg / (float) len;
+            meanbg = (float) sumbg / (float) pbg;
+            meanfg = (float) sumfg / (float) pfg;
+            for (size_t j = 0; j <= 255; j++) {
+                if (j < i) {
+                    if (histogram[j] != 0)
+                        sumvarbg += histogram[j] * (float) (j - meanbg) *
+                          (float) (j - meanbg);
+                } else {
+                    if (histogram[j] != 0)
+                        sumvarfg += histogram[j] * (float) (j - meanfg) *
+                          (float) (j - meanfg);
+                }
+            }
+            varbg = (float) sumvarbg / (float) pbg;
+            varfg = (float) sumvarfg / (float) pfg;
+            var = wbg * (float) varbg + wfg * (float) varfg;
+            vars[i] = var;
+            pbg = 0;
+            pfg = 0;
+            sumbg = 0;
+            sumfg = 0;
+            sumvarbg = 0;
+            sumvarfg = 0;
+        }
+        var_max = vars[22];
+        for (size_t i = 1; i <= 254; i++) {
+            if (vars[i] < var_max && vars[i] != 0) {
+                treshold = i;
+                var_max = vars[i];
+            }
+        }
     }
     // printf("treshold: %d\n", treshold);
     return treshold;
@@ -109,31 +109,31 @@ event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* grayscale)
     int colorVersion = 1;
 
     while (1) {
-	SDL_WaitEvent(&event);
+        SDL_WaitEvent(&event);
 
-	switch (event.type) {
-	    case SDL_QUIT:
-		return;
+        switch (event.type) {
+            case SDL_QUIT:
+                return;
 
-	    case SDL_WINDOWEVENT:
-		if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-		    if (!colorVersion) {
-			draw(renderer, grayscale);
-		    } else {
-			draw(renderer, t);
-		    }
-		}
-		break;
-	    case SDL_KEYDOWN:
-		if (!colorVersion) {
-		    draw(renderer, t);
-		    colorVersion = 1;
-		} else {
-		    draw(renderer, grayscale);
-		    colorVersion = 0;
-		}
-		break;
-	}
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    if (!colorVersion) {
+                        draw(renderer, grayscale);
+                    } else {
+                        draw(renderer, t);
+                    }
+                }
+                break;
+            case SDL_KEYDOWN:
+                if (!colorVersion) {
+                    draw(renderer, t);
+                    colorVersion = 1;
+                } else {
+                    draw(renderer, grayscale);
+                    colorVersion = 0;
+                }
+                break;
+        }
     }
 }
 
@@ -170,8 +170,8 @@ surface_to_grayscale(SDL_Surface* surface)
     SDL_PixelFormat* format = surface->format;
     SDL_LockSurface(surface);
     for (int i = 0; i < len; i++) {
-	Uint32 average = pixel_to_grayscale(pixels[i], format);
-	pixels[i] = average;
+        Uint32 average = pixel_to_grayscale(pixels[i], format);
+        pixels[i] = average;
     }
     SDL_UnlockSurface(surface);
 }
@@ -184,10 +184,10 @@ back_to_black(SDL_Surface* surface, int threshold)
     SDL_PixelFormat* format = surface->format;
     SDL_LockSurface(surface);
     for (int i = 0; i < len; i++) {
-	int val = pixels[i] >> 16 & 0xff;
-	int new_val = 0;
-	if (val > threshold) new_val = 255;
-	pixels[i] = SDL_MapRGB(format, new_val, new_val, new_val);
+        int val = pixels[i] >> 16 & 0xff;
+        int new_val = 0;
+        if (val > threshold) new_val = 255;
+        pixels[i] = SDL_MapRGB(format, new_val, new_val, new_val);
     }
     SDL_UnlockSurface(surface);
 }
