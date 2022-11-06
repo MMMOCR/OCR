@@ -38,7 +38,6 @@ all: $(OUT)
 gui/interface_rotate utils/linesdetection: utils/rotateutils.o
 neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
-.SECONDEXPANSION:
 $(OUT):
 	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
 
@@ -64,4 +63,4 @@ clean:
 	rm -rf $(DEPS)
 	rm -rf $(DEPS:%.d=%.dSYM)
 
-.PHONY: clean test_gui test_linedetection test_imageutils test_solver
+.PHONY: clean test_gui test_linedetection test_imageutils test_solver all
