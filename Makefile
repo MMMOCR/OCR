@@ -14,7 +14,7 @@ endif
 LIBS ?= --libs
 
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
-CPPFLAGS := -MMD
+CPPFLAGS := -MD
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
@@ -34,7 +34,10 @@ DEPS += $(OUT:%=%.d)
 utils/linesdetection: utils/rotateutils.o
 gui/interface_rotate: utils/rotateutils.o
 
-$(OUT):
+$(DEPS):
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(@:%.d=%.c) $(LDFLAGS) $(LDLIBS)
+
+$(OUT): %.d
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(^:%.h=) $(LDLIBS) $(LDFLAGS) -o $@
 
 $(OBJ):
