@@ -7,7 +7,7 @@ LDFLAGS =
 LDLIBS = `pkg-config --libs sdl2` -lm
 
 
-SRC = NN.c
+SRC = NN.c train.c tools.c job.c functions.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
 main:
