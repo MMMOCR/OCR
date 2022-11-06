@@ -37,5 +37,5 @@ make clean
 ### Neural network
 ```sh
 ./neuralnetwork/NN train <path_to_the_file_to_save_weights> <time_of_training>
-./neuralnetwork/NN job <path_to_the_saved_weights> <first_digit_of_XOR><second_digit_of_XOR>
+./neuralnetwork/NN job <path_to_the_saved_weights> <first_digit_to_XOR><second_digit_to_XOR>
 ```
