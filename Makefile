@@ -49,10 +49,13 @@ test_gui: gui/interface_rotate
 
 test_imageutils: utils/imageutils
 	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
+	
+test_solver: solver/solver
+	./$< ./solver/samples/sample1
 
 clean:
 	rm -rf $(OUT)
 	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
 
-.PHONY: clean test_gui test_linedetection test_imageutils
+.PHONY: clean test_gui test_linedetection test_imageutils test_solver
