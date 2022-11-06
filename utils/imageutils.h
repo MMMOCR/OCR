@@ -7,4 +7,4 @@ void
 rotate_image(SDL_Surface* image, double angle);
 
 void
-image_utils(char *filename);
+image_utils(char* filename);
