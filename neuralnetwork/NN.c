@@ -1,7 +1,7 @@
 // include nessesary libs
 #include <math.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 // include needed functions in other files
 #include "NN.h"
