@@ -3,7 +3,8 @@
 void
 shuffle(int *array, size_t n);
 
-double init_weights();
+double
+init_weights();
 
 void
 exit_usage();

@@ -2,5 +2,9 @@
 #include "NN.h"
 
 void
-save_model(double hiddenLayer[], double outputLayer[], double hidddenLayerBias[],
-		double outputLayerBias[],double hiddenWeights[][hiddenNodesNb],double outputWeights[][outputNb]);
+save_model(double hiddenLayer[],
+           double outputLayer[],
+           double hidddenLayerBias[],
+           double outputLayerBias[],
+           double hiddenWeights[][hiddenNodesNb],
+           double outputWeights[][outputNb]);
