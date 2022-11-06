@@ -244,8 +244,7 @@ main(int argc, char** argv)
     int w;
     if (argc != 2) errx(EXIT_FAILURE, "Usage: image-file");
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s",
-    SDL_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Window* window =
       SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
