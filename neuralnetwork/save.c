@@ -2,12 +2,13 @@
 
 #include "NN.h"
 #include "string.h"
+
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <sys/types.h>
+#include <time.h>
 
 void
 save_model(double hiddenLayer[],
@@ -50,7 +51,6 @@ save_model(double hiddenLayer[],
         fprintf(fptr, "%f\n", hiddenLayerBias[i]);
     }
 
-
     for (size_t i = 0; i < inputNb; i++) {
         for (size_t j = 0; j < hiddenNodesNb; j++) {
             fprintf(fptr, "%f\n", hiddenWeights[i][j]);
@@ -65,50 +65,52 @@ load_model(double hiddenLayer[],
            double outputLayer[],
            double hiddenLayerBias[],
            double outputLayerBias[],
-           double **hiddenWeights,
-           double **outputWeights,char *path)
+           double** hiddenWeights,
+           double** outputWeights,
+           char* path)
 {
     FILE* file = fopen(path, "r");
 
     load_array(file, outputLayer, outputNb);
     load_array(file, outputLayerBias, outputNb);
-    load_2darray(file, outputWeights, outputNb, hiddenNodesNb );
+    load_2darray(file, outputWeights, outputNb, hiddenNodesNb);
 
     load_array(file, hiddenLayer, hiddenNodesNb);
     load_array(file, hiddenLayerBias, hiddenNodesNb);
-    load_2darray(file, hiddenWeights, hiddenNodesNb, inputNb );
+    load_2darray(file, hiddenWeights, hiddenNodesNb, inputNb);
     fclose(file);
 }
 
 void
-load_array(FILE* file, double array[], size_t len) {
-    char * line = NULL;
+load_array(FILE* file, double array[], size_t len)
+{
+    char* line = NULL;
     size_t slen = 0;
     ssize_t read;
     for (size_t i = 0; i < len; i++) {
         read = getline(&line, &slen, file);
-        if(read != -1) {
-            array[i] = (double)atoi(line);
+        if (read != -1) {
+            array[i] = (double) atoi(line);
+        } else {
+            errx(EXIT_FAILURE, "the model you are trying to load is no good");
         }
-        else {
-                errx(EXIT_FAILURE,"the model you are trying to load is no good");
-            }
     }
 }
 void
-load_2darray(FILE* file, double **array, size_t x, size_t y) {
-    char * line = NULL;
+load_2darray(FILE* file, double** array, size_t x, size_t y)
+{
+    char* line = NULL;
     size_t len = 0;
     ssize_t read;
-     for (size_t i = 0; i < y; i++) {
+    for (size_t i = 0; i < y; i++) {
         for (size_t j = 0; j < x; j++) {
             read = getline(&line, &len, file);
-            if(read != -1) {
-            printf("%lu,%lu\n",i,j);
-            array[i][j] = (double)atoi(line);
-            }
-            else {
-                errx(EXIT_FAILURE,"the model you are trying to load is no good");
+            if (read != -1) {
+                printf("%lu,%lu\n", i, j);
+                array[i][j] = (double) atoi(line);
+            } else {
+                errx(EXIT_FAILURE,
+                     "the model you are trying to load is no good");
             }
         }
     }

@@ -13,9 +13,7 @@ int
 main(int argc, char** argv)
 {
     if (argc != 4) { exit_usage(); }
-    if (strcmp(argv[1], "job") == 0) { 
-        job(argv[2], argv[3]); 
-    }
+    if (strcmp(argv[1], "job") == 0) { job(argv[2], argv[3]); }
     if (strcmp(argv[1], "train") == 0) {
         train(argv[2], atoi(argv[3]));
     } else {

@@ -1,5 +1,6 @@
 #pragma once
 #include "NN.h"
+
 #include <stddef.h>
 #include <stdio.h>
 
@@ -18,10 +19,11 @@ load_model(double hiddenLayer[],
            double hiddenLayerBias[],
            double outputLayerBias[],
            double **hiddenWeights,
-           double **outputWeights,char *path);
+           double **outputWeights,
+           char *path);
 
 void
-load_array(FILE* file, double array[], size_t len);
+load_array(FILE *file, double array[], size_t len);
 
 void
-load_2darray(FILE* file, double **array, size_t x, size_t y);
+load_2darray(FILE *file, double **array, size_t x, size_t y);
