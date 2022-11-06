@@ -4,10 +4,10 @@
 #include "save.h"
 #include "tools.h"
 
-#include <stdlib.h>
-#include <time.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 void
 train(char* path, int epochNb)
 {

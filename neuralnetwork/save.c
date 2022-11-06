@@ -49,7 +49,7 @@ save_model(double hiddenLayer[],
     fprintf(fptr, "outputWeights\n");
 
     for (size_t i = 0; i < hiddenNodesNb; i++) {
-        for (size_t j = 0; j < outputNb; j++){
+        for (size_t j = 0; j < outputNb; j++) {
             fprintf(fptr, "%f ", outputWeights[i][j]);
         }
         fprintf(fptr, "\n");
@@ -73,7 +73,7 @@ save_model(double hiddenLayer[],
     fprintf(fptr, "hiddenWeights:\n");
 
     for (size_t i = 0; i < inputNb; i++) {
-        for (size_t j = 0; j < hiddenNodesNb; j++){
+        for (size_t j = 0; j < hiddenNodesNb; j++) {
             fprintf(fptr, "%f ", hiddenWeights[i][j]);
         }
         fprintf(fptr, "\n");

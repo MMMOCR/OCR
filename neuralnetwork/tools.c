@@ -2,7 +2,6 @@
 
 #include "functions.h"
 
-
 #include <err.h>
 #include <math.h>
 #include <stdlib.h>
