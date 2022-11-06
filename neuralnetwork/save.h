@@ -4,7 +4,7 @@
 void
 save_model(double hiddenLayer[],
            double outputLayer[],
-           double hidddenLayerBias[],
+           double hiddenLayerBias[],
            double outputLayerBias[],
            double hiddenWeights[][hiddenNodesNb],
            double outputWeights[][outputNb],

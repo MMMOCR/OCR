@@ -4,11 +4,14 @@
 #include "save.h"
 #include "tools.h"
 
+#include <stdlib.h>
+#include <time.h>
 #include <stddef.h>
 #include <stdio.h>
 void
 train(char* path, int epochNb)
 {
+    srand((unsigned int) time(NULL));
 
     double hiddenLayer[hiddenNodesNb];
     double outputLayer[outputNb];

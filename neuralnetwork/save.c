@@ -12,7 +12,7 @@
 void
 save_model(double hiddenLayer[],
            double outputLayer[],
-           double hidddenLayerBias[],
+           double hiddenLayerBias[],
            double outputLayerBias[],
            double hiddenWeights[][hiddenNodesNb],
            double outputWeights[][outputNb],
@@ -21,7 +21,7 @@ save_model(double hiddenLayer[],
     (void) hiddenWeights;
     (void) outputLayer;
     (void) outputLayerBias;
-    (void) hidddenLayerBias;
+    (void) hiddenLayerBias;
     (void) outputWeights;
     FILE* fptr;
     int length = snprintf(NULL, 0, "%ld", time(NULL));
@@ -32,11 +32,53 @@ save_model(double hiddenLayer[],
 
     if (fptr == NULL) { errx(1, "The file was not created"); }
 
-    // le code pour serializer la hidden layer
+    // le code pour serializer les layers
+    fprintf(fptr, "outputLayer:\n");
+    for (size_t i = 0; i < outputNb; i++) {
+        fprintf(fptr, "%f ", outputLayer[i]);
+    }
+
+    fprintf(fptr, "\n");
+    fprintf(fptr, "outputLayerBias:\n");
+
+    for (size_t i = 0; i < outputNb; i++) {
+        fprintf(fptr, "%f ", outputLayerBias[i]);
+    }
+
+    fprintf(fptr, "\n");
+    fprintf(fptr, "outputWeights\n");
+
+    for (size_t i = 0; i < hiddenNodesNb; i++) {
+        for (size_t j = 0; j < outputNb; j++){
+            fprintf(fptr, "%f ", outputWeights[i][j]);
+        }
+        fprintf(fptr, "\n");
+    }
+
+    fprintf(fptr, "\n");
+    fprintf(fptr, "hiddenLayer:\n");
 
     for (size_t i = 0; i < hiddenNodesNb; i++) {
         fprintf(fptr, "%f ", hiddenLayer[i]);
     }
+
+    fprintf(fptr, "\n");
+    fprintf(fptr, "hiddenLayerBias:\n");
+
+    for (size_t i = 0; i < hiddenNodesNb; i++) {
+        fprintf(fptr, "%f ", hiddenLayerBias[i]);
+    }
+
+    fprintf(fptr, "\n");
+    fprintf(fptr, "hiddenWeights:\n");
+
+    for (size_t i = 0; i < inputNb; i++) {
+        for (size_t j = 0; j < hiddenNodesNb; j++){
+            fprintf(fptr, "%f ", hiddenWeights[i][j]);
+        }
+        fprintf(fptr, "\n");
+    }
+
     fclose(fptr);
 }
 
