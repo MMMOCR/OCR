@@ -27,7 +27,7 @@ endif
 IMG ?= 5
 EXT ?= jpeg
 
-OUT := utils/linesdetection utils/imageutils gui/interface_rotate
+OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver
 OBJS := utils/rotateutils.o
 
 all: $(OUT)
