@@ -49,6 +49,7 @@ train(char* path, int epochNb)
     for (int epoch = 0; epoch < epochNb; epoch++) {
         shuffle(trainingSetOrder, trainingSetsNb);
 
+        //train the NN for each value of the training set
         for (int x = 0; x < trainingSetsNb; x++) {
             int i = trainingSetOrder[x];
 

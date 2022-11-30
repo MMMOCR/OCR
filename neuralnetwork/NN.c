@@ -22,3 +22,5 @@ main(int argc, char** argv)
     }
     return 0;
 }
+
+//normaliser la couleur des pixels en -1 et 1 car softmax centrer -1 1 donc conv plus vite + eviter explosion de grdient 
