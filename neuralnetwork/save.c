@@ -11,13 +11,13 @@
 #include <time.h>
 
 void
-save_model(double hiddenLayer[],
+save_model(double *hiddenLayer,
            double outputLayer[],
-           double hiddenLayerBias[],
+           double *hiddenLayerBias,
            double outputLayerBias[],
-           double hiddenWeights[][hiddenNodesNb],
-           double outputWeights[][outputNb],
-           char* path)
+           double *hiddenWeights,
+           double *outputWeights,
+           char* path, int hiddenNodesNb, size_t inputNb)
 {
     FILE* fptr;
     int length = snprintf(NULL, 0, "%ld", time(NULL));
@@ -37,23 +37,23 @@ save_model(double hiddenLayer[],
         fprintf(fptr, "%f\n", outputLayerBias[i]);
     }
 
-    for (size_t i = 0; i < hiddenNodesNb; i++) {
+    for (size_t i = 0; i < outputNb; i++) {
         for (size_t j = 0; j < outputNb; j++) {
-            fprintf(fptr, "%f\n", outputWeights[i][j]);
+            fprintf(fptr, "%f\n", outputWeights[i * outputNb + j]);
         }
     }
 
-    for (size_t i = 0; i < hiddenNodesNb; i++) {
+    for (size_t i = 0; hiddenLayer[i] != '\0'; i++) {
         fprintf(fptr, "%f\n", hiddenLayer[i]);
     }
 
-    for (size_t i = 0; i < hiddenNodesNb; i++) {
+    for (size_t i = 0; hiddenLayerBias[i] != '\0'; i++) {
         fprintf(fptr, "%f\n", hiddenLayerBias[i]);
     }
 
     for (size_t i = 0; i < inputNb; i++) {
-        for (size_t j = 0; j < hiddenNodesNb; j++) {
-            fprintf(fptr, "%f\n", hiddenWeights[i][j]);
+        for (size_t j = 0; hiddenWeights[j] != '\0'; j++) {
+            fprintf(fptr, "%f\n", hiddenWeights[i * hiddenNodesNb + j]);
         }
     }
 
@@ -67,7 +67,7 @@ load_model(double hiddenLayer[],
            double outputLayerBias[],
            double* hiddenWeights,
            double* outputWeights,
-           char* path)
+           char* path, int hiddenNodesNb, size_t inputNb)
 {
     FILE* file = fopen(path, "r");
 

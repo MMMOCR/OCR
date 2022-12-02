@@ -1,4 +1,4 @@
 #pragma once
 
-void
-job(char* path, char* sinput);
+int
+job(char* path, double* inputs, int hiddenNodesNb, int inputNb );
