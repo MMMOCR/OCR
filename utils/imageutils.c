@@ -1,104 +1,25 @@
-#include <SDL2/SDL.h>
+#include "imageutils.h"
+#include "otsu.h"
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_surface.h>
-#include <err.h>
-#include <stdint.h>
-#include <stdio.h>
-
-int
-treshold(long int len, Uint32* pixels, int override_treshold)
-{
-    // TODO implement gaussian noise reduction
-    int treshold = 0;
-    int var_max = 0;
-    unsigned histogram[256];
-    int pbg = 0;
-    int pfg = 0;
-    float wbg = 0;
-    float wfg = 0;
-    int sumbg = 0;
-    int sumfg = 0;
-    float meanbg = 0;
-    float meanfg = 0;
-    float sumvarbg = 0;
-    float sumvarfg = 0;
-    float varbg = 0;
-    float varfg = 0;
-    float var = 0;
-    float vars[256];
-    Uint8 val = 0;
-
-    for (size_t i = 0; i <= 255; i++)
-        histogram[i] = 0;
-
-    if (override_treshold != 0) {
-        treshold = override_treshold;
-    } else {
-        for (int i = 0; i < len; i++) {
-            int pixel = pixels[i];
-            val = pixel >> 16 & 0xff;
-            histogram[val]++;
-        }
-        for (size_t i = 0; i <= 255; i++) {
-            for (size_t j = 0; j <= 255; j++) {
-                if (j < i) {
-                    pbg += histogram[j];
-                    if (histogram[j] != 0) sumbg += j * histogram[j];
-                } else {
-                    pfg += histogram[j];
-                    if (histogram[j] != 0) sumfg += j * histogram[j];
-                }
-            }
-            if (pbg == 0 || pfg == 0) {
-                vars[i] = 0;
-                continue;
-            }
-            wbg = (float) pbg / (float) len;
-            wfg = (float) pfg / (float) len;
-            meanbg = (float) sumbg / (float) pbg;
-            meanfg = (float) sumfg / (float) pfg;
-            for (size_t j = 0; j <= 255; j++) {
-                if (j < i) {
-                    if (histogram[j] != 0)
-                        sumvarbg += histogram[j] * (float) (j - meanbg) *
-                          (float) (j - meanbg);
-                } else {
-                    if (histogram[j] != 0)
-                        sumvarfg += histogram[j] * (float) (j - meanfg) *
-                          (float) (j - meanfg);
-                }
-            }
-            varbg = (float) sumvarbg / (float) pbg;
-            varfg = (float) sumvarfg / (float) pfg;
-            var = wbg * (float) varbg + wfg * (float) varfg;
-            vars[i] = var;
-            pbg = 0;
-            pfg = 0;
-            sumbg = 0;
-            sumfg = 0;
-            sumvarbg = 0;
-            sumvarfg = 0;
-        }
-        var_max = vars[22];
-        for (size_t i = 1; i <= 254; i++) {
-            if (vars[i] < var_max && vars[i] != 0) {
-                treshold = i;
-                var_max = vars[i];
-            }
-        }
-    }
-    // printf("treshold: %d\n", treshold);
-    return treshold;
-}
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
 {
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
+}
+
+
+void save_texture(const char* file_name, SDL_Renderer* renderer, SDL_Texture* texture) {
+    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    SDL_SetRenderTarget(renderer, texture);
+    int width, height;
+    SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
+    IMG_SavePNG(surface, file_name);
+    SDL_FreeSurface(surface);
+    SDL_SetRenderTarget(renderer, target);
 }
 
 void
@@ -125,6 +46,11 @@ event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* grayscale)
                 }
                 break;
             case SDL_KEYDOWN:
+                printf("%x\n", event.key.keysym.sym);
+                if (event.key.keysym.sym == 0x73)
+                {
+                    save_texture("pute.png", renderer, t);
+                }
                 if (!colorVersion) {
                     draw(renderer, t);
                     colorVersion = 1;
@@ -177,7 +103,7 @@ surface_to_grayscale(SDL_Surface* surface)
 }
 
 void
-back_to_black(SDL_Surface* surface, int threshold)
+back_to_black(SDL_Surface* surface, int treshold)
 {
     Uint32* pixels = surface->pixels;
     int len = surface->w * surface->h;
@@ -186,7 +112,7 @@ back_to_black(SDL_Surface* surface, int threshold)
     for (int i = 0; i < len; i++) {
         int val = pixels[i] >> 16 & 0xff;
         int new_val = 0;
-        if (val > threshold) new_val = 255;
+        if (val > treshold) new_val = 255;
         pixels[i] = SDL_MapRGB(format, new_val, new_val, new_val);
     }
     SDL_UnlockSurface(surface);
@@ -198,7 +124,7 @@ image_utils(char* filename)
     int h;
     int w;
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
+if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Window* window =
       SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
@@ -220,10 +146,11 @@ image_utils(char* filename)
 
     surface_to_grayscale(colored_surface);
 
-    int threshold = treshold(colored_surface->w * colored_surface->h,
+    int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
                              colored_surface->pixels, 0);
+    printf("%d\n", treshold);
 
-    back_to_black(colored_surface, threshold);
+    back_to_black(colored_surface, treshold);
 
     SDL_Texture* grayscale_texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);
@@ -266,10 +193,10 @@ main(int argc, char** argv)
 
     surface_to_grayscale(colored_surface);
 
-    int threshold = treshold(colored_surface->w * colored_surface->h,
+    int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
                              colored_surface->pixels, 0);
 
-    back_to_black(colored_surface, threshold);
+    back_to_black(colored_surface, treshold);
 
     SDL_Texture* grayscale_texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);

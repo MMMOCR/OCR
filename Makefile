@@ -36,6 +36,7 @@ DEPS += $(OBJS:%.o=%.d)
 all: $(OUT)
 
 gui/interface_rotate utils/linesdetection: utils/rotateutils.o
+utils/imageutils: utils/otsu.o
 neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
 $(OUT):
