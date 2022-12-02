@@ -64,7 +64,6 @@ otsu_treshold(long int len, Uint32* pixels, int override_treshold)
             }
         }
     }
-    printf("%d\n",treshold);
+    printf("%d\n", treshold);
     return treshold;
 }
-

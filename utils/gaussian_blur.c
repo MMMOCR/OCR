@@ -1,6 +1,6 @@
 #include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 // #include "imageutils.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -11,7 +11,6 @@
 #include <err.h>
 #include <stdint.h>
 #include <stdio.h>
-
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -125,8 +124,8 @@ gauss_blur(float *&in, float *&out, int w, int h, int sigma)
 // }
 //
 #define smooth_kernel_size 5
-#define sigma 1//0.84089642
-#define K  1
+#define sigma 1 // 0.84089642
+#define K 1
 
 Uint32
 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format)
@@ -165,7 +164,8 @@ gaussian_kernel(double gauss[smooth_kernel_size][smooth_kernel_size])
         for (j = 0; j < smooth_kernel_size; j++) {
             double x = i - (smooth_kernel_size - 1) / 2.0;
             double y = j - (smooth_kernel_size - 1) / 2.0;
-            gauss[i][j] = K * exp(((pow(x, 2) + pow(y, 2)) / ((2 * pow(sigma, 2)))) * (-1));
+            gauss[i][j] =
+              K * exp(((pow(x, 2) + pow(y, 2)) / ((2 * pow(sigma, 2)))) * (-1));
             sum += gauss[i][j];
         }
     }
@@ -180,7 +180,6 @@ gaussian_kernel(double gauss[smooth_kernel_size][smooth_kernel_size])
         }
         printf("\n");
     }
-
 }
 
 SDL_Surface*
@@ -194,42 +193,49 @@ load(const char* path)
     return format;
 }
 
-
 double
-yes(Uint32* pixels,int i,double gauss[smooth_kernel_size][smooth_kernel_size], int j)
+yes(Uint32* pixels,
+    int i,
+    double gauss[smooth_kernel_size][smooth_kernel_size],
+    int j)
 {
     double sum = 0;
     for (size_t k = 0; k < 5; k++) {
-        sum += (pixels[i+k] >> 16 & 0xff)*gauss[j][k];
+        sum += (pixels[i + k] >> 16 & 0xff) * gauss[j][k];
     }
     return sum;
 }
 
 void
-compute(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_size],int i,SDL_Surface* out)
+compute(SDL_Surface* surface,
+        double gauss[smooth_kernel_size][smooth_kernel_size],
+        int i,
+        SDL_Surface* out)
 {
-    int r,g,b;
+    int r, g, b;
     Uint32* pixels = surface->pixels;
     SDL_PixelFormat* format = surface->format;
     int w = surface->w;
     int h = surface->h;
     double sum = 0;
 
-
     for (size_t j = 0; i < 2; i++) {
-        sum += yes(pixels, i-w-j, gauss, j);
+        sum += yes(pixels, i - w - j, gauss, j);
     }
     // sum += yes(pixels,i-w-2,gauss,0);
     // sum += yes(pixels,i-w-1,gauss,1);
-    sum += yes(pixels,i-1,gauss,2);
+    sum += yes(pixels, i - 1, gauss, 2);
     // sum += yes(pixels,i+w-1,gauss,3);
     // sum += yes(pixels,i+w-2,gauss,4);
     for (size_t j = 0; j < 2; j++) {
-        sum+= yes(pixels, i+w-j, gauss, 2+j);
+        sum += yes(pixels, i + w - j, gauss, 2 + j);
     }
-    // sum += (pixels[i-w-1] >> 16 & 0xff)*gauss[0][0] + (pixels[i-w] >> 16 & 0xff)*gauss[0][1] + (pixels[i-w+1] >> 16 & 0xff)*gauss[0][2];
-    // sum += (pixels[i-1] >> 16 & 0xff)*gauss[1][0] + (pixels[i] >> 16 & 0xff)*gauss[1][1] + (pixels[i+1] >> 16 & 0xff)*gauss[1][2];
-    // sum += (pixels[i+w-1] >> 16 & 0xff)*gauss[2][0] + (pixels[i+w] >> 16 & 0xff)*gauss[2][1] + (pixels[i+w+1] >> 16 & 0xff)*gauss[2][2];
+    // sum += (pixels[i-w-1] >> 16 & 0xff)*gauss[0][0] + (pixels[i-w] >> 16 &
+    // 0xff)*gauss[0][1] + (pixels[i-w+1] >> 16 & 0xff)*gauss[0][2]; sum +=
+    // (pixels[i-1] >> 16 & 0xff)*gauss[1][0] + (pixels[i] >> 16 &
+    // 0xff)*gauss[1][1] + (pixels[i+1] >> 16 & 0xff)*gauss[1][2]; sum +=
+    // (pixels[i+w-1] >> 16 & 0xff)*gauss[2][0] + (pixels[i+w] >> 16 &
+    // 0xff)*gauss[2][1] + (pixels[i+w+1] >> 16 & 0xff)*gauss[2][2];
     // printf("%f\n",sum);
     r = sum;
     g = sum;
@@ -239,11 +245,10 @@ compute(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_siz
     pixelsOut[i] = SDL_MapRGB(format, r, g, b);
 }
 
-
 void
 test(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_size])
 {
-     SDL_Window* window =
+    SDL_Window* window =
       SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
                        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -251,28 +256,27 @@ test(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_size])
     SDL_Renderer* renderer =
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
-    SDL_Texture* bwtexture =
-      SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture* bwtexture = SDL_CreateTextureFromSurface(renderer, surface);
     Uint32* pixels = surface->pixels;
     SDL_Surface* out = surface;
     int len = surface->w * surface->h;
     SDL_PixelFormat* format = surface->format;
     SDL_LockSurface(surface);
-    for (int i = surface->w + 1; i < len - surface->h -1; i++) {
+    for (int i = surface->w + 1; i < len - surface->h - 1; i++) {
         // printf("%d\n", val);
         // printf("%d\n",i);
-        compute(surface,gauss,i,out);
+        compute(surface, gauss, i, out);
     }
-   
-    SDL_Texture* texture =
-      SDL_CreateTextureFromSurface(renderer, out);
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, out);
     event_loop(renderer, bwtexture, texture);
 
     SDL_UnlockSurface(surface);
 }
 
-
-int main() {
+int
+main()
+{
     double gauss[smooth_kernel_size][smooth_kernel_size];
     gaussian_kernel(gauss);
     // SDL_Surface* colored_surface = load("/home/malossa/Documents/81px.png");

@@ -12,14 +12,15 @@ void
 draw(SDL_Renderer* renderer, SDL_Texture* texture);
 
 void
-event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* grayscale);
+event_loop(SDL_Renderer* renderer,
+           SDL_Texture* colored,
+           SDL_Texture* grayscale);
 
 SDL_Surface*
 load_image(const char* path);
 
 Uint32
 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format);
-
 
 void
 surface_to_grayscale(SDL_Surface* surface);
@@ -29,4 +30,3 @@ back_to_black(SDL_Surface* surface, int threshold);
 
 void
 image_utils(char* filename);
-
