@@ -2,4 +2,4 @@
 #include "NN.h"
 
 void
-train(char* path,int hiddenNodesNb, char* trainingsetpath, int epochNb);
+train(char* path, int hiddenNodesNb, char* trainingsetpath, int epochNb);

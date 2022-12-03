@@ -11,13 +11,15 @@
 #include <time.h>
 
 void
-save_model(double *hiddenLayer,
+save_model(double* hiddenLayer,
            double outputLayer[],
-           double *hiddenLayerBias,
+           double* hiddenLayerBias,
            double outputLayerBias[],
-           double *hiddenWeights,
-           double *outputWeights,
-           char* path, int hiddenNodesNb, size_t inputNb)
+           double* hiddenWeights,
+           double* outputWeights,
+           char* path,
+           int hiddenNodesNb,
+           size_t inputNb)
 {
     FILE* fptr;
     int length = snprintf(NULL, 0, "%ld", time(NULL));
@@ -67,7 +69,9 @@ load_model(double hiddenLayer[],
            double outputLayerBias[],
            double* hiddenWeights,
            double* outputWeights,
-           char* path, int hiddenNodesNb, size_t inputNb)
+           char* path,
+           int hiddenNodesNb,
+           size_t inputNb)
 {
     FILE* file = fopen(path, "r");
 
