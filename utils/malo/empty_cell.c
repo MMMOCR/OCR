@@ -49,22 +49,20 @@ is_empty(SDL_Surface* image)
     return 1;
 }
 
-int[] PicToList(SDL_Surface *image)
+int[] PicToList(SDL_Surface* image)
 {
     int height = image->h;
     int width = image->w;
     Uint32* pixels = image->pixels;
-    int len = width*height;
-    int* list = calloc(len,sizeof(int));
-    size_t ratiox = (width *0.1);
-    size_t ratioy = (height*0.1);
-    for(size_t i = ratiox; i<width - ratiox; i++)
-    {
-        for (size_t j = ratioy; j< height - ratioy; j++)
-        {
-            long pos = (width*0.2);
+    int len = width * height;
+    int* list = calloc(len, sizeof(int));
+    size_t ratiox = (width * 0.1);
+    size_t ratioy = (height * 0.1);
+    for (size_t i = ratiox; i < width - ratiox; i++) {
+        for (size_t j = ratioy; j < height - ratioy; j++) {
+            long pos = (width * 0.2);
             int pixel = pixels[i * (width - pos) + j] >> 16 & 0xff0;
-            list[i*(width-pos)+j]= pixel;
+            list[i * (width - pos) + j] = pixel;
         }
     }
     return list;
