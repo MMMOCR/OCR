@@ -73,7 +73,9 @@ train(char* path,int hiddenNodesNb,char* trainingsetpath, int epochNb)
     }
 
     int *trainingSetOrder = malloc(trainingSetsNb * sizeof(int));
-    
+    for(size_t i = 0; i < trainingSetsNb; i++){
+        *(trainingSetOrder + i) = i;
+    }
 
     // Train the NN for the defined number of epochs
     for (int epoch = 0; epoch < epochNb; epoch++) {
@@ -105,7 +107,7 @@ train(char* path,int hiddenNodesNb,char* trainingsetpath, int epochNb)
 
                 // /!\ function used on the output layer must be called in a way
                 // to be changed in the NN config in NN.h
-                outputLayer[j] = sigmoid(activation);
+                outputLayer[j] = relu(activation);
             }
         
             printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f] || Expected output : [%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]\n",
@@ -122,7 +124,7 @@ train(char* path,int hiddenNodesNb,char* trainingsetpath, int epochNb)
             double deltaOutput[outputNb];
             for (int j = 0; j < outputNb; j++) {
                 double error = (training_outputs[i * outputNb + j] - outputLayer[j]);
-                deltaOutput[j] = error * dSigmoid(outputLayer[j]);
+                deltaOutput[j] = error * drelu(outputLayer[j]);
             }
 
             // Compute change in hidden weights
