@@ -26,8 +26,8 @@ is_empty(SDL_Surface* image)
     int width = image->w;
     Uint32* pixels = image->pixels;
     long sum = 0;
-    size_t ratiox = (width *0.1);
-    size_t ratioy = (height*0.1);
+    size_t ratiox = (width * 0.1);
+    size_t ratioy = (height * 0.1);
     size_t i, j;
     for (i = ratiox; i < width - ratiox; i++) {
         for (j = ratioy; j < height - ratioy; j++) {
@@ -50,22 +50,21 @@ is_empty(SDL_Surface* image)
     return 1;
 }
 
-int* PicToList(SDL_Surface *image)
+int*
+PicToList(SDL_Surface* image)
 {
     int height = image->h;
     int width = image->w;
     Uint32* pixels = image->pixels;
-    int len = width*height;
-    int* list = calloc(len,sizeof(int));
-    size_t ratiox = (width *0.1);
-    size_t ratioy = (height*0.1);
-    for(size_t i = ratiox; i<width - ratiox; i++)
-    {
-        for (size_t j = ratioy; j< height - ratioy; j++)
-        {
-            long pos = (width*0.2);
+    int len = width * height;
+    int* list = calloc(len, sizeof(int));
+    size_t ratiox = (width * 0.1);
+    size_t ratioy = (height * 0.1);
+    for (size_t i = ratiox; i < width - ratiox; i++) {
+        for (size_t j = ratioy; j < height - ratioy; j++) {
+            long pos = (width * 0.2);
             int pixel = pixels[i * (width - pos) + j] >> 16 & 0xff;
-            list[i*(width-pos)+j]= pixel;
+            list[i * (width - pos) + j] = pixel;
         }
     }
     return list;
@@ -76,8 +75,8 @@ main(int argc, char** argv)
     SDL_Surface* surface = load_image(argv[1]);
     printf("%d\n", is_empty(surface));
     int* ptr = PicToList(surface);
-    int *const end = ptr + 784;
-    while( ptr < end ) {
+    int* const end = ptr + 784;
+    while (ptr < end) {
         printf("%d\n", *ptr++);
     }
     return 1;
