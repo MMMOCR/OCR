@@ -13,7 +13,7 @@ double
 drelu(double x);
 
 void
-softmax(double*,size_t len);
+softmax(double*, size_t len);
 
 double
 dsoftmax(double*, size_t len, size_t i);

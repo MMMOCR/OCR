@@ -52,11 +52,12 @@ save_model(double* hiddenLayer,
 
     for (size_t i = 0; hiddenLayerBias[i] != '\0'; i++) {
         fprintf(fptr, "%f\n", hiddenLayerBias[i]);
-        if (hiddenLayer[i] > 5)
-            {
-                printf(" Warning the Big hidden output detected at save thus big biases : %f\n",hiddenLayer[i]);
-                delay(3000);
-            }
+        if (hiddenLayer[i] > 5) {
+            printf(" Warning the Big hidden output detected at save thus big "
+                   "biases : %f\n",
+                   hiddenLayer[i]);
+            delay(3000);
+        }
     }
 
     for (size_t i = 0; i < inputNb; i++) {

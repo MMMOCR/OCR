@@ -9,4 +9,5 @@ init_weights();
 void
 exit_usage();
 
-void delay(int number_of_seconds);
+void
+delay(int number_of_seconds);
