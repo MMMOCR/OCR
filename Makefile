@@ -14,31 +14,32 @@ endif
 LIBS ?= --libs
 
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
-CPPFLAGS := -MD
+CPPFLAGS := 
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
 ifeq ($(DEBUG), 1)
 	CFLAGS += -g3
+	CFLAGS += -fsanitize=address
+	LDFLAGS += -fsanitize=address
 endif
 
 IMG ?= 5
 EXT ?= jpeg
 
-OUT := utils/linesdetection utils/imageutils gui/interface_rotate
-OBJS := utils/rotateutils.o
+OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver neuralnetwork/NN
+OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
-DEPS := $(OBJS:%.o=%.d)
-DEPS += $(OUT:%=%.d)
+DEPS := $(OUT:%=%.d)
+DEPS += $(OBJS:%.o=%.d)
 
-utils/linesdetection: utils/rotateutils.o
-gui/interface_rotate: utils/rotateutils.o
+all: $(OUT)
 
-$(DEPS):
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(@:%.d=%.c) $(LDFLAGS) $(LDLIBS)
+gui/interface_rotate utils/linesdetection: utils/rotateutils.o
+neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
-$(OUT): %.d
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(^:%.h=) $(LDLIBS) $(LDFLAGS) -o $@
+$(OUT):
+	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
 
 $(OBJ):
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
@@ -57,9 +58,9 @@ test_solver: solver/solver
 
 clean:
 	rm -rf $(OUT)
+	rm -rf $(OBJS:%.o:%)
 	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
+	rm -rf $(DEPS:%.d=%.dSYM)
 
-.PHONY: clean test_gui test_linedetection test_imageutils
-
--include $(DEPS)
+.PHONY: clean test_gui test_linedetection test_imageutils test_solver all
