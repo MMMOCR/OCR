@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 
 size_t
 line_number(const char *f, size_t len);

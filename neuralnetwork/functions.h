@@ -1,5 +1,5 @@
 #pragma once
-
+#include <stddef.h>
 double
 sigmoid(double x);
 
@@ -12,8 +12,8 @@ relu(double x);
 double
 drelu(double x);
 
-double
-softmax(double x);
+void
+softmax(double*,size_t len);
 
 double
-dsoftmax(double x);
+dsoftmax(double*, size_t len, size_t i);

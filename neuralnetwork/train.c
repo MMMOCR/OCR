@@ -112,7 +112,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
 
                     // /!\ function used on the output layer must be called in a
                     // way to be changed in the NN config in NN.h
-                    outputLayer[j] = relu(activation);
+                    outputLayer[j] = sigmoid(activation);
                 }
 
                 printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f] || Expected "
@@ -139,7 +139,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
                 for (int j = 0; j < outputNb; j++) {
                     double error =
                       (training_outputs[i * outputNb + j] - outputLayer[j]);
-                    deltaOutput[j] = error * drelu(outputLayer[j]);
+                    deltaOutput[j] = error * dSigmoid(outputLayer[j]);
                 }
 
                 // Compute change in hidden weights

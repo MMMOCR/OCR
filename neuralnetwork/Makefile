@@ -10,7 +10,6 @@ LDLIBS = `pkg-config --libs sdl2` -lm
 SRC = NN.c train.c tools.c functions.c loadset.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
-main:
 
 main:
 	gcc -lm -Wall -Wextra -Werror -O1 -o NN *.c
