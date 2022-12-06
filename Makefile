@@ -50,7 +50,10 @@ test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
 
 test_imageutils: utils/imageutils
-	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
+	./$< ./images/sudoku3.jpeg
+	
+test_solver: solver/solver
+	./$< ./solver/samples/sample1
 
 clean:
 	rm -rf $(OUT)
