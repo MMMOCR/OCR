@@ -1,6 +1,6 @@
 # Makefile
 
-CC := gcc
+CC ?= gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
@@ -51,7 +51,7 @@ test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
 
 test_imageutils: utils/imageutils
-	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
+	./$< ./images/sudoku3.jpeg
 	
 test_solver: solver/solver
 	./$< ./solver/samples/sample1
