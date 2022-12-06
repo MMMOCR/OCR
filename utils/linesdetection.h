@@ -13,7 +13,7 @@
 #define TRIGOINV(rad, deg) (deg % 180 < 46) ? sin(rad) : cos(rad)
 #define DIFF(deg, modulo) \
     (deg % modulo < 44) ? deg % modulo : (deg % modulo) - 90
-#define ANGLEF(angle) (angle % 90 > 45) ? -(90-(angle % 90)) : (angle % 90)
+#define ANGLEF(angle) (angle % 90 > 45) ? -(90 - (angle % 90)) : (angle % 90)
 #define DIAG(x, y) sqrt(x *x + y * y)
 #define ISVERT(x) (x % 180 < 10 || ((x + 10) % 180) < 10) ? 1 : 0
 #define ISHOR(x)                                        \
@@ -25,17 +25,17 @@
 #define MAXDIFF(x, y, n) \
     (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
-typedef struct 
+typedef struct
 {
-    size_t * data;
+    size_t *data;
     size_t row;
     size_t column;
 } Matrix;
 
-typedef struct 
+typedef struct
 {
-   size_t x;
-   size_t y;
+    size_t x;
+    size_t y;
 } Point;
 
 typedef struct
@@ -66,4 +66,4 @@ Points_Array *
 detect_lines(SDL_Surface *surface);
 
 float
-compute_determinant(Matrix * matrix);
+compute_determinant(Matrix *matrix);
