@@ -108,14 +108,14 @@ init(struct training *t)
 void
 train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
 {
-    struct training t;
+    struct training t = { 0 };
     t.hidden_count = hiddenNodesNb;
     srand((unsigned int) time(NULL));
-
+    size_t inputNb;
     printf("Loading the training set\n");
-    if (!dostuff(trainingsetpath, &t.training_inputs, &t.training_outputs, 0,
+    if (!dostuff(trainingsetpath, &t.training_inputs, &t.training_outputs, &inputNb,
                  &t.training_count)) {
-        printf("Training set loaded, inputNb : %d\n", INPUT_COUNT);
+        
         init(&t);
 
         t.training_order = malloc(t.training_count * sizeof(int));
@@ -124,10 +124,26 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
         }
 
         for (int epoch = 0; epoch < epochNb; epoch++) {
-            printf("epoch: %d\n", epoch);
+            int i=0;
+            printf(" Output (%d): [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f] || Expected "
+                       "output : [%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]\n", epoch,
+                       t.output_layer[0], t.output_layer[1], t.output_layer[2],
+                       t.output_layer[3], t.output_layer[4], t.output_layer[5],
+                       t.output_layer[6], t.output_layer[7], t.output_layer[8],
+                       t.output_layer[9], t.training_outputs[i * 10 + 0],
+                       t.training_outputs[i * 10 + 1],
+                       t.training_outputs[i * 10 + 2],
+                       t.training_outputs[i * 10 + 3],
+                       t.training_outputs[i * 10 + 4],
+                       t.training_outputs[i * 10 + 5],
+                       t.training_outputs[i * 10 + 6],
+                       t.training_outputs[i * 10 + 7],
+                       t.training_outputs[i * 10 + 8],
+                       t.training_outputs[i * 10 + 9]);
             shuffle(t.training_order, t.training_count);
+        
             for (size_t x = 0; x < t.training_count; x++) {
-                int i = t.training_order[x];
+                i = t.training_order[x];
 
                 forward_propagation(&t, i);
                 backward_propagation(&t, i);
