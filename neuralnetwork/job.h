@@ -1,4 +1,5 @@
 #pragma once
 
-void
-job(char* path, char* sinput);
+#include "NN.h"
+
+int job(neural_network nn, char *inputs);

@@ -2,18 +2,19 @@
 
 CC = gcc
 CPPFLAGS = 
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2` -g3 -fsanitize=address
+CFLAGS = -g `pkg-config --cflags sdl2`
 LDFLAGS =
 LDLIBS = `pkg-config --libs sdl2` -lm
 
 
-SRC = NN.c train.c tools.c job.c functions.c
+SRC = NN.c train.c tools.c functions.c loadset.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
-main:
+
+all: main
 
 main:
-	gcc -lm -Wall -Wextra -Werror -O1 -o NN *.c -g3 -fsanitize=address
+	gcc $(CFLAGS) -o NN *.c $(LDLIBS)
 
 clean:
 	${RM} ${OBJ}

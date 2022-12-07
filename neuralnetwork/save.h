@@ -5,13 +5,15 @@
 #include <stdio.h>
 
 void
-save_model(double hiddenLayer[],
+save_model(double *hiddenLayer,
            double outputLayer[],
-           double hiddenLayerBias[],
+           double *hiddenLayerBias,
            double outputLayerBias[],
-           double hiddenWeights[][hiddenNodesNb],
-           double outputWeights[][outputNb],
-           char *filename);
+           double *hiddenWeights,
+           double *outputWeights,
+           char *path,
+           int hiddenNodesNb,
+           size_t inputNb);
 
 void
 load_model(double hiddenLayer[],
@@ -20,7 +22,9 @@ load_model(double hiddenLayer[],
            double outputLayerBias[],
            double *hiddenWeights,
            double *outputWeights,
-           char *path);
+           char *path,
+           int hiddenNodesNb,
+           size_t inputNb);
 
 void
 load_array(FILE *file, double array[], size_t len);

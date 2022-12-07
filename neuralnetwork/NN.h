@@ -1,9 +1,26 @@
 #pragma once
+#include <stddef.h>
 
-// This is the neural network parameters do not touch PlZ oR I wiLl FiNd YoU.
+#define OUTPUT_COUNT 10
+#define INPUT_COUNT 784
 
-#define inputNb 2 // for XOR we only have 2 input for 2 bits
-#define hiddenNodesNb 2 // minimum configuration for XOR
-#define outputNb 1 // for XOR we only have 1 bit of output
-#define trainingSetsNb 4
-#define learningRate 0.1 // The bigger, the faster, the less precise
+struct nn_sizes {
+    size_t hidden_weights_count;
+    size_t hidden_bias_count;
+    size_t output_weights_count;
+    size_t output_bias_count;
+
+    size_t hidden_count;
+};
+
+struct {
+    double *hidden_weights;
+    double *hidden_bias;
+    double *output_weights;
+    double *output_bias;
+
+    struct nn_sizes sizes;
+} typedef neural_network;
+
+void save(neural_network *nn, char *path);
+neural_network load(char *path);
