@@ -870,14 +870,15 @@ flatten_image(SDL_Surface *image,
 }
 
 Point_arr *
-get_corners(SDL_Surface * image) {
-    size_t threshold = 0; //TODO
-    size_t k = 0; //TODO
-    long int dx = calloc(image->w*image->h, sizeof(long int));
-    long int dy = calloc(image->w*image->h, sizeof(long int));
-    long int cornerness = calloc(image->w*image->h, sizeof(long int));
-    Point_arr * corners = calloc(1,sizeof(Point_arr));
-    corners->arr = calloc(40,sizeof(Point));
+get_corners(SDL_Surface *image)
+{
+    size_t threshold = 0; // TODO
+    size_t k = 0; // TODO
+    long int dx = calloc(image->w * image->h, sizeof(long int));
+    long int dy = calloc(image->w * image->h, sizeof(long int));
+    long int cornerness = calloc(image->w * image->h, sizeof(long int));
+    Point_arr *corners = calloc(1, sizeof(Point_arr));
+    corners->arr = calloc(40, sizeof(Point));
     corners->size = 0;
     long int a;
     long int b;
@@ -887,14 +888,14 @@ get_corners(SDL_Surface * image) {
             a = dx[j * image->w + i] * dx[j * image->w + i];
             b = dx[j * image->w + i] * dy[j * image->w + i];
             c = dy[j * image->w + i] * dy[j * image->w + i];
-            cornerness[j * image->w + i] (a * c - b*b) -k * (a+c) * (a+c);
+            cornerness[j * image->w + i](a * c - b * b) - k *(a + c) * (a + c);
         }
     }
 
     for (size_t i = 0; i < image->w; i++) {
         for (size_t j = 0; j < image->h; j++) {
             if (cornerness[j * image->w + i] > threshold) {
-                corners->arr[corners->size++] = {i, j};
+                corners->arr[corners->size++] = { i, j };
             }
         }
     }

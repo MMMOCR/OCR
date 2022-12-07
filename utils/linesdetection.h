@@ -35,7 +35,7 @@ typedef struct
 
 typedef struct
 {
-    Point * arr;
+    Point *arr;
     size_t size;
 } Point_arr;
 
