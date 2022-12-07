@@ -1,6 +1,6 @@
 #include "gaussian_blur.h"
 
-//function that create the gaussian kernel 
+// function that create the gaussian kernel
 void
 gaussian_kernel(double gauss[smooth_kernel_size][smooth_kernel_size])
 {
@@ -27,13 +27,15 @@ gaussian_kernel(double gauss[smooth_kernel_size][smooth_kernel_size])
     //     }
     //     printf("\n");
     // }
-
 }
 
 // function that compute the gaussian kernel to the grayscale
 // image, output image is the parameter out
 void
-compute(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_size],int k,SDL_Surface* out)
+compute(SDL_Surface* surface,
+        double gauss[smooth_kernel_size][smooth_kernel_size],
+        int k,
+        SDL_Surface* out)
 {
     int w = surface->w;
     int h = surface->h;
@@ -41,18 +43,19 @@ compute(SDL_Surface* surface, double gauss[smooth_kernel_size][smooth_kernel_siz
     Uint32* pixelsOut = out->pixels;
     SDL_PixelFormat* format = surface->format;
     long int Gx_compute = 0;
-    for (size_t i = 2; i < h-2; i++) {
-        for (size_t j = 2; j < w-2; j++) {
+    for (size_t i = 2; i < h - 2; i++) {
+        for (size_t j = 2; j < w - 2; j++) {
             Gx_compute = 0;
             for (int x = -2; x < 3; x++) {
                 for (int y = -2; y < 3; y++) {
-                    int kx = x+2;
-                    int ky = y+2;
-                    int val = pixels[(i+y)*w + (j+x)] >> 16 & 0xff;
-                    Gx_compute += val*gauss[kx][ky]; 
+                    int kx = x + 2;
+                    int ky = y + 2;
+                    int val = pixels[(i + y) * w + (j + x)] >> 16 & 0xff;
+                    Gx_compute += val * gauss[kx][ky];
                 }
-            } 
-            pixelsOut[i*w + j] = SDL_MapRGB(format, Gx_compute, Gx_compute, Gx_compute);
+            }
+            pixelsOut[i * w + j] =
+              SDL_MapRGB(format, Gx_compute, Gx_compute, Gx_compute);
         }
     }
 }

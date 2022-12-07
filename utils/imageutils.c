@@ -1,10 +1,10 @@
 #include "imageutils.h"
 
+#include "gaussian_blur.h"
 #include "otsu.h"
+#include "sobel.h"
 
 #include <SDL2/SDL_image.h>
-#include "sobel.h"
-#include "gaussian_blur.h"
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -135,9 +135,10 @@ back_to_black(SDL_Surface* surface, int treshold)
 //             int val = pixels[i*old_w + j] >> 16 & 0xff;
 //             int new_val = 0;
 //             if (val > threshold) new_val = 255;
-//             pixels[i*old_w + j] = SDL_MapRGB(format, new_val, new_val, new_val);
+//             pixels[i*old_w + j] = SDL_MapRGB(format, new_val, new_val,
+//             new_val);
 //         }
-//         
+//
 //     }
 //     SDL_UnlockSurface(surface);
 // }
@@ -208,26 +209,21 @@ main(int argc, char** argv)
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-
     h = colored_surface->h;
     w = colored_surface->w;
     SDL_SetWindowSize(window, w, h);
 
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             // colored_surface->pixels, 0);
+    // colored_surface->pixels, 0);
     // back_to_black(colored_surface, treshold);
     SDL_Texture* texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);
 
     surface_to_grayscale(colored_surface);
 
-<<<<<<< HEAD
-    int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                                 colored_surface->pixels, 0);
-=======
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
                              // colored_surface->pixels, 0);
->>>>>>> cb7d0e4 (Bosse mtn mathis)
+    // colored_surface->pixels, 0);
 
     // printf("%d\n",colored_surface->w);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
@@ -241,13 +237,13 @@ main(int argc, char** argv)
     SDL_Surface* out = colored_surface;
     compute(colored_surface, gauss, 0, out);
 
-    // Compute edges with sobel 
+    // Compute edges with sobel
     edges(out);
 
     // multiple(out->w, out->h, out);
-    
-    // int threshold = otsu_treshold(colored_surface->w * colored_surface->h, colored_surface->pixels, 0);
-    // back_to_black(colored_surface, threshold);
+
+    // int threshold = otsu_treshold(colored_surface->w * colored_surface->h,
+    // colored_surface->pixels, 0); back_to_black(colored_surface, threshold);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
 
     SDL_Texture* grayscale_texture =
@@ -262,4 +258,3 @@ main(int argc, char** argv)
     SDL_Quit();
     return EXIT_SUCCESS;
 }
-
