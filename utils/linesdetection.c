@@ -1,8 +1,8 @@
 #include "linesdetection.h"
-#include "sobel.h"
 
 #include "SDL_rect.h"
 #include "rotateutils.h"
+#include "sobel.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -875,15 +875,16 @@ get_corners(SDL_Surface *image)
 {
     size_t threshold = 0; // TODO
     size_t k = 0; // TODO
-    int * pixels = image->pixels;
-    long int * dx = calloc(image->w * image->h, sizeof(long int));
-    long int * dy = calloc(image->w * image->h, sizeof(long int));
+    int *pixels = image->pixels;
+    long int *dx = calloc(image->w * image->h, sizeof(long int));
+    long int *dy = calloc(image->w * image->h, sizeof(long int));
     for (size_t i = 2; i < image->h - 2; i++) {
         for (size_t j = 2; j < image->w - 2; j++) {
-            convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j, image->w);
+            convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j,
+                     image->w);
         }
     }
-    long int * cornerness = calloc(image->w * image->h, sizeof(long int));
+    long int *cornerness = calloc(image->w * image->h, sizeof(long int));
     Point_arr *corners = calloc(1, sizeof(Point_arr));
     corners->arr = calloc(40, sizeof(Point));
     corners->size = 40;
@@ -895,7 +896,8 @@ get_corners(SDL_Surface *image)
             a = dx[j * image->w + i] * dx[j * image->w + i];
             b = dx[j * image->w + i] * dy[j * image->w + i];
             c = dy[j * image->w + i] * dy[j * image->w + i];
-            cornerness[j * image->w + i] = (a * c - b * b) - k *(a + c) * (a + c);
+            cornerness[j * image->w + i] =
+              (a * c - b * b) - k * (a + c) * (a + c);
         }
     }
 
@@ -909,7 +911,8 @@ get_corners(SDL_Surface *image)
                 p.y = j;
                 corners->arr[cc++] = p;
                 if (cc >= corners->size) {
-                    corners->arr = realloc(corners->size + 40, 100 * sizeof(Point));
+                    corners->arr =
+                      realloc(corners->size + 40, 100 * sizeof(Point));
                     corners->size += 40;
                 }
             }
