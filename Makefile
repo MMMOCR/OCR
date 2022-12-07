@@ -11,6 +11,8 @@ ifneq ($(OS),Windows_NT)
     endif
 endif
 
+OCR ?= ocr-
+
 LIBS ?= --libs
 
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
@@ -36,7 +38,7 @@ DEPS += $(OBJS:%.o=%.d)
 all: $(OUT)
 
 gui/interface_rotate utils/linesdetection: utils/rotateutils.o utils/sobel.o
-utils/imageutils: utils/otsu.o
+utils/imageutils: utils/otsu.o utils/sobel.o utils/gaussian_blur.o
 neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 
 $(OUT):
@@ -46,13 +48,13 @@ $(OBJ):
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
 
 test_linedetection: utils/linesdetection
-	./$< ./images/ocr-$(IMG).$(EXT)
+	./$< ./images/$(OCR)$(IMG).$(EXT)
 
 test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
 
 test_imageutils: utils/imageutils
-	./$< ./images/sudoku3.jpeg
+	./$< ./images/sudoku2.jpeg
 	
 test_solver: solver/solver
 	./$< ./solver/samples/sample1

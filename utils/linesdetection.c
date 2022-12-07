@@ -876,12 +876,18 @@ get_corners(SDL_Surface *image)
     size_t threshold = 0; // TODO
     size_t k = 0; // TODO
     int *pixels = image->pixels;
+    printf("%lu, %lu\n", image->w, image->h);
     long int *dx = calloc(image->w * image->h, sizeof(long int));
     long int *dy = calloc(image->w * image->h, sizeof(long int));
+    int li, la;
     for (size_t i = 2; i < image->h - 2; i++) {
         for (size_t j = 2; j < image->w - 2; j++) {
-            convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j,
+            printf("%lu, %lu\n", i, j);
+            //convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j,
+            convolve(pixels, &li, &la, i, j,
                      image->w);
+	    //printf("%li, %li\n",dx[i * image->w + j],dy[i * image->w + j]);
+	    //printf("%i, %i\n",li, la);
         }
     }
     long int *cornerness = calloc(image->w * image->h, sizeof(long int));
@@ -896,6 +902,8 @@ get_corners(SDL_Surface *image)
             a = dx[j * image->w + i] * dx[j * image->w + i];
             b = dx[j * image->w + i] * dy[j * image->w + i];
             c = dy[j * image->w + i] * dy[j * image->w + i];
+    	    printf("%li, %li, %li\n",a,b,c);
+
             cornerness[j * image->w + i] =
               (a * c - b * b) - k * (a + c) * (a + c);
         }
@@ -903,6 +911,10 @@ get_corners(SDL_Surface *image)
 
     size_t cc = 0;
     Point p;
+
+//    for (size_t i = 0; i < image->w * image->h; i++) {
+//    	printf("%lu\n", cornerness[i]);
+//    }
 
     for (size_t i = 0; i < image->w; i++) {
         for (size_t j = 0; j < image->h; j++) {
@@ -931,6 +943,9 @@ main(int argc, char **argv)
 {
 
     SDL_Surface *image_test = IMG_Load(argv[1]);
+    if (!image_test) { errx(1, "sa daronne la pute"); }
+    get_corners(image_test);
+
     //    Point top_left = { 892, 364 };
     //    Point top_right = { 1038, 887 };
     //    Point bot_left = { 233, 547 };
@@ -945,8 +960,6 @@ main(int argc, char **argv)
       flatten_image(image_test, &top_left, &top_right, &bot_left, &bot_right);
 
     IMG_SavePNG(out, "./flatten_test.png");
-
-    get_corners(out);
 
     Points_Array *arr;
     Points_Array *intersect_arr;
