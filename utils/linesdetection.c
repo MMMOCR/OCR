@@ -297,6 +297,13 @@ detect_lines_and_rotate(int *pixels,
     }
 
     moy /= (double) arr->len / 2;
+    double moy = 0;
+
+    for (size_t i = 0; i < (size_t) arr->len; i += 2) {
+        moy += DIFF(arr->array[i + 1], 90);
+    }
+
+    moy /= (double) counter / 2;
 
     printf("%f\n", moy);
 
@@ -972,6 +979,8 @@ main(int argc, char **argv)
         y2 = y0 - 2 * image_temp->h * (m);
         // draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
         // SDL_MapRGB(image_temp->format, 0, 255, 0));
+        draw_line(pixels, image_temp->w, image_temp->h, x1, y1, x2, y2,
+                  SDL_MapRGB(image_temp->format, 0, 255, 0));
     }
 
     for (size_t i = 0; i < sorted_arr->count_v; i += 2) {
