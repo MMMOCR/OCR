@@ -1,6 +1,6 @@
 # Makefile
 
-CC ?= gcc
+CC := gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 
@@ -35,7 +35,7 @@ DEPS += $(OBJS:%.o=%.d)
 
 all: $(OUT)
 
-gui/interface_rotate utils/linesdetection: utils/rotateutils.o
+gui/interface_rotate utils/linesdetection: utils/rotateutils.o utils/sobel.o
 utils/imageutils: utils/otsu.o
 neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
 

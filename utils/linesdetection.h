@@ -35,15 +35,15 @@ typedef struct
 
 typedef struct
 {
-    Point *arr;
-    size_t size;
-} Point_arr;
-
-typedef struct
-{
     size_t x;
     size_t y;
 } Point;
+
+typedef struct
+{
+    Point *arr;
+    size_t size;
+} Point_arr;
 
 typedef struct
 {

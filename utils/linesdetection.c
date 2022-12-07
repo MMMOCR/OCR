@@ -1,4 +1,5 @@
 #include "linesdetection.h"
+#include "sobel.h"
 
 #include "SDL_rect.h"
 #include "rotateutils.h"
@@ -297,13 +298,6 @@ detect_lines_and_rotate(int *pixels,
     }
 
     moy /= (double) arr->len / 2;
-    double moy = 0;
-
-    for (size_t i = 0; i < (size_t) arr->len; i += 2) {
-        moy += DIFF(arr->array[i + 1], 90);
-    }
-
-    moy /= (double) counter / 2;
 
     printf("%f\n", moy);
 
@@ -881,12 +875,18 @@ get_corners(SDL_Surface *image)
 {
     size_t threshold = 0; // TODO
     size_t k = 0; // TODO
-    long int dx = calloc(image->w * image->h, sizeof(long int));
-    long int dy = calloc(image->w * image->h, sizeof(long int));
-    long int cornerness = calloc(image->w * image->h, sizeof(long int));
+    int * pixels = image->pixels;
+    long int * dx = calloc(image->w * image->h, sizeof(long int));
+    long int * dy = calloc(image->w * image->h, sizeof(long int));
+    for (size_t i = 2; i < image->h - 2; i++) {
+        for (size_t j = 2; j < image->w - 2; j++) {
+            convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j, image->w);
+        }
+    }
+    long int * cornerness = calloc(image->w * image->h, sizeof(long int));
     Point_arr *corners = calloc(1, sizeof(Point_arr));
     corners->arr = calloc(40, sizeof(Point));
-    corners->size = 0;
+    corners->size = 40;
     long int a;
     long int b;
     long int c;
@@ -895,16 +895,29 @@ get_corners(SDL_Surface *image)
             a = dx[j * image->w + i] * dx[j * image->w + i];
             b = dx[j * image->w + i] * dy[j * image->w + i];
             c = dy[j * image->w + i] * dy[j * image->w + i];
-            cornerness[j * image->w + i](a * c - b * b) - k *(a + c) * (a + c);
+            cornerness[j * image->w + i] = (a * c - b * b) - k *(a + c) * (a + c);
         }
     }
+
+    size_t cc = 0;
+    Point p;
 
     for (size_t i = 0; i < image->w; i++) {
         for (size_t j = 0; j < image->h; j++) {
             if (cornerness[j * image->w + i] > threshold) {
-                corners->arr[corners->size++] = { i, j };
+                p.x = i;
+                p.y = j;
+                corners->arr[cc++] = p;
+                if (cc >= corners->size) {
+                    corners->arr = realloc(corners->size + 40, 100 * sizeof(Point));
+                    corners->size += 40;
+                }
             }
         }
+    }
+
+    for (size_t i = 0; i < corners->size; i++) {
+        printf("corners : %lu, %lu\n");
     }
 
     return corners;
@@ -929,6 +942,8 @@ main(int argc, char **argv)
       flatten_image(image_test, &top_left, &top_right, &bot_left, &bot_right);
 
     IMG_SavePNG(out, "./flatten_test.png");
+
+    get_corners(out);
 
     Points_Array *arr;
     Points_Array *intersect_arr;
