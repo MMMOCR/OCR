@@ -616,15 +616,25 @@ yeet_the_fools(Sorted_Points_Array *pa)
 }
 
 Matrix *
-init_mat(size_t row)
+init_mat(size_t row, size_t columns)
 {
     Matrix *mat = calloc(1, sizeof(Matrix));
     mat->row = row;
-    mat->column = row;
-    mat->data = calloc(row * row, sizeof(size_t));
+    mat->column = columns;
+    mat->data = calloc(row * row, sizeof(long double));
 }
 
-float
+void
+print_mat(Matrix * mat) {
+    printf("(%lu,%lu) = [",mat->row, mat->column);
+    for (size_t i = 0; i < mat->row*mat->column; i++) {
+	printf("%Lf,",mat->data[i]);
+    }
+    printf("]\n");
+
+}
+
+long double
 compute_minor(Matrix *matrix, size_t i, size_t j)
 {
     if (i < 0 || i >= matrix->row || j < 0 || j >= matrix->column) { return 0; }
@@ -647,22 +657,21 @@ compute_minor(Matrix *matrix, size_t i, size_t j)
         }
     }
 
-    Matrix *minor = init_mat(matrix->row - 1);
+    Matrix *minor = init_mat(matrix->row - 1, matrix->column-1);
     for (size_t k = 0; k < matrix->row; k++) {
         if (i == k) { continue; }
         for (size_t l = 0; l < matrix->column; l++) {
             if (j == l) { continue; }
-            minor->data[(k < i ? k : k - 1) * minor->row + l < j ? l : l - 1] =
-              matrix->data[k * matrix->row + l];
+            minor->data[(k < i ? k : k - 1) * minor->column + (l < j ? l : l - 1)] = matrix->data[k * matrix->column + l];
         }
     }
 
-    float k = compute_determinant(minor);
+    long double k = compute_determinant(minor);
     free(minor);
     return k;
 }
 
-float
+long double
 compute_determinant(Matrix *matrix)
 {
     if (matrix->row != matrix->column) { return 0; }
@@ -670,13 +679,13 @@ compute_determinant(Matrix *matrix)
     if (matrix->row == 1) { return matrix->data[0]; }
 
     if (matrix->row == 2) {
-        return matrix->data[0] * matrix->data[3] -
-          matrix->data[1] * matrix->data[2];
+        return (long double)(matrix->data[0] * matrix->data[3] -
+          matrix->data[1] * matrix->data[2]);
     }
 
-    float det = 0;
+    long double det = 0;
     for (size_t i = 0; i < matrix->column; i++) {
-        det += matrix->data[i] * compute_minor(matrix, 0, i);
+        det += matrix->data[i] * (i % 2 == 0 ? 1 : -1) * compute_minor(matrix, 0, i);
     }
 
     return det;
@@ -685,16 +694,19 @@ compute_determinant(Matrix *matrix)
 Matrix *
 inverse_mat(Matrix *matrix)
 {
-    float det = compute_determinant(matrix);
+    long double det = compute_determinant(matrix);
 
     if (det == 0) { return NULL; }
 
-    Matrix *inverse = init_mat(matrix->row);
+    Matrix *inverse = init_mat(matrix->row, matrix->row);
+    long double s; 
 
     for (size_t i = 0; i < matrix->row; i++) {
         for (size_t j = 0; j < matrix->column; j++) {
-            inverse->data[i * (matrix->row - 1) + j] =
-              compute_minor(matrix, i, j) / det;
+            s = (long double)(compute_minor(matrix, i, j)) * ((i+j)%2 == 0 ? 1 : -1);
+	    s /= det;
+            inverse->data[j * (matrix->row) + i] = s;
+
         }
     }
 
@@ -702,40 +714,93 @@ inverse_mat(Matrix *matrix)
 }
 
 Matrix *
-create_transformation_matrix(Point *in_top_left,
-                             Point *in_top_right,
-                             Point *in_bot_left)
-{
-    Matrix *transform = init_mat(3);
-
-    transform->data[0] = in_top_left->x;
-    transform->data[1] = in_top_left->y;
-    transform->data[2] = 1;
-    transform->data[3] = in_top_right->x;
-    transform->data[4] = in_top_right->y;
-    transform->data[5] = 1;
-    transform->data[6] = in_bot_left->x;
-    transform->data[7] = in_bot_left->y;
-    transform->data[8] = 1;
-
-    Matrix *inverse_transform = inverse_mat(transform);
-
-    return inverse_transform;
+mat_product(Matrix * a, Matrix * b) {
+	Matrix * r = init_mat(a->row, b->column);
+	long double s = 0;
+	for (size_t i = 0; i < a->row; i++) {
+            for (size_t j = 0; j < b->column; j++) {
+		s = 0;
+		for (size_t k = 0; k < a->column; k++) {
+		    s += (a->data[i*a->column + k]) * (b->data[k * b->column + j]);
+		}
+		r->data[i*r->column + j] = s;
+	    }
+	}
+	return r;
 }
 
 Matrix *
-compute_perspective_transform(Point *in_top_left,
-                              Point *in_top_right,
-                              Point *in_bot_left)
+create_transformation_matrix(Point *in_top_left,
+                             Point *in_top_right,
+                             Point *in_bot_left,
+                             Point *in_bot_right,
+			     Point *out_top_left,
+			     Point *out_top_right,
+			     Point *out_bot_left,
+			     Point *out_bot_right,
+			     size_t w, size_t h)
 {
-    Matrix *transform =
-      create_transformation_matrix(in_top_left, in_top_right, in_bot_left);
+    Matrix *transform = init_mat(3, 3);
 
-    Matrix *inverse = inverse_mat(transform);
+    transform->data[0] = out_top_left->x;
+    transform->data[1] = out_top_left->y;
+    transform->data[2] = 1;
+    transform->data[3] = out_top_right->x;
+    transform->data[4] = out_top_right->y;
+    transform->data[5] = 1;
+    transform->data[6] = out_bot_left->x;
+    transform->data[7] = out_bot_left->y;
+    transform->data[8] = 1;
 
+    Matrix * inverse = inverse_mat(transform);
+    
     free(transform);
 
-    return inverse;
+    Matrix * output = init_mat(3, 1);
+
+    output->data[0] = in_top_left->x;
+    output->data[1] = in_top_right->x;
+    output->data[2] = in_bot_left->x;
+
+    Matrix * output_x = mat_product(inverse, output);
+
+    output->data[0] = in_top_left->y;
+    output->data[1] = in_top_right->y;
+    output->data[2] = in_bot_left->y;
+
+    Matrix * output_y = mat_product(inverse, output);
+    
+    Matrix * perspective_transform = init_mat(3, 3);
+
+    perspective_transform->data[0] = output_x->data[0];
+    perspective_transform->data[1] = output_x->data[1];
+    perspective_transform->data[2] = output_x->data[2];
+    perspective_transform->data[3] = output_y->data[0];
+    perspective_transform->data[4] = output_y->data[1];
+    perspective_transform->data[5] = output_y->data[2];
+    perspective_transform->data[6] = 0;
+    perspective_transform->data[7] = 0;
+    perspective_transform->data[8] = 1;
+
+    free(output_x);
+    free(output_y);
+    free(output);
+
+    return perspective_transform;
+}
+
+size_t max_Point(size_t x1, size_t x2, size_t x3, size_t x4) {
+    x1 = MAX(x1,x2);
+    x3 = MAX(x3,x4);
+    x1 = MAX(x1,x3);
+    return x1;
+}
+
+size_t min_Point(size_t x1, size_t x2, size_t x3, size_t x4) {
+    x1 = MIN(x1,x2);
+    x3 = MIN(x3,x4);
+    x1 = MIN(x1,x3);
+    return x1;
 }
 
 SDL_Surface *
@@ -745,47 +810,68 @@ flatten_image(SDL_Surface *image,
               Point *bot_left,
               Point *bot_right)
 {
-    size_t w = top_right->x - top_left->x;
-    size_t h = bot_left->y - top_left->y;
+    size_t min_x = min_Point(top_left->x, top_right->x, bot_left->x, bot_right->x);
+    size_t max_x = max_Point(top_left->x, top_right->x, bot_left->x, bot_right->x);
+    size_t min_y = min_Point(top_left->y, top_right->y, bot_left->y, bot_right->y);
+    size_t max_y = max_Point(top_left->y, top_right->y, bot_left->y, bot_right->y);
+
+    size_t w = max_x - min_x + 1;
+    size_t h = max_y - min_y + 1;
+
+    Point i = {0,0};
+    Point j = {w,0};
+    Point k = {0,h};
+    Point l = {w,h};
 
     SDL_Surface *out = SDL_CreateRGBSurface(
-      0, w, h, image->format->BytesPerPixel * w, image->format->Rmask,
+      0, w, h, 32, image->format->Rmask,
       image->format->Gmask, image->format->Bmask, image->format->Amask);
 
     Matrix *transform =
-      compute_perspective_transform(top_left, top_right, bot_left);
+      create_transformation_matrix(top_left, top_right, bot_left, bot_right, &i, &j, &k, &l, w, h);
+
+    if (!transform) {
+	errx(1, "mat transform not inv");
+    }
 
     int *pixels = image->pixels;
     int *new_pixels = out->pixels;
 
-    size_t new_x, new_y;
-    for (size_t i = 0; i < image->w; i++) {
-        for (size_t j = 0; j < image->h; j++) {
-            new_x = i * transform->data[0] + j * transform->data[3] +
-              transform->data[6];
-            new_y = i * transform->data[1] + j * transform->data[4] +
-              transform->data[7];
-            if (new_x >= 0 && new_x < w && new_y >= 0 && new_y < h) {
-                new_pixels[new_x * w + new_y] = pixels[i * w + j];
+    long double new_x, new_y, ki;
+    for (size_t i = 0; i < w; i++) {
+        for (size_t j = 0; j < h; j++) {
+            new_x = round((long double)i * transform->data[0] + (long double)j * transform->data[1] +
+              transform->data[2]);
+            new_y = round((long double)i * transform->data[3] + (long double)j * transform->data[4] +
+              transform->data[5]);
+            if ((long int)new_x >= 0 && (long int)new_x < image->w && (long int)new_y >= 0 && (long int)new_y < image->h) {
+                new_pixels[(long int)j * w + (long int)i] = pixels[(long int)new_y * image->w + (long int)new_x];
             }
         }
     }
+
+    return out;
 }
 
 int
 main(int argc, char **argv)
 {
-
+    
     SDL_Surface *image_test = IMG_Load(argv[1]);
-    Point top_left = { 892, 364 };
-    Point top_right = { 1038, 887 };
-    Point bot_left = { 233, 547 };
-    Point bot_right = { 364, 1073 };
+//    Point top_left = { 892, 364 };
+//    Point top_right = { 1038, 887 };
+//    Point bot_left = { 233, 547 };
+//    Point bot_right = { 364, 1073 };
+
+    Point top_left = { 238, 140 };
+    Point top_right = { 824, 186 };
+    Point bot_left = { 178, 888 };
+    Point bot_right = { 766, 942 };
 
     SDL_Surface *out =
       flatten_image(image_test, &top_left, &top_right, &bot_left, &bot_right);
 
-    IMG_SavePNG(image_test, "./flatten_test.png");
+    IMG_SavePNG(out, "./flatten_test.png");
 
     Points_Array *arr;
     Points_Array *intersect_arr;

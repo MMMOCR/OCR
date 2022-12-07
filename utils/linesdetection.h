@@ -22,12 +22,13 @@
       ? 1                                               \
       : 0
 #define MAX(a, b) a > b ? a : b
+#define MIN(a, b) a > b ? b : a
 #define MAXDIFF(x, y, n) \
     (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
 typedef struct
 {
-    size_t *data;
+    long double *data;
     size_t row;
     size_t column;
 } Matrix;
@@ -65,5 +66,5 @@ draw_line(int *pixels,
 Points_Array *
 detect_lines(SDL_Surface *surface);
 
-float
+long double
 compute_determinant(Matrix *matrix);
