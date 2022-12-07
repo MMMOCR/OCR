@@ -34,6 +34,31 @@ drelu(double x)
 void
 softmax(double *layer, size_t len)
 {
+    double sum = 0;
+    for (double *i = layer; i < layer + len; i++) {
+        sum += exp(*i);
+    }
+
+    for (double *i = layer; i < layer + len; i++) {
+        *i = (exp(*i)) / sum;
+    }
+}
+
+double
+dsoftmax(double *layer, size_t len, size_t target)
+{
+    double sum = 0;
+    for (double *i = layer; i < layer + len; i++) {
+        sum += exp(*i);
+    }
+    double t = exp(*(layer + target));
+
+    return t * (sum - t) / (pow(sum, 2));
+}
+
+void
+softmax_normalized(double *layer, size_t len)
+{
     double max = *layer;
     for (double *i = layer; i < layer + len; i++) {
         if (max < *i) { max = *i; }
@@ -50,7 +75,7 @@ softmax(double *layer, size_t len)
 }
 
 double
-dsoftmax(double *layer, size_t len, size_t target)
+dsoftmax_normalized(double *layer, size_t len, size_t target)
 {
     double max = *layer;
     for (double *i = layer; i < layer + len; i++) {

@@ -18,3 +18,9 @@ softmax(double*, size_t len);
 
 double
 dsoftmax(double*, size_t len, size_t i);
+
+void
+softmax_normalized(double*, size_t len);
+
+double
+dsoftmax_normalized(double*, size_t len, size_t i);

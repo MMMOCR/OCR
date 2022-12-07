@@ -18,7 +18,7 @@ forward_propagation(struct training *t, int input)
             activation += t->training_inputs[input * INPUT_COUNT + k] *
               t->nn.hidden_weights[k * t->hidden_count + j];
         }
-
+        
         t->hidden_layer[j] = relu(activation);
     }
 
@@ -31,6 +31,7 @@ forward_propagation(struct training *t, int input)
         }
 
         t->output_layer[j] = activation;
+        
     }
 
     softmax(t->output_layer, OUTPUT_COUNT);
@@ -149,7 +150,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
             }
         }
 
-        save(&t.nn, "/home/rigole/Desktop/ogboi/og");
+        save(&t.nn, path);
     } else {
         errx(EXIT_FAILURE,
              "The dataset you are trying to load is bullshit mate!");
