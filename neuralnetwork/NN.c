@@ -33,7 +33,7 @@ load(char *path)
     nn.output_weights = malloc(nn.sizes.output_weights_count * sizeof(double));
     nn.output_bias = malloc(nn.sizes.output_bias_count * sizeof(double));
 
-    fread(nn.hidden_weights, sizeof(double), nn.sizes.hidden_weights_count,f);
+    fread(nn.hidden_weights, sizeof(double), nn.sizes.hidden_weights_count, f);
     fread(nn.hidden_bias, sizeof(double), nn.sizes.hidden_bias_count, f);
     fread(nn.output_weights, sizeof(double), nn.sizes.output_weights_count, f);
     fread(nn.output_bias, sizeof(double), nn.sizes.output_bias_count, f);
