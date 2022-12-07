@@ -1,8 +1,10 @@
 #include "imageutils.h"
-#include "otsu.h"
-#include <SDL2/SDL_image.h>
-#include "sobel.h"
+
 #include "gaussian_blur.h"
+#include "otsu.h"
+#include "sobel.h"
+
+#include <SDL2/SDL_image.h>
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -11,14 +13,19 @@ draw(SDL_Renderer* renderer, SDL_Texture* texture)
     SDL_RenderPresent(renderer);
 }
 
-
-void save_texture(const char* file_name, SDL_Renderer* renderer, SDL_Texture* texture) {
+void
+save_texture(const char* file_name,
+             SDL_Renderer* renderer,
+             SDL_Texture* texture)
+{
     SDL_Texture* target = SDL_GetRenderTarget(renderer);
     SDL_SetRenderTarget(renderer, texture);
     int width, height;
     SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-    SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
+    SDL_Surface* surface =
+      SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(renderer, NULL, surface->format->format,
+                         surface->pixels, surface->pitch);
     IMG_SavePNG(surface, file_name);
     SDL_FreeSurface(surface);
     SDL_SetRenderTarget(renderer, target);
@@ -128,9 +135,10 @@ back_to_black(SDL_Surface* surface, int treshold)
 //             int val = pixels[i*old_w + j] >> 16 & 0xff;
 //             int new_val = 0;
 //             if (val > threshold) new_val = 255;
-//             pixels[i*old_w + j] = SDL_MapRGB(format, new_val, new_val, new_val);
+//             pixels[i*old_w + j] = SDL_MapRGB(format, new_val, new_val,
+//             new_val);
 //         }
-//         
+//
 //     }
 //     SDL_UnlockSurface(surface);
 // }
@@ -141,7 +149,7 @@ image_utils(char* filename)
     int h;
     int w;
 
-if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Window* window =
       SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
@@ -164,7 +172,7 @@ if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
     surface_to_grayscale(colored_surface);
 
     int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             colored_surface->pixels, 0);
+                                 colored_surface->pixels, 0);
     printf("%d\n", treshold);
 
     back_to_black(colored_surface, treshold);
@@ -201,13 +209,12 @@ main(int argc, char** argv)
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-
     h = colored_surface->h;
     w = colored_surface->w;
     SDL_SetWindowSize(window, w, h);
 
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             // colored_surface->pixels, 0);
+    // colored_surface->pixels, 0);
     // back_to_black(colored_surface, treshold);
     SDL_Texture* texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);
@@ -215,7 +222,7 @@ main(int argc, char** argv)
     surface_to_grayscale(colored_surface);
 
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             // colored_surface->pixels, 0);
+    // colored_surface->pixels, 0);
 
     // printf("%d\n",colored_surface->w);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
@@ -229,13 +236,13 @@ main(int argc, char** argv)
     SDL_Surface* out = colored_surface;
     compute(colored_surface, gauss, 0, out);
 
-    // Compute edges with sobel 
+    // Compute edges with sobel
     edges(out);
 
     // multiple(out->w, out->h, out);
-    
-    // int threshold = otsu_treshold(colored_surface->w * colored_surface->h, colored_surface->pixels, 0);
-    // back_to_black(colored_surface, threshold);
+
+    // int threshold = otsu_treshold(colored_surface->w * colored_surface->h,
+    // colored_surface->pixels, 0); back_to_black(colored_surface, threshold);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
 
     SDL_Texture* grayscale_texture =
@@ -250,4 +257,3 @@ main(int argc, char** argv)
     SDL_Quit();
     return EXIT_SUCCESS;
 }
-
