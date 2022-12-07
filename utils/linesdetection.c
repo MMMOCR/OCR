@@ -883,11 +883,11 @@ get_corners(SDL_Surface *image)
     for (size_t i = 2; i < image->h - 2; i++) {
         for (size_t j = 2; j < image->w - 2; j++) {
             printf("%lu, %lu\n", i, j);
-            //convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i, j,
-            convolve(pixels, &li, &la, i, j,
-                     image->w);
-	    //printf("%li, %li\n",dx[i * image->w + j],dy[i * image->w + j]);
-	    //printf("%i, %i\n",li, la);
+            // convolve(pixels, &dx[i * image->w + j], &dy[i * image->w + j], i,
+            // j,
+            convolve(pixels, &li, &la, i, j, image->w);
+            // printf("%li, %li\n",dx[i * image->w + j],dy[i * image->w + j]);
+            // printf("%i, %i\n",li, la);
         }
     }
     long int *cornerness = calloc(image->w * image->h, sizeof(long int));
@@ -902,7 +902,7 @@ get_corners(SDL_Surface *image)
             a = dx[j * image->w + i] * dx[j * image->w + i];
             b = dx[j * image->w + i] * dy[j * image->w + i];
             c = dy[j * image->w + i] * dy[j * image->w + i];
-    	    printf("%li, %li, %li\n",a,b,c);
+            printf("%li, %li, %li\n", a, b, c);
 
             cornerness[j * image->w + i] =
               (a * c - b * b) - k * (a + c) * (a + c);
@@ -912,9 +912,9 @@ get_corners(SDL_Surface *image)
     size_t cc = 0;
     Point p;
 
-//    for (size_t i = 0; i < image->w * image->h; i++) {
-//    	printf("%lu\n", cornerness[i]);
-//    }
+    //    for (size_t i = 0; i < image->w * image->h; i++) {
+    //    	printf("%lu\n", cornerness[i]);
+    //    }
 
     for (size_t i = 0; i < image->w; i++) {
         for (size_t j = 0; j < image->h; j++) {

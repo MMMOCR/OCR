@@ -151,7 +151,7 @@ image_utils(char* filename)
     surface_to_grayscale(colored_surface);
 
     int threshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             colored_surface->pixels, 0);
+                                  colored_surface->pixels, 0);
 
     back_to_black(colored_surface, threshold);
     printf("%d\n", threshold);
