@@ -1,7 +1,9 @@
 #include "train.h"
+
 #include "loadset.h"
 #include "save.h"
 #include "tools.h"
+
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +17,7 @@ forward_propagation(struct training *t, int input)
 
         for (size_t k = 0; k < INPUT_COUNT; k++) {
             activation += t->training_inputs[input * INPUT_COUNT + k] *
-                          t->nn.hidden_weights[k * t->hidden_count + j];
+              t->nn.hidden_weights[k * t->hidden_count + j];
         }
 
         t->hidden_layer[j] = sigmoid(activation);
@@ -25,7 +27,8 @@ forward_propagation(struct training *t, int input)
         double activation = t->nn.output_bias[j];
 
         for (int k = 0; k < t->hidden_count; k++) {
-            activation += t->hidden_layer[k] * t->nn.output_weights[k * OUTPUT_COUNT + j];
+            activation +=
+              t->hidden_layer[k] * t->nn.output_weights[k * OUTPUT_COUNT + j];
         }
 
         t->output_layer[j] = sigmoid(activation);
@@ -37,7 +40,8 @@ backward_propagation(struct training *t, int input)
 {
     double deltaOutput[OUTPUT_COUNT];
     for (int j = 0; j < OUTPUT_COUNT; j++) {
-        double error = (t->training_outputs[input * OUTPUT_COUNT + j] - t->output_layer[j]);
+        double error =
+          (t->training_outputs[input * OUTPUT_COUNT + j] - t->output_layer[j]);
         deltaOutput[j] = error * dSigmoid(t->output_layer[j]);
     }
 
@@ -46,7 +50,8 @@ backward_propagation(struct training *t, int input)
     for (int j = 0; j < t->hidden_count; j++) {
         double error = 0.0f;
         for (int k = 0; k < OUTPUT_COUNT; k++) {
-            error += deltaOutput[k] * t->nn.output_weights[j * OUTPUT_COUNT + k];
+            error +=
+              deltaOutput[k] * t->nn.output_weights[j * OUTPUT_COUNT + k];
         }
         deltaHidden[j] = error * dSigmoid(t->hidden_layer[j]);
     }
@@ -56,7 +61,7 @@ backward_propagation(struct training *t, int input)
         t->nn.output_bias[j] += deltaOutput[j] * LEARNING_RATE;
         for (int k = 0; k < t->hidden_count; k++) {
             t->nn.output_weights[k * OUTPUT_COUNT + j] +=
-                    t->hidden_layer[k] * deltaOutput[j] * LEARNING_RATE;
+              t->hidden_layer[k] * deltaOutput[j] * LEARNING_RATE;
         }
     }
     // Apply change hidden weights
@@ -64,8 +69,8 @@ backward_propagation(struct training *t, int input)
         t->nn.hidden_bias[j] += deltaHidden[j] * LEARNING_RATE;
         for (size_t k = 0; k < INPUT_COUNT; k++) {
             t->nn.hidden_weights[k * t->hidden_count + j] +=
-                    t->training_inputs[input * INPUT_COUNT + k] * deltaHidden[j] *
-                    LEARNING_RATE;
+              t->training_inputs[input * INPUT_COUNT + k] * deltaHidden[j] *
+              LEARNING_RATE;
         }
     }
 }
@@ -84,16 +89,16 @@ init(struct training *t)
     t->nn.output_bias = calloc(sizeof(double), t->nn.sizes.output_bias_count);
 
     t->nn.hidden_weights =
-            malloc(t->nn.sizes.hidden_weights_count * sizeof(double));
+      malloc(t->nn.sizes.hidden_weights_count * sizeof(double));
     t->nn.output_weights =
-            malloc(t->nn.sizes.output_weights_count * sizeof(double));
+      malloc(t->nn.sizes.output_weights_count * sizeof(double));
 
     for (size_t i = 0; i < INPUT_COUNT; i++) {
-        for (int j = 0; j < t->hidden_count ; j++) {
-            t->nn.hidden_weights[i * t->hidden_count  + j] = init_weights();
+        for (int j = 0; j < t->hidden_count; j++) {
+            t->nn.hidden_weights[i * t->hidden_count + j] = init_weights();
         }
     }
-    for (int i = 0; i < t->hidden_count ; i++) {
+    for (int i = 0; i < t->hidden_count; i++) {
         for (int j = 0; j < OUTPUT_COUNT; j++) {
             t->nn.output_weights[i * OUTPUT_COUNT + j] = init_weights();
         }
@@ -129,11 +134,13 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
             }
         }
 
-//        save(&t.nn, "/home/rigole/Desktop/ogboi/og");
-//        neural_network loldead = load("/home/rigole/Desktop/ogboi/og");
+        //        save(&t.nn, "/home/rigole/Desktop/ogboi/og");
+        //        neural_network loldead =
+        //        load("/home/rigole/Desktop/ogboi/og");
 
-        save_model(t.hidden_layer, t.output_layer, t.nn.hidden_bias, t.nn.output_bias,
-                   t.nn.hidden_weights, t.nn.output_weights, path, t.hidden_count, INPUT_COUNT);
+        save_model(t.hidden_layer, t.output_layer, t.nn.hidden_bias,
+                   t.nn.output_bias, t.nn.hidden_weights, t.nn.output_weights,
+                   path, t.hidden_count, INPUT_COUNT);
     } else {
         errx(EXIT_FAILURE,
              "The dataset you are trying to load is bullshit mate!");

@@ -1,18 +1,22 @@
+#include "NN.h"
+
+#include "tools.h"
+#include "train.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "NN.h"
-#include "tools.h"
-#include "train.h"
 
 void
 save(neural_network *nn, char *path)
 {
     FILE *f = fopen(path, "wb");
     fwrite(&nn->sizes, sizeof(struct nn_sizes), 1, f);
-    fwrite(nn->hidden_weights, sizeof(double), nn->sizes.hidden_weights_count, f);
+    fwrite(nn->hidden_weights, sizeof(double), nn->sizes.hidden_weights_count,
+           f);
     fwrite(nn->hidden_bias, sizeof(double), nn->sizes.hidden_bias_count, f);
-    fwrite(nn->output_weights, sizeof(double), nn->sizes.output_weights_count, f);
+    fwrite(nn->output_weights, sizeof(double), nn->sizes.output_weights_count,
+           f);
     fwrite(nn->output_bias, sizeof(double), nn->sizes.output_bias_count, f);
     fclose(f);
 }
@@ -30,7 +34,8 @@ load(char *path)
     nn.output_bias = malloc(nn.sizes.output_bias_count * sizeof(double));
     nn.hi
 
-    fread(nn.hidden_weights, sizeof(double), nn.sizes.hidden_weights_count, f);
+      fread(nn.hidden_weights, sizeof(double), nn.sizes.hidden_weights_count,
+            f);
     fread(nn.hidden_bias, sizeof(double), nn.sizes.hidden_bias_count, f);
     fread(nn.output_weights, sizeof(double), nn.sizes.output_weights_count, f);
     fread(nn.output_bias, sizeof(double), nn.sizes.output_bias_count, f);
@@ -40,7 +45,7 @@ load(char *path)
 }
 
 int
-main(int argc, char** argv)
+main(int argc, char **argv)
 {
     if (argc > 10) { exit_usage(); }
     if (strcmp(argv[1], "job") == 0) {

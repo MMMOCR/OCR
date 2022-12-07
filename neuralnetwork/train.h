@@ -1,11 +1,13 @@
 #pragma once
 #include "NN.h"
-#include <stdio.h>
 #include "functions.h"
+
+#include <stdio.h>
 
 #define LEARNING_RATE 0.1
 
-struct training {
+struct training
+{
     neural_network nn;
 
     double *training_inputs;
@@ -20,7 +22,11 @@ struct training {
     double output_layer[OUTPUT_COUNT];
 };
 
-void train(char* path, int hiddenNodesNb, char* trainingsetpath, int epochNb);
-void init(struct training *t);
-void forward_propagation(struct training *t, int input);
-void backward_propagation(struct training *t, int input);
+void
+train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb);
+void
+init(struct training *t);
+void
+forward_propagation(struct training *t, int input);
+void
+backward_propagation(struct training *t, int input);
