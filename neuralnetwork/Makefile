@@ -1,23 +1,17 @@
-# Makefile
-
 CC = gcc
-CPPFLAGS = 
-CFLAGS = -g3 `pkg-config --cflags sdl2`
-LDFLAGS =
-LDLIBS = `pkg-config --libs sdl2` -lm -fsanitize=address
-
-
+CFLAGS = -g
+LDLIBS = -lm
 SRC = NN.c train.c tools.c functions.c loadset.c
 OBJ = ${SRC:.c=.o}
-EXE = ${SRC:.c=}
+EXE = NN
 
-all: NN
+all: $(EXE)
 
-NN:
-	gcc $(CFLAGS) -o NN *.c $(LDLIBS)
+$(EXE): $(OBJ)
+	$(CC) -o $@ $^ $(LDLIBS)
+
+%.o: %.c
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	${RM} ${OBJ}
-	${RM} ${EXE}
-
-# END
+	rm $(EXE) $(OBJ)

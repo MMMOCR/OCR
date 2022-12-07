@@ -1,9 +1,7 @@
 #include "train.h"
 
 #include "loadset.h"
-#include "save.h"
 #include "tools.h"
-
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +18,7 @@ forward_propagation(struct training *t, int input)
               t->nn.hidden_weights[k * t->hidden_count + j];
         }
 
-        t->hidden_layer[j] = sigmoid(activation);
+        t->hidden_layer[j] = relu(activation);
     }
 
     for (int j = 0; j < OUTPUT_COUNT; j++) {
@@ -31,8 +29,10 @@ forward_propagation(struct training *t, int input)
               t->hidden_layer[k] * t->nn.output_weights[k * OUTPUT_COUNT + j];
         }
 
-        t->output_layer[j] = sigmoid(activation);
+        t->output_layer[j] = activation;
     }
+
+    softmax(t->output_layer, OUTPUT_COUNT);
 }
 
 void
@@ -42,7 +42,7 @@ backward_propagation(struct training *t, int input)
     for (int j = 0; j < OUTPUT_COUNT; j++) {
         double error =
           (t->training_outputs[input * OUTPUT_COUNT + j] - t->output_layer[j]);
-        deltaOutput[j] = error * dSigmoid(t->output_layer[j]);
+        deltaOutput[j] = error * dsoftmax(t->output_layer, OUTPUT_COUNT, j);
     }
 
     // Compute change in hidden weights
@@ -53,7 +53,7 @@ backward_propagation(struct training *t, int input)
             error +=
               deltaOutput[k] * t->nn.output_weights[j * OUTPUT_COUNT + k];
         }
-        deltaHidden[j] = error * dSigmoid(t->hidden_layer[j]);
+        deltaHidden[j] = error * drelu(t->hidden_layer[j]);
     }
 
     // Apply change in output weights
@@ -110,6 +110,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
 {
     struct training t = { 0 };
     t.hidden_count = hiddenNodesNb;
+
     srand((unsigned int) time(NULL));
     size_t inputNb;
     printf("Loading the training set\n");
@@ -122,9 +123,9 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
         for (size_t i = 0; i < t.training_count; i++) {
             t.training_order[i] = i;
         }
+        int i = 0;
 
         for (int epoch = 0; epoch < epochNb; epoch++) {
-            int i = 0;
             printf(
               " Output (%d): [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f] || Expected "
               "output : [%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]\n",
@@ -147,13 +148,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
             }
         }
 
-        //        save(&t.nn, "/home/rigole/Desktop/ogboi/og");
-        //        neural_network loldead =
-        //        load("/home/rigole/Desktop/ogboi/og");
-
-        save_model(t.hidden_layer, t.output_layer, t.nn.hidden_bias,
-                   t.nn.output_bias, t.nn.hidden_weights, t.nn.output_weights,
-                   path, t.hidden_count, INPUT_COUNT);
+        save(&t.nn, "/home/rigole/Desktop/ogboi/og");
     } else {
         errx(EXIT_FAILURE,
              "The dataset you are trying to load is bullshit mate!");

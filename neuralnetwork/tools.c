@@ -29,7 +29,7 @@ shuffle(int *array, size_t n)
 double
 init_weights()
 {
-    return ((double) rand()) / ((double) RAND_MAX);
+    return ((double) rand()) / ((double) RAND_MAX * 2 - 1);
 }
 
 // When shit happens display man
