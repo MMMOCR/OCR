@@ -1,6 +1,8 @@
 #include "imageutils.h"
 #include "otsu.h"
 #include <SDL2/SDL_image.h>
+#include "sobel.h"
+#include "gaussian_blur.h"
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -46,11 +48,6 @@ event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* grayscale)
                 }
                 break;
             case SDL_KEYDOWN:
-                printf("%x\n", event.key.keysym.sym);
-                if (event.key.keysym.sym == 0x73)
-                {
-                    save_texture("pute.png", renderer, t);
-                }
                 if (!colorVersion) {
                     draw(renderer, t);
                     colorVersion = 1;
@@ -118,6 +115,26 @@ back_to_black(SDL_Surface* surface, int treshold)
     SDL_UnlockSurface(surface);
 }
 
+// void
+// to_black(SDL_Surface* surface, int threshold, long int x, long int y,
+//         long int w, long int h)
+// {
+//     Uint32* pixels = surface->pixels;
+//     int old_w = surface->w,old_h = surface->h;
+//     SDL_PixelFormat* format = surface->format;
+//     SDL_LockSurface(surface);
+//     for (size_t i = x; i < w; i++) {
+//         for (size_t j = y; j < h; j++) {
+//             int val = pixels[i*old_w + j] >> 16 & 0xff;
+//             int new_val = 0;
+//             if (val > threshold) new_val = 255;
+//             pixels[i*old_w + j] = SDL_MapRGB(format, new_val, new_val, new_val);
+//         }
+//         
+//     }
+//     SDL_UnlockSurface(surface);
+// }
+
 void
 image_utils(char* filename)
 {
@@ -170,6 +187,8 @@ main(int argc, char** argv)
     int h;
     int w;
     if (argc != 2) errx(EXIT_FAILURE, "Usage: image-file");
+    SDL_Surface* colored_surface;
+    colored_surface = load_image(argv[1]);
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
@@ -182,24 +201,45 @@ main(int argc, char** argv)
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Surface* colored_surface = load_image(argv[1]);
 
     h = colored_surface->h;
     w = colored_surface->w;
     SDL_SetWindowSize(window, w, h);
 
+    // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
+                             // colored_surface->pixels, 0);
+    // back_to_black(colored_surface, treshold);
     SDL_Texture* texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);
 
     surface_to_grayscale(colored_surface);
 
-    int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             colored_surface->pixels, 0);
+    // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
+                             // colored_surface->pixels, 0);
 
-    back_to_black(colored_surface, treshold);
+    // printf("%d\n",colored_surface->w);
+    // multiple(colored_surface->w, colored_surface->h, colored_surface);
+
+    // back_to_black(colored_surface, treshold);
+    // to_black(colored_surface, 185, 0, 0, 708, 666);
+
+    // Gaussian Blur
+    double gauss[5][5];
+    gaussian_kernel(gauss);
+    SDL_Surface* out = colored_surface;
+    compute(colored_surface, gauss, 0, out);
+
+    // Compute edges with sobel 
+    edges(out);
+
+    // multiple(out->w, out->h, out);
+    
+    // int threshold = otsu_treshold(colored_surface->w * colored_surface->h, colored_surface->pixels, 0);
+    // back_to_black(colored_surface, threshold);
+    // multiple(colored_surface->w, colored_surface->h, colored_surface);
 
     SDL_Texture* grayscale_texture =
-      SDL_CreateTextureFromSurface(renderer, colored_surface);
+      SDL_CreateTextureFromSurface(renderer, out);
 
     SDL_FreeSurface(colored_surface);
 
@@ -210,3 +250,4 @@ main(int argc, char** argv)
     SDL_Quit();
     return EXIT_SUCCESS;
 }
+
