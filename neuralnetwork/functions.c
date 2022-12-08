@@ -87,5 +87,5 @@ dsoftmax_normalized(double *layer, size_t len, size_t target)
     }
     double t = exp(*(layer + target) - max);
 
-    return t * (sum - t) / (pow(sum, 2)); //10E-10
+    return t * (sum - t) / (pow(sum, 2)); // 10E-10
 }
