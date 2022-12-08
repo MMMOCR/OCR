@@ -34,7 +34,7 @@ forward_propagation(struct training *t, int input)
         
     }
 
-    softmax(t->output_layer, OUTPUT_COUNT);
+    softmax_normalized(t->output_layer, OUTPUT_COUNT);
 }
 
 void
@@ -44,7 +44,7 @@ backward_propagation(struct training *t, int input)
     for (int j = 0; j < OUTPUT_COUNT; j++) {
         double error =
           (t->training_outputs[input * OUTPUT_COUNT + j] - t->output_layer[j]);
-        deltaOutput[j] = error * dsoftmax(t->output_layer, OUTPUT_COUNT, j);
+        deltaOutput[j] = error * dsoftmax_normalized(t->output_layer, OUTPUT_COUNT, j);
     }
 
     // Compute change in hidden weights
@@ -98,6 +98,7 @@ init(struct training *t)
     for (size_t i = 0; i < INPUT_COUNT; i++) {
         for (int j = 0; j < t->hidden_count; j++) {
             t->nn.hidden_weights[i * t->hidden_count + j] = init_weights();
+            //printf("%f\n",t->nn.hidden_weights[i * t->hidden_count + j]);
         }
     }
     for (int i = 0; i < t->hidden_count; i++) {
@@ -140,6 +141,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
               t.training_outputs[i * 10 + 5], t.training_outputs[i * 10 + 6],
               t.training_outputs[i * 10 + 7], t.training_outputs[i * 10 + 8],
               t.training_outputs[i * 10 + 9]);
+              //delay(300);
             shuffle(t.training_order, t.training_count);
 
             for (size_t x = 0; x < t.training_count; x++) {

@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define LEARNING_RATE 0.1
+#define LEARNING_RATE 0.001
 
 struct training
 {

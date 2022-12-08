@@ -70,7 +70,7 @@ softmax_normalized(double *layer, size_t len)
     }
 
     for (double *i = layer; i < layer + len; i++) {
-        *i = (exp(*i - max)) / exp(sum);
+        *i = (exp(*i - max)) / sum;
     }
 }
 
@@ -87,5 +87,5 @@ dsoftmax_normalized(double *layer, size_t len, size_t target)
     }
     double t = exp(*(layer + target) - max);
 
-    return t * (sum - t) / (pow(sum, 2) + 10E-10);
+    return t * (sum - t) / (pow(sum, 2)); //10E-10
 }
