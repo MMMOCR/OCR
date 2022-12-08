@@ -13,13 +13,6 @@
 
 #define PI 3.14159265358979323846
 
-SDL_Surface *
-load_image(char file[])
-{
-    SDL_Surface *image = IMG_Load(file);
-    return image;
-}
-
 unsigned int
 get_pixel(SDL_Surface *surface, size_t x, size_t y)
 {

@@ -169,7 +169,7 @@ image_utils(char* filename)
 }
 
 int
-main(int argc, char** argv)
+putemain(int argc, char** argv)
 {
     int h;
     int w;
@@ -212,7 +212,8 @@ main(int argc, char** argv)
     // Gaussian Blur
     double gauss[5][5];
     gaussian_kernel(gauss);
-    SDL_Surface* out = colored_surface;
+    SDL_Surface* out = SDL_CreateRGBSurfaceWithFormat(0, colored_surface->w, 
+            colored_surface->h, 32, colored_surface->format->format);
     compute(colored_surface, gauss, 0, out);
 
     // Compute edges with sobel
