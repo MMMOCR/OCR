@@ -212,8 +212,9 @@ putemain(int argc, char** argv)
     // Gaussian Blur
     double gauss[5][5];
     gaussian_kernel(gauss);
-    SDL_Surface* out = SDL_CreateRGBSurfaceWithFormat(0, colored_surface->w, 
-            colored_surface->h, 32, colored_surface->format->format);
+    SDL_Surface* out =
+      SDL_CreateRGBSurfaceWithFormat(0, colored_surface->w, colored_surface->h,
+                                     32, colored_surface->format->format);
     compute(colored_surface, gauss, 0, out);
 
     // Compute edges with sobel

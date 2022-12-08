@@ -1,8 +1,8 @@
 #include "linesdetection.h"
-#include "gaussian_blur.h"
-#include "imageutils.h"
 
 #include "SDL_rect.h"
+#include "gaussian_blur.h"
+#include "imageutils.h"
 #include "rotateutils.h"
 #include "sobel.h"
 
@@ -882,9 +882,8 @@ get_corners(SDL_Surface *image)
     double gauss[5][5];
     gaussian_kernel(gauss);
 
-
-    SDL_Surface* out = SDL_CreateRGBSurfaceWithFormat(0, image->w, 
-            image->h, 32, image->format->format);
+    SDL_Surface *out = SDL_CreateRGBSurfaceWithFormat(0, image->w, image->h, 32,
+                                                      image->format->format);
     compute(image, gauss, 0, out);
 
     Uint32 *pixels = out->pixels;
@@ -895,7 +894,8 @@ get_corners(SDL_Surface *image)
     for (size_t i = 2; i < out->h - 2; i++) {
         for (size_t j = 2; j < out->w - 2; j++) {
             // printf("%lu, %lu\n", i, j);
-            convolve(pixels, dx + (i * image->w + j), dy + (i * out->w + j), i, j, out->w);
+            convolve(pixels, dx + (i * image->w + j), dy + (i * out->w + j), i,
+                     j, out->w);
             // j,
             // printf("%i, %i\n",dx[i * out->w + j],dy[i * out->w + j]);
             // printf("%i, %i\n",li, la);
@@ -910,13 +910,19 @@ get_corners(SDL_Surface *image)
     int c;
     for (size_t i = 0; i < image->h; i++) {
         for (size_t j = 0; j < image->w; j++) {
-            a = (int)(dx[i * out->w + j]) * (int)(dx[i * out->w + j]);
-            b = (int)(dx[i * out->w + j]) * (int)(dy[i * out->w + j]);
-            c = (int)(dy[i * out->w + j]) * (int)(dy[i * out->w + j]);
+            a = (int) (dx[i * out->w + j]) * (int) (dx[i * out->w + j]);
+            b = (int) (dx[i * out->w + j]) * (int) (dy[i * out->w + j]);
+            c = (int) (dy[i * out->w + j]) * (int) (dy[i * out->w + j]);
             // printf("%i, %i, %i\n", a, b, c);
 
-            cornerness[i * out->w + j] = (long int)
-              ((long int)((long int)((long int)a * (long int)c) - (long int)((long int)b * (long int)b)) - (long int)((long int)k * (long int)((long int)a + (long int)c) * (long int)((long int)a + (long int)c)));
+            cornerness[i * out->w + j] =
+              (long int) ((long int) ((long int) ((long int) a * (long int) c) -
+                                      (long int) ((long int) b *
+                                                  (long int) b)) -
+                          (long int) ((long int) k *
+                                      (long int) ((long int) a + (long int) c) *
+                                      (long int) ((long int) a +
+                                                  (long int) c)));
         }
     }
 
@@ -924,7 +930,7 @@ get_corners(SDL_Surface *image)
     Point p;
 
     for (size_t i = 0; i < image->w * image->h; i++) {
-     	printf("%li\n", cornerness[i]);
+        printf("%li\n", cornerness[i]);
     }
 
     for (size_t i = 0; i < image->w; i++) {
