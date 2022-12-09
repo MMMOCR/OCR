@@ -1,6 +1,8 @@
 #include "job.h"
+
 #include "NN.h"
 #include "train.h"
+
 #include <stdlib.h>
 
 int
@@ -9,7 +11,8 @@ job(neural_network nn, double *input)
     struct training travailfamillepatrie = { 0 };
 
     travailfamillepatrie.nn = nn;
-    travailfamillepatrie.hidden_layer = malloc(nn.sizes.hidden_count * sizeof(double));
+    travailfamillepatrie.hidden_layer =
+      malloc(nn.sizes.hidden_count * sizeof(double));
     forward_propagation(&travailfamillepatrie, input, -1);
 
     size_t max_index = 0;

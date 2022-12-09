@@ -17,10 +17,10 @@ forward_propagation(struct training *t, double *inputs, int input)
         for (size_t k = 0; k < INPUT_COUNT; k++) {
             if (input != -1) {
                 activation += inputs[input * INPUT_COUNT + k] *
-                              t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+                  t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
             } else {
                 activation += inputs[k] *
-                              t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+                  t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
             }
         }
 
@@ -101,7 +101,8 @@ init(struct training *t)
 
     for (size_t i = 0; i < INPUT_COUNT; i++) {
         for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
-            t->nn.hidden_weights[i * t->nn.sizes.hidden_count + j] = init_weights();
+            t->nn.hidden_weights[i * t->nn.sizes.hidden_count + j] =
+              init_weights();
             // printf("%f\n",t->nn.hidden_weights[i * t->hidden_count + j]);
         }
     }
