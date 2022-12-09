@@ -875,9 +875,14 @@ flatten_image(SDL_Surface *image,
 Point_arr *
 get_corners(SDL_Surface *image)
 {
-    size_t threshold = 0; // TODO
-    size_t k = 100; // TODO
+    size_t threshold = 90000; // TODO
+    long double k = 0.06; // TODO
+
+    image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGB888, 0);
+
     surface_to_grayscale(image);
+
+    IMG_SavePNG(image, "test.png");
 
     double gauss[5][5];
     gaussian_kernel(gauss);
@@ -888,57 +893,115 @@ get_corners(SDL_Surface *image)
 
     Uint32 *pixels = out->pixels;
 
+    size_t max = 0;
+    int s, ss;
     // printf("%lu, %lu\n", image->w, image->h);
-    int *dx = calloc(image->w * image->h, sizeof(int));
-    int *dy = calloc(image->w * image->h, sizeof(int));
+    long double *dx = calloc(image->w * image->h, sizeof(long double));
+    long double *dy = calloc(image->w * image->h, sizeof(long double));
     for (size_t i = 2; i < out->h - 2; i++) {
         for (size_t j = 2; j < out->w - 2; j++) {
             // printf("%lu, %lu\n", i, j);
-            convolve(pixels, dx + (i * image->w + j), dy + (i * out->w + j), i,
-                     j, out->w);
+	    s = 0;
+	    ss = 0;
+            convolve(pixels, &s, &ss, i, j, out->w);
+	    dx[i * out->w + j] = (long double)s;
+	    dy[i * out->w + j] = (long double)ss;
             // j,
-            // printf("%i, %i\n",dx[i * out->w + j],dy[i * out->w + j]);
+	    for (; max < 40; max++) {
+//                printf("%Lf, %Lf\n",dx[i * out->w + j],dy[i * out->w + j]);
+	    }
             // printf("%i, %i\n",li, la);
         }
     }
-    long int *cornerness = calloc(image->w * image->h, sizeof(long int));
+    long double *cornerness = calloc(image->w * image->h, sizeof(long double));
     Point_arr *corners = calloc(1, sizeof(Point_arr));
-    corners->arr = calloc(40, sizeof(Point));
-    corners->size = 40;
-    int a;
-    int b;
-    int c;
-    for (size_t i = 0; i < image->h; i++) {
-        for (size_t j = 0; j < image->w; j++) {
-            a = (int) (dx[i * out->w + j]) * (int) (dx[i * out->w + j]);
-            b = (int) (dx[i * out->w + j]) * (int) (dy[i * out->w + j]);
-            c = (int) (dy[i * out->w + j]) * (int) (dy[i * out->w + j]);
-            // printf("%i, %i, %i\n", a, b, c);
+    corners->arr = calloc(10000, sizeof(Point));
+    corners->size = 10000;
+    long double a, b, c, d, e, m, o;
+    max = 0;
+    size_t x, y;
+    for (size_t i = 10; i < image->h-11; i++) {
+        for (size_t j = 10; j < image->w-11; j++) {
+	    a = 0;
+	    b = 0;
+	    c = 0;
+	    for (int k = -10; k < 11; k ++) {
+	    	for (int l = -10; l < 11; l++) {
+		    x = l + j;
+		    y = k + i;
+//		    x = j;
+//		    y = i;
+		    if (x >= 0 && x < image->w && y >=0 && y < image->h) {
+			a += dx[y * out->w + x] * dx[y * out->w +x];
+			b += dx[y * out->w + x] * dy[y * out->w +x];
+			c += dy[y * out->w + x] * dy[y * out->w +x];
+		    }
+		}
+	    }
+//	    if (max < 40) {
+//                printf("i: %Lf, %Lf\n",dx[i * out->w + j],dy[i * out->w + j]);
+//	    }
 
-            cornerness[i * out->w + j] =
-              (long int) ((long int) ((long int) ((long int) a * (long int) c) -
-                                      (long int) ((long int) b *
-                                                  (long int) b)) -
-                          (long int) ((long int) k *
-                                      (long int) ((long int) a + (long int) c) *
-                                      (long int) ((long int) a +
-                                                  (long int) c)));
+//	    if (max++ < 40) {
+//	    }
+//	    d = (a * c - b * b) - k * (a + c) * (a + c);
+	    d = 0.5 * ((a + c) + sqrt((a+c) * (a+c) - 4 * (a*c - b * b)));
+	    e = 0.5 * ((a + c) - sqrt((a+c) * (a+c) - 4 * (a*c - b * b)));
+//            printf("| %Lf, %Lf, y: %lu, x: %lu\n", d, e, i, j);
+//	    if (d > 100000) {
+//		    d= 0;
+//	    }
+//	    if (i > 950 && i < 970 && j < 30) {
+//          	printf("| %Lf, y: %lu, x: %lu\n", d, i, j);
+//	    }
+//	    if (i > 990 && j > 30 && j < 50) {
+//            	printf("_ %Lf, y: %lu, x: %lu\n", d, i, j);
+//	    }
+//	    if (i > 979 && j < 30) {
+//           	printf("|_ %Lf, y: %lu, x: %lu\n", d, i, j);
+//	    }
+	    d = d < e ? d : e;
+	    if (d <= cornerness[(i-1) * out->w + (j-1)] || d <= cornerness[(i-1) * out->w + (j)] || d <= cornerness[(i-1) * out->w + (j+1)] || d <= cornerness[(i) * out->w + (j-1)] || d <= cornerness[(i) * out->w + (j+1)] ||d <= cornerness[(i+1) * out->w + (j-1)] || d <= cornerness[(i+1) * out->w + (j)] ||d <= cornerness[(i+1) * out->w + (j+1)]) {
+		d = 0;
+	    }
+	    if (d >= cornerness[(i-1) * out->w + (j-1)]) {
+	   	cornerness[(i-1) * out->w + (j-1)] = 0;
+	    }
+	    if (d >= cornerness[(i-1) * out->w + (j)]) {
+	   	cornerness[(i-1) * out->w + (j)] = 0;
+	    } 
+	    if (d >= cornerness[(i-1) * out->w + (j+1)]) {
+	   	cornerness[(i-1) * out->w + (j+1)] = 0;
+	    }
+	    m = sqrt(dx[i * out->w + j] * dx[i * out->w + j] + dy[i * out->w + j] * dy[i * out->w + j]);
+	    o = atan2(dy[i * out->w + j], dx[i * out->w + j]);
+	    if (m > 1500 && d > 1000) {
+           	printf("|_ %Lf, y: %lu, x: %lu, Gx: %Lf, Gy: %Lf, m: %Lf, o: %Lf\n", d, i, j, dx[i * out->w + j], dy[i * out->w + j], m, o);
+	    }
+            cornerness[i * out->w + j] = d;
+//            printf("%Lf, y: %lu, x: %lu\n", d, i, j);
         }
     }
 
     size_t cc = 0;
     Point p;
-
-    for (size_t i = 0; i < image->w * image->h; i++) {
-        printf("%li\n", cornerness[i]);
+/*
+    max = 0;
+    for (size_t i = 2; i < image->w - 2; i++) {
+    	for (size_t j = 2; i < image->h - 2;j++) {
+            if (max++ < 40) {
+                printf("ttt%Lf\n", cornerness[j * image->w + i]);
+	    }
+	}
     }
-
-    for (size_t i = 0; i < image->w; i++) {
-        for (size_t j = 0; j < image->h; j++) {
+*/
+    for (size_t i = 2; i < image->w - 2; i++) {
+        for (size_t j = 2; j < image->h - 2; j++) {
             if (cornerness[j * image->w + i] > threshold) {
                 p.x = i;
                 p.y = j;
                 corners->arr[cc++] = p;
+        	printf("corners x: %lu, y: %lu\n", p.x, p.y);
                 if (cc >= corners->size) {
                     corners->arr =
                       realloc(corners->size + 40, 100 * sizeof(Point));
@@ -948,9 +1011,9 @@ get_corners(SDL_Surface *image)
         }
     }
 
-    for (size_t i = 0; i < corners->size; i++) {
-        printf("corners : %lu, %lu\n");
-    }
+//    for (size_t i = 0; i < corners->size; i++) {
+//        printf("corners : %lu, %lu\n");
+//    }
 
     return corners;
 }
@@ -973,8 +1036,9 @@ main(int argc, char **argv)
     Point bot_left = { 178, 888 };
     Point bot_right = { 766, 942 };
 
+    SDL_Surface *imag_test = IMG_Load("./images/ocr-7.png");
     SDL_Surface *out =
-      flatten_image(image_test, &top_left, &top_right, &bot_left, &bot_right);
+      flatten_image(imag_test, &top_left, &top_right, &bot_left, &bot_right);
 
     IMG_SavePNG(out, "./flatten_test.png");
 
