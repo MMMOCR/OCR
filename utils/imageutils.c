@@ -222,7 +222,7 @@ main(int argc, char** argv)
     surface_to_grayscale(colored_surface);
 
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
-                             // colored_surface->pixels, 0);
+    // colored_surface->pixels, 0);
     // colored_surface->pixels, 0);
 
     // printf("%d\n",colored_surface->w);
