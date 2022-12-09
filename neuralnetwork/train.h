@@ -15,7 +15,6 @@ struct training
 
     int *training_order;
     size_t training_count;
-    size_t hidden_count;
 
     double *hidden_layer;
     double input_layer[INPUT_COUNT];
@@ -27,6 +26,6 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb);
 void
 init(struct training *t);
 void
-forward_propagation(struct training *t, int input);
+forward_propagation(struct training *t, double *inputs, int input);
 void
 backward_propagation(struct training *t, int input);

@@ -24,7 +24,5 @@ struct
     struct nn_sizes sizes;
 } typedef neural_network;
 
-void
-save(neural_network *nn, char *path);
-neural_network
-load(char *path);
+void save(neural_network *nn, char *path);
+neural_network load(char *path);

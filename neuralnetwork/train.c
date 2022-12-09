@@ -9,14 +9,19 @@
 #include <time.h>
 
 void
-forward_propagation(struct training *t, int input)
+forward_propagation(struct training *t, double *inputs, int input)
 {
-    for (int j = 0; j < t->hidden_count; j++) {
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
         double activation = t->nn.hidden_bias[j];
 
         for (size_t k = 0; k < INPUT_COUNT; k++) {
-            activation += t->training_inputs[input * INPUT_COUNT + k] *
-              t->nn.hidden_weights[k * t->hidden_count + j];
+            if (input != -1) {
+                activation += inputs[input * INPUT_COUNT + k] *
+                              t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+            } else {
+                activation += inputs[k] *
+                              t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+            }
         }
 
         t->hidden_layer[j] = relu(activation);
@@ -25,7 +30,7 @@ forward_propagation(struct training *t, int input)
     for (int j = 0; j < OUTPUT_COUNT; j++) {
         double activation = t->nn.output_bias[j];
 
-        for (int k = 0; k < t->hidden_count; k++) {
+        for (int k = 0; k < t->nn.sizes.hidden_count; k++) {
             activation +=
               t->hidden_layer[k] * t->nn.output_weights[k * OUTPUT_COUNT + j];
         }
@@ -48,8 +53,8 @@ backward_propagation(struct training *t, int input)
     }
 
     // Compute change in hidden weights
-    double deltaHidden[t->hidden_count];
-    for (int j = 0; j < t->hidden_count; j++) {
+    double deltaHidden[t->nn.sizes.hidden_count];
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
         double error = 0.0f;
         for (int k = 0; k < OUTPUT_COUNT; k++) {
             error +=
@@ -61,16 +66,16 @@ backward_propagation(struct training *t, int input)
     // Apply change in output weights
     for (int j = 0; j < OUTPUT_COUNT; j++) {
         t->nn.output_bias[j] += deltaOutput[j] * LEARNING_RATE;
-        for (int k = 0; k < t->hidden_count; k++) {
+        for (int k = 0; k < t->nn.sizes.hidden_count; k++) {
             t->nn.output_weights[k * OUTPUT_COUNT + j] +=
               t->hidden_layer[k] * deltaOutput[j] * LEARNING_RATE;
         }
     }
     // Apply change hidden weights
-    for (int j = 0; j < t->hidden_count; j++) {
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
         t->nn.hidden_bias[j] += deltaHidden[j] * LEARNING_RATE;
         for (size_t k = 0; k < INPUT_COUNT; k++) {
-            t->nn.hidden_weights[k * t->hidden_count + j] +=
+            t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j] +=
               t->training_inputs[input * INPUT_COUNT + k] * deltaHidden[j] *
               LEARNING_RATE;
         }
@@ -80,13 +85,12 @@ backward_propagation(struct training *t, int input)
 void
 init(struct training *t)
 {
-    t->nn.sizes.hidden_bias_count = t->hidden_count;
+    t->nn.sizes.hidden_bias_count = t->nn.sizes.hidden_count;
     t->nn.sizes.output_bias_count = OUTPUT_COUNT;
-    t->nn.sizes.hidden_weights_count = INPUT_COUNT * t->hidden_count;
-    t->nn.sizes.output_weights_count = t->hidden_count * OUTPUT_COUNT;
-    t->nn.sizes.hidden_count = t->hidden_count;
+    t->nn.sizes.hidden_weights_count = INPUT_COUNT * t->nn.sizes.hidden_count;
+    t->nn.sizes.output_weights_count = t->nn.sizes.hidden_count * OUTPUT_COUNT;
 
-    t->hidden_layer = malloc(t->hidden_count * sizeof(double));
+    t->hidden_layer = malloc(t->nn.sizes.hidden_count * sizeof(double));
     t->nn.hidden_bias = calloc(sizeof(double), t->nn.sizes.hidden_bias_count);
     t->nn.output_bias = calloc(sizeof(double), t->nn.sizes.output_bias_count);
 
@@ -96,12 +100,12 @@ init(struct training *t)
       malloc(t->nn.sizes.output_weights_count * sizeof(double));
 
     for (size_t i = 0; i < INPUT_COUNT; i++) {
-        for (int j = 0; j < t->hidden_count; j++) {
-            t->nn.hidden_weights[i * t->hidden_count + j] = init_weights();
+        for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
+            t->nn.hidden_weights[i * t->nn.sizes.hidden_count + j] = init_weights();
             // printf("%f\n",t->nn.hidden_weights[i * t->hidden_count + j]);
         }
     }
-    for (int i = 0; i < t->hidden_count; i++) {
+    for (int i = 0; i < t->nn.sizes.hidden_count; i++) {
         for (int j = 0; j < OUTPUT_COUNT; j++) {
             t->nn.output_weights[i * OUTPUT_COUNT + j] = init_weights();
         }
@@ -112,7 +116,7 @@ void
 train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
 {
     struct training t = { 0 };
-    t.hidden_count = hiddenNodesNb;
+    t.nn.sizes.hidden_count = hiddenNodesNb;
 
     srand((unsigned int) time(NULL));
     size_t inputNb;
@@ -147,7 +151,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
             for (size_t x = 0; x < t.training_count; x++) {
                 i = t.training_order[x];
 
-                forward_propagation(&t, i);
+                forward_propagation(&t, t.training_inputs, i);
                 backward_propagation(&t, i);
             }
         }
