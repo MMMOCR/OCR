@@ -901,15 +901,16 @@ get_corners(SDL_Surface *image)
     for (size_t i = 2; i < out->h - 2; i++) {
         for (size_t j = 2; j < out->w - 2; j++) {
             // printf("%lu, %lu\n", i, j);
-	    s = 0;
-	    ss = 0;
+            s = 0;
+            ss = 0;
             convolve(pixels, &s, &ss, i, j, out->w);
-	    dx[i * out->w + j] = (long double)s;
-	    dy[i * out->w + j] = (long double)ss;
+            dx[i * out->w + j] = (long double) s;
+            dy[i * out->w + j] = (long double) ss;
             // j,
-	    for (; max < 40; max++) {
-//                printf("%Lf, %Lf\n",dx[i * out->w + j],dy[i * out->w + j]);
-	    }
+            for (; max < 40; max++) {
+                //                printf("%Lf, %Lf\n",dx[i * out->w + j],dy[i *
+                //                out->w + j]);
+            }
             // printf("%i, %i\n",li, la);
         }
     }
@@ -920,88 +921,99 @@ get_corners(SDL_Surface *image)
     long double a, b, c, d, e, m, o;
     max = 0;
     size_t x, y;
-    for (size_t i = 10; i < image->h-11; i++) {
-        for (size_t j = 10; j < image->w-11; j++) {
-	    a = 0;
-	    b = 0;
-	    c = 0;
-	    for (int k = -10; k < 11; k ++) {
-	    	for (int l = -10; l < 11; l++) {
-		    x = l + j;
-		    y = k + i;
-//		    x = j;
-//		    y = i;
-		    if (x >= 0 && x < image->w && y >=0 && y < image->h) {
-			a += dx[y * out->w + x] * dx[y * out->w +x];
-			b += dx[y * out->w + x] * dy[y * out->w +x];
-			c += dy[y * out->w + x] * dy[y * out->w +x];
-		    }
-		}
-	    }
-//	    if (max < 40) {
-//                printf("i: %Lf, %Lf\n",dx[i * out->w + j],dy[i * out->w + j]);
-//	    }
+    for (size_t i = 10; i < image->h - 11; i++) {
+        for (size_t j = 10; j < image->w - 11; j++) {
+            a = 0;
+            b = 0;
+            c = 0;
+            for (int k = -10; k < 11; k++) {
+                for (int l = -10; l < 11; l++) {
+                    x = l + j;
+                    y = k + i;
+                    //		    x = j;
+                    //		    y = i;
+                    if (x >= 0 && x < image->w && y >= 0 && y < image->h) {
+                        a += dx[y * out->w + x] * dx[y * out->w + x];
+                        b += dx[y * out->w + x] * dy[y * out->w + x];
+                        c += dy[y * out->w + x] * dy[y * out->w + x];
+                    }
+                }
+            }
+            //	    if (max < 40) {
+            //                printf("i: %Lf, %Lf\n",dx[i * out->w + j],dy[i *
+            //                out->w + j]);
+            //	    }
 
-//	    if (max++ < 40) {
-//	    }
-//	    d = (a * c - b * b) - k * (a + c) * (a + c);
-	    d = 0.5 * ((a + c) + sqrt((a+c) * (a+c) - 4 * (a*c - b * b)));
-	    e = 0.5 * ((a + c) - sqrt((a+c) * (a+c) - 4 * (a*c - b * b)));
-//            printf("| %Lf, %Lf, y: %lu, x: %lu\n", d, e, i, j);
-//	    if (d > 100000) {
-//		    d= 0;
-//	    }
-//	    if (i > 950 && i < 970 && j < 30) {
-//          	printf("| %Lf, y: %lu, x: %lu\n", d, i, j);
-//	    }
-//	    if (i > 990 && j > 30 && j < 50) {
-//            	printf("_ %Lf, y: %lu, x: %lu\n", d, i, j);
-//	    }
-//	    if (i > 979 && j < 30) {
-//           	printf("|_ %Lf, y: %lu, x: %lu\n", d, i, j);
-//	    }
-	    d = d < e ? d : e;
-	    if (d <= cornerness[(i-1) * out->w + (j-1)] || d <= cornerness[(i-1) * out->w + (j)] || d <= cornerness[(i-1) * out->w + (j+1)] || d <= cornerness[(i) * out->w + (j-1)] || d <= cornerness[(i) * out->w + (j+1)] ||d <= cornerness[(i+1) * out->w + (j-1)] || d <= cornerness[(i+1) * out->w + (j)] ||d <= cornerness[(i+1) * out->w + (j+1)]) {
-		d = 0;
-	    }
-	    if (d >= cornerness[(i-1) * out->w + (j-1)]) {
-	   	cornerness[(i-1) * out->w + (j-1)] = 0;
-	    }
-	    if (d >= cornerness[(i-1) * out->w + (j)]) {
-	   	cornerness[(i-1) * out->w + (j)] = 0;
-	    } 
-	    if (d >= cornerness[(i-1) * out->w + (j+1)]) {
-	   	cornerness[(i-1) * out->w + (j+1)] = 0;
-	    }
-	    m = sqrt(dx[i * out->w + j] * dx[i * out->w + j] + dy[i * out->w + j] * dy[i * out->w + j]);
-	    o = atan2(dy[i * out->w + j], dx[i * out->w + j]);
-	    if (m > 1500 && d > 1000) {
-           	printf("|_ %Lf, y: %lu, x: %lu, Gx: %Lf, Gy: %Lf, m: %Lf, o: %Lf\n", d, i, j, dx[i * out->w + j], dy[i * out->w + j], m, o);
-	    }
+            //	    if (max++ < 40) {
+            //	    }
+            //	    d = (a * c - b * b) - k * (a + c) * (a + c);
+            d = 0.5 * ((a + c) + sqrt((a + c) * (a + c) - 4 * (a * c - b * b)));
+            e = 0.5 * ((a + c) - sqrt((a + c) * (a + c) - 4 * (a * c - b * b)));
+            //            printf("| %Lf, %Lf, y: %lu, x: %lu\n", d, e, i, j);
+            //	    if (d > 100000) {
+            //		    d= 0;
+            //	    }
+            //	    if (i > 950 && i < 970 && j < 30) {
+            //          	printf("| %Lf, y: %lu, x: %lu\n", d, i, j);
+            //	    }
+            //	    if (i > 990 && j > 30 && j < 50) {
+            //            	printf("_ %Lf, y: %lu, x: %lu\n", d, i, j);
+            //	    }
+            //	    if (i > 979 && j < 30) {
+            //           	printf("|_ %Lf, y: %lu, x: %lu\n", d, i, j);
+            //	    }
+            d = d < e ? d : e;
+            if (d <= cornerness[(i - 1) * out->w + (j - 1)] ||
+                d <= cornerness[(i - 1) * out->w + (j)] ||
+                d <= cornerness[(i - 1) * out->w + (j + 1)] ||
+                d <= cornerness[(i) *out->w + (j - 1)] ||
+                d <= cornerness[(i) *out->w + (j + 1)] ||
+                d <= cornerness[(i + 1) * out->w + (j - 1)] ||
+                d <= cornerness[(i + 1) * out->w + (j)] ||
+                d <= cornerness[(i + 1) * out->w + (j + 1)]) {
+                d = 0;
+            }
+            if (d >= cornerness[(i - 1) * out->w + (j - 1)]) {
+                cornerness[(i - 1) * out->w + (j - 1)] = 0;
+            }
+            if (d >= cornerness[(i - 1) * out->w + (j)]) {
+                cornerness[(i - 1) * out->w + (j)] = 0;
+            }
+            if (d >= cornerness[(i - 1) * out->w + (j + 1)]) {
+                cornerness[(i - 1) * out->w + (j + 1)] = 0;
+            }
+            m = sqrt(dx[i * out->w + j] * dx[i * out->w + j] +
+                     dy[i * out->w + j] * dy[i * out->w + j]);
+            o = atan2(dy[i * out->w + j], dx[i * out->w + j]);
+            if (m > 1500 && d > 1000) {
+                printf(
+                  "|_ %Lf, y: %lu, x: %lu, Gx: %Lf, Gy: %Lf, m: %Lf, o: %Lf\n",
+                  d, i, j, dx[i * out->w + j], dy[i * out->w + j], m, o);
+            }
             cornerness[i * out->w + j] = d;
-//            printf("%Lf, y: %lu, x: %lu\n", d, i, j);
+            //            printf("%Lf, y: %lu, x: %lu\n", d, i, j);
         }
     }
 
     size_t cc = 0;
     Point p;
-/*
-    max = 0;
-    for (size_t i = 2; i < image->w - 2; i++) {
-    	for (size_t j = 2; i < image->h - 2;j++) {
-            if (max++ < 40) {
-                printf("ttt%Lf\n", cornerness[j * image->w + i]);
-	    }
-	}
-    }
-*/
+    /*
+        max = 0;
+        for (size_t i = 2; i < image->w - 2; i++) {
+            for (size_t j = 2; i < image->h - 2;j++) {
+                if (max++ < 40) {
+                    printf("ttt%Lf\n", cornerness[j * image->w + i]);
+                }
+            }
+        }
+    */
     for (size_t i = 2; i < image->w - 2; i++) {
         for (size_t j = 2; j < image->h - 2; j++) {
             if (cornerness[j * image->w + i] > threshold) {
                 p.x = i;
                 p.y = j;
                 corners->arr[cc++] = p;
-        	printf("corners x: %lu, y: %lu\n", p.x, p.y);
+                printf("corners x: %lu, y: %lu\n", p.x, p.y);
                 if (cc >= corners->size) {
                     corners->arr =
                       realloc(corners->size + 40, 100 * sizeof(Point));
@@ -1011,9 +1023,9 @@ get_corners(SDL_Surface *image)
         }
     }
 
-//    for (size_t i = 0; i < corners->size; i++) {
-//        printf("corners : %lu, %lu\n");
-//    }
+    //    for (size_t i = 0; i < corners->size; i++) {
+    //        printf("corners : %lu, %lu\n");
+    //    }
 
     return corners;
 }
