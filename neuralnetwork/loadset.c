@@ -94,8 +94,8 @@ dostuff(const char *path,
         printf("train_inputs failed\n");
         return 1;
     };
-    if (((*train_outputs) = calloc(*trainingSetsNb * OUTPUT_COUNT, sizeof(char))) ==
-        NULL) {
+    if (((*train_outputs) =
+           calloc(*trainingSetsNb * OUTPUT_COUNT, sizeof(char))) == NULL) {
         printf("train_outputs failed\n");
         return 1;
     };
