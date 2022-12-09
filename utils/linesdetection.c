@@ -373,7 +373,7 @@ detect_lines(SDL_Surface *surface)
                 x2 = x0 - 2 * w * (-n);
                 y2 = y0 - 2 * h * (m);
                 // draw_line(pixels, w, h, x1, y1, x2, y2,
-                    // SDL_MapRGB(format, 0, 255, 0));
+                // SDL_MapRGB(format, 0, 255, 0));
                 if (arr->len <= counter) {
                     arr->len += 800;
                     arr->array =
@@ -386,11 +386,11 @@ detect_lines(SDL_Surface *surface)
         }
     }
 
-//    for (size_t i = 0; i < counter; i += 2) {
-//        printf("r: %lu,theta: %lu\n", arr->array[i], arr->array[i + 1]);
-//    }
+    //    for (size_t i = 0; i < counter; i += 2) {
+    //        printf("r: %lu,theta: %lu\n", arr->array[i], arr->array[i + 1]);
+    //    }
 
-//    printf("##########################################################\n");
+    //    printf("##########################################################\n");
 
     arr->array = realloc(arr->array, sizeof(long int) * counter);
     if (!arr->array) { return NULL; }
@@ -403,8 +403,8 @@ detect_lines(SDL_Surface *surface)
     // int x0, y0, x1, y1, x2, y2;
     //
     for (size_t i = 0; i < arr->len; i += 2) {
-//        printf("r: %lu,theta: %lu\n", arr->array[i],
-//               arr->array[i + 1]);
+        //        printf("r: %lu,theta: %lu\n", arr->array[i],
+        //               arr->array[i + 1]);
         m = sin(arr->array[i + 1] * PI / 180);
         n = cos(arr->array[i + 1] * PI / 180);
         x0 = m * arr->array[i];
@@ -414,10 +414,10 @@ detect_lines(SDL_Surface *surface)
         x2 = x0 - 2 * w * (-n);
         y2 = y0 - 2 * h * (m);
         // draw_line(pixels, w, h, x1, y1, x2, y2,
-                  // SDL_MapRGB(format, 0, 255, 0));
+        // SDL_MapRGB(format, 0, 255, 0));
     }
 
-    SDL_Surface * tt_surface = SDL_CreateRGBSurfaceFrom(
+    SDL_Surface *tt_surface = SDL_CreateRGBSurfaceFrom(
       (void *) pixels, w, h, 32, format->BytesPerPixel * w, format->Rmask,
       format->Gmask, format->Bmask, format->Amask);
     IMG_SavePNG(tt_surface, "./test8.png");
@@ -536,15 +536,15 @@ get_intersection_points(Points_Array *array, long int w, long int h)
 
     for (size_t i = 0; i < array->len; i += 2) {
         // for (size_t j = 0; j < array->count_v; j += 2) {
-            if (parametricIntersect(
-                  array->array[i], array->array[i + 1],
-                  array->array[i+2], array->array[i + 3], &x, &y)) {
-                if (x >= 0 && x < w && y >= 0 && y < h) {
-                    printf("(%lu, %lu)\n", x, y);
-                    intersect_arr->array[counter++] = x;
-                    intersect_arr->array[counter++] = y;
-                }
+        if (parametricIntersect(array->array[i], array->array[i + 1],
+                                array->array[i + 2], array->array[i + 3], &x,
+                                &y)) {
+            if (x >= 0 && x < w && y >= 0 && y < h) {
+                printf("(%lu, %lu)\n", x, y);
+                intersect_arr->array[counter++] = x;
+                intersect_arr->array[counter++] = y;
             }
+        }
         // }
     }
 
@@ -979,8 +979,9 @@ get_corners(SDL_Surface *image)
             o = atan2(dy[i * out->w + j], dx[i * out->w + j]);
             if (m > 1500 && d > 1000) {
                 // printf(
-                //   "|_ %Lf, y: %lu, x: %lu, Gx: %Lf, Gy: %Lf, m: %Lf, o: %Lf\n",
-                //   d, i, j, dx[i * out->w + j], dy[i * out->w + j], m, o);
+                //   "|_ %Lf, y: %lu, x: %lu, Gx: %Lf, Gy: %Lf, m: %Lf, o:
+                //   %Lf\n", d, i, j, dx[i * out->w + j], dy[i * out->w + j], m,
+                //   o);
             }
             cornerness[i * out->w + j] = d;
             //            printf("%Lf, y: %lu, x: %lu\n", d, i, j);
@@ -1068,7 +1069,8 @@ main(int argc, char **argv)
 
     int *pixels = image_temp->pixels;
 
-    // image_temp = detect_lines_and_rotate(pixels, image_temp->w, image_temp->h,
+    // image_temp = detect_lines_and_rotate(pixels, image_temp->w,
+    // image_temp->h,
     //                                      image_temp->format);
 
     arr = detect_lines(image_temp);
@@ -1153,7 +1155,7 @@ main(int argc, char **argv)
             for (int k = -2; k <= 2; k++) {
                 // printf("%ld, %ld, %ld, %ld\n", intersect_arr->array[i] + j,
                 // intersect_arr->array[i+ 1] + k, image_temp->w,
-                // image_temp->h); 
+                // image_temp->h);
                 // change_pixel(image_temp,
                 // intersect_arr->array[i] - ABS(j) >= 0 &&
                 // intersect_arr->array[i] + ABS(j) < image_temp->h ?
