@@ -1,8 +1,8 @@
 #pragma once
-#include <stddef.h>
 #include <SDL2/SDL_image.h>
+#include <stddef.h>
 void
-shuffle(int *array, size_t n);
+shuffle(int* array, size_t n);
 
 double
 init_weights();

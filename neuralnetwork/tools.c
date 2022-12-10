@@ -13,7 +13,7 @@
 // Shuffling function allows to suffle the data set and optimize learning speed
 // this avoid the NN to learn the order in wich the training set is provided
 void
-shuffle(int *array, size_t n)
+shuffle(int* array, size_t n)
 {
     if (n > 1) {
         size_t i;
@@ -58,32 +58,29 @@ delay(int number_of_seconds)
 double*
 PicToList(SDL_Surface* image)
 {
-    image = SDL_ConvertSurfaceFormat(image,SDL_PIXELFORMAT_RGB888,0);
-
+    image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGB888, 0);
 
     int height = image->h;
     int width = image->w;
     int len = width * height;
     long pos = 0; //(width * 0.2);
 
-    double* list = malloc(len*sizeof(double));
-    for (size_t i = 0; i < 784; i++)
-    {
+    double* list = malloc(len * sizeof(double));
+    for (size_t i = 0; i < 784; i++) {
         list[i] = 1;
     }
-    
 
     int* pixels = image->pixels;
 
     size_t ratiox = (width * 0.1);
     size_t ratioy = (height * 0.1);
-    
+
     for (size_t i = ratiox; i < width - ratiox; i++) {
         for (size_t j = ratioy; j < height - ratioy; j++) {
-            
+
             int pixel = (pixels[j * width + i] >> 8) & 0xff;
 
-            double pixel2 = (double)(pixel)/255;
+            double pixel2 = (double) (pixel) / 255;
             list[j * width + i] = pixel2;
         }
     }

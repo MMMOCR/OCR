@@ -1,8 +1,8 @@
 #include "NN.h"
 
+#include "job.h"
 #include "tools.h"
 #include "train.h"
-#include "job.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,14 +52,12 @@ main(int argc, char **argv)
         if (argc != 4) { exit_usage(); }
         SDL_Surface *img = IMG_Load(argv[3]);
         double *array = PicToList(img);
-        
-        job(load(argv[2]),array);
-    }
-    else if (strcmp(argv[1], "train") == 0) {
+
+        job(load(argv[2]), array);
+    } else if (strcmp(argv[1], "train") == 0) {
         if (argc != 6) { exit_usage(); }
         train(argv[2], atoi(argv[3]), argv[4], atoi(argv[5]));
-    } 
-    else {
+    } else {
         exit_usage();
     }
     return 0;
