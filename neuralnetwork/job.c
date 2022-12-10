@@ -9,8 +9,8 @@ int
 job(neural_network nn, double *input)
 {
     struct training travailfamillepatrie = { 0 };
-
     travailfamillepatrie.nn = nn;
+    printf("hidden size: %f\n",nn.sizes.hidden_count);
     travailfamillepatrie.hidden_layer =
       malloc(nn.sizes.hidden_count * sizeof(double));
     forward_propagation(&travailfamillepatrie, input, -1);
@@ -25,7 +25,12 @@ job(neural_network nn, double *input)
             max_index = i;
         }
     }
-
+    printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f]",
+                       travailfamillepatrie.output_layer[0], travailfamillepatrie.output_layer[1], travailfamillepatrie.output_layer[2],
+                       travailfamillepatrie.output_layer[3], travailfamillepatrie.output_layer[4], travailfamillepatrie.output_layer[5],
+                       travailfamillepatrie.output_layer[6], travailfamillepatrie.output_layer[7], travailfamillepatrie.output_layer[8],
+                       travailfamillepatrie.output_layer[9]);
+    printf("result : %lu\n",max_index);
     return max_index;
 }
 

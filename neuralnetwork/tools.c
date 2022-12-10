@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+//
 // All tools used by the NN are here with an explication on their use
 //
 
@@ -52,4 +53,44 @@ delay(int number_of_seconds)
     // looping till required time is not achieved
     while (clock() < start_time + milli_seconds)
         ;
+}
+
+double*
+PicToList(SDL_Surface* image)
+{
+    image = SDL_ConvertSurfaceFormat(image,SDL_PIXELFORMAT_RGB888,0);
+
+
+    int height = image->h;
+    int width = image->w;
+    int len = width * height;
+    long pos = 0; //(width * 0.2);
+
+    double* list = malloc(len*sizeof(double));
+    for (size_t i = 0; i < 784; i++)
+    {
+        list[i] = 1;
+    }
+    
+
+    int* pixels = image->pixels;
+
+    size_t ratiox = (width * 0.1);
+    size_t ratioy = (height * 0.1);
+    
+    for (size_t i = ratiox; i < width - ratiox; i++) {
+        for (size_t j = ratioy; j < height - ratioy; j++) {
+            
+            int pixel = (pixels[j * width + i] >> 8) & 0xff;
+
+            double pixel2 = (double)(pixel)/255;
+            list[j * width + i] = pixel2;
+        }
+    }
+    for (size_t i = 0; i < 784; i++) {
+        printf("%f", list[i]);
+    }
+    printf("\n");
+    SDL_FreeSurface(image);
+    return list;
 }

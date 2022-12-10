@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <SDL2/SDL_image.h>
 
 #define OUTPUT_COUNT 10
 #define INPUT_COUNT 784
