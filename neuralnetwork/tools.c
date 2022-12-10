@@ -65,11 +65,7 @@ PicToList(SDL_Surface* image)
     int len = width * height;
     long pos = 0; //(width * 0.2);
 
-    double* list = malloc(len * sizeof(double));
-    for (size_t i = 0; i < 784; i++) {
-        list[i] = 1;
-    }
-
+    double *list = calloc(len, sizeof(double));
     int* pixels = image->pixels;
 
     size_t ratiox = (width * 0.1);
@@ -80,12 +76,12 @@ PicToList(SDL_Surface* image)
 
             int pixel = (pixels[j * width + i] >> 8) & 0xff;
 
-            double pixel2 = (double) (pixel) / 255;
+            double pixel2 = (double) (255 - pixel) / 255;
             list[j * width + i] = pixel2;
         }
     }
     for (size_t i = 0; i < 784; i++) {
-        printf("%f", list[i]);
+        printf("%f ", list[i]);
     }
     printf("\n");
     SDL_FreeSurface(image);
