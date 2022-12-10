@@ -65,7 +65,7 @@ PicToList(SDL_Surface* image)
     int len = width * height;
     long pos = 0; //(width * 0.2);
 
-    double *list = calloc(len, sizeof(double));
+    double* list = calloc(len, sizeof(double));
     int* pixels = image->pixels;
 
     size_t ratiox = (width * 0.1);
