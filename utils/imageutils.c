@@ -160,9 +160,8 @@ image_utils(char* filename)
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window =
-      SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
-                       SDL_WINDOW_HIDDEN);
+    SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640,
+                                          400, SDL_WINDOW_HIDDEN);
     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Renderer* renderer =
@@ -191,7 +190,7 @@ image_utils(char* filename)
 
     SDL_FreeSurface(colored_surface);
 
-   // event_loop(renderer, texture, grayscale_texture);
+    // event_loop(renderer, texture, grayscale_texture);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -209,9 +208,8 @@ main(int argc, char** argv)
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window =
-      SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
-                       SDL_WINDOW_HIDDEN);
+    SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640,
+                                          400, SDL_WINDOW_HIDDEN);
     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Renderer* renderer =

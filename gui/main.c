@@ -78,12 +78,11 @@ static char *images[] = {
     "steps/rotation.png",     "steps/numbers_detection.png",
     "steps/solving.png",      "steps/output.png"
 };
-static char *bins[] = { "imageutils",      "grid_detection", "rotation",
+static char *bins[] = { "imageutils",        "grid_detection", "rotation",
                         "numbers_detection", "solving",        "output" };
 
 static char *weigths_path;
-static char *image_path =
-  "/home/rigole/Documents/FinalOCR/test1.png";
+static char *image_path = "/home/rigole/Documents/FinalOCR/test1.png";
 
 enum dialog_type
 {
@@ -168,19 +167,18 @@ execute_task(struct sypbc *ctx)
     strcpy(pim, ctx->images_path);
     strcat(pim, images[current_step]);
 
-    switch(current_step) {
+    switch (current_step) {
         case 0: {
             char pbin[512];
             strcpy(pbin, ctx->bin_path);
             strcat(pbin, bins[current_step]);
             strcat(pbin, " ");
             strcat(pbin, image_path);
-            
+
             system(pbin);
             break;
         }
         case 1: {
-
         }
     }
 
