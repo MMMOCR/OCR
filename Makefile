@@ -27,41 +27,46 @@ endif
 IMG ?= 5
 EXT ?= jpeg
 
-OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver neuralnetwork/NN
-OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
+OUT := linesdetection imageutils interface_rotate solver NN
+OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o utils/otsu.o utils/gaussian_blur.o utils/sobel.o utils/imageutils.o
+
 
 DEPS := $(OUT:%=%.d)
 DEPS += $(OBJS:%.o=%.d)
 
 all: $(OUT)
 
-gui/interface_rotate utils/linesdetection: utils/rotateutils.o
-utils/imageutils: utils/otsu.o
-neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
+solver: solver/solver.o
+gui/interface_rotate linesdetection: utils/rotateutils.o utils/linesdetection.o
+imageutils: utils/otsu.o utils/gaussian_blur.o utils/sobel.o utils/imageutils.o utils/erosion_dilation.o utils/resize.o
+NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o neuralnetwork/NN.o
 
 $(OUT):
-	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDLIBS) $(LDFLAGS) -o bin/$@
 
 $(OBJ):
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
 
-test_linedetection: utils/linesdetection
-	./$< ./images/ocr-$(IMG).$(EXT)
+test_linedetection: linesdetection
+	./bin/linesdetection /images/ocr-$(IMG).$(EXT)
 
 test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
 
-test_imageutils: utils/imageutils
-	./$< /home/malossa/2022-09-22-155433_1920x1080_scrot.png
+test_imageutils: imageutils
+	./bin/imageutils ./images/sudoku2.jpeg
 	
-test_solver: solver/solver
-	./$< ./solver/samples/sample1
+test_solver: solver
+	./bin/solver ./solver/samples/sample1
+
+test_NN: NN
+	# ./bin/NN 
 
 clean:
 	rm -rf $(OUT)
-	rm -rf $(OBJS:%.o:%)
+	rm -rf $(OBJS)
 	rm -rf $(OUT:%=%.o)
 	rm -rf $(DEPS)
 	rm -rf $(DEPS:%.d=%.dSYM)
 
-.PHONY: clean test_gui test_linedetection test_imageutils test_solver all
+.PHONY: clean test_gui test_linedetection test_imageutils test_solver test_NN all
