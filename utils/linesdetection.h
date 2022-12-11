@@ -22,12 +22,17 @@
       ? 1                                               \
       : 0
 #define MAX(a, b) a > b ? a : b
+#define MIN(a, b) a > b ? b : a
 #define MAXDIFF(x, y, n) \
     (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
+#define ALED(x, y, angle)                                                      \
+    angle < 90 ? (x * cosf((angle * PI) / 180) + y * sinf((angle * PI) / 180)) \
+               : (x * cosf((angle * PI) / 180) + y * cosf((angle * PI) / 180))
+
 typedef struct
 {
-    size_t *data;
+    long double *data;
     size_t row;
     size_t column;
 } Matrix;
@@ -37,6 +42,28 @@ typedef struct
     size_t x;
     size_t y;
 } Point;
+
+typedef struct
+{
+    size_t *bge;
+    size_t *bde;
+    size_t *hge;
+    size_t *hde;
+    Point *bg;
+    Point *bd;
+    Point *hg;
+    Point *hd;
+    size_t bgs;
+    size_t bds;
+    size_t hgs;
+    size_t hds;
+} Point_arr_o;
+
+typedef struct
+{
+    Point *arr;
+    size_t size;
+} Point_arr;
 
 typedef struct
 {
@@ -65,5 +92,5 @@ draw_line(int *pixels,
 Points_Array *
 detect_lines(SDL_Surface *surface);
 
-float
+long double
 compute_determinant(Matrix *matrix);

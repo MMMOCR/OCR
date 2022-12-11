@@ -1,2 +1,0 @@
-void
-help(char *name);

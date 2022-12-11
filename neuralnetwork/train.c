@@ -1,123 +1,167 @@
 #include "train.h"
 
-#include "functions.h"
-#include "save.h"
+#include "job.h"
+#include "loadset.h"
 #include "tools.h"
 
-#include <stddef.h>
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 void
-train(char* path, int epochNb)
+forward_propagation(struct training *t, double *inputs, int input)
 {
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
+        double activation = t->nn.hidden_bias[j];
+
+        for (size_t k = 0; k < INPUT_COUNT; k++) {
+            if (input != -1) {
+                activation += inputs[input * INPUT_COUNT + k] *
+                  t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+            } else {
+                activation += inputs[k] *
+                  t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j];
+            }
+        }
+
+        t->hidden_layer[j] = relu(activation);
+    }
+
+    for (int j = 0; j < OUTPUT_COUNT; j++) {
+        double activation = t->nn.output_bias[j];
+
+        for (int k = 0; k < t->nn.sizes.hidden_count; k++) {
+            activation +=
+              t->hidden_layer[k] * t->nn.output_weights[k * OUTPUT_COUNT + j];
+        }
+
+        t->output_layer[j] = activation;
+    }
+
+    softmax_normalized(t->output_layer, OUTPUT_COUNT);
+}
+
+void
+backward_propagation(struct training *t, int input)
+{
+    double deltaOutput[OUTPUT_COUNT];
+    for (int j = 0; j < OUTPUT_COUNT; j++) {
+        double error =
+          (t->training_outputs[input * OUTPUT_COUNT + j] - t->output_layer[j]);
+        deltaOutput[j] =
+          error * dsoftmax_normalized(t->output_layer, OUTPUT_COUNT, j);
+    }
+
+    // Compute change in hidden weights
+    double deltaHidden[t->nn.sizes.hidden_count];
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
+        double error = 0.0f;
+        for (int k = 0; k < OUTPUT_COUNT; k++) {
+            error +=
+              deltaOutput[k] * t->nn.output_weights[j * OUTPUT_COUNT + k];
+        }
+        deltaHidden[j] = error * drelu(t->hidden_layer[j]);
+    }
+
+    // Apply change in output weights
+    for (int j = 0; j < OUTPUT_COUNT; j++) {
+        t->nn.output_bias[j] += deltaOutput[j] * LEARNING_RATE;
+        for (int k = 0; k < t->nn.sizes.hidden_count; k++) {
+            t->nn.output_weights[k * OUTPUT_COUNT + j] +=
+              t->hidden_layer[k] * deltaOutput[j] * LEARNING_RATE;
+        }
+    }
+    // Apply change hidden weights
+    for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
+        t->nn.hidden_bias[j] += deltaHidden[j] * LEARNING_RATE;
+        for (size_t k = 0; k < INPUT_COUNT; k++) {
+            t->nn.hidden_weights[k * t->nn.sizes.hidden_count + j] +=
+              t->training_inputs[input * INPUT_COUNT + k] * deltaHidden[j] *
+              LEARNING_RATE;
+        }
+    }
+}
+
+void
+init(struct training *t)
+{
+    t->nn.sizes.hidden_bias_count = t->nn.sizes.hidden_count;
+    t->nn.sizes.output_bias_count = OUTPUT_COUNT;
+    t->nn.sizes.hidden_weights_count = INPUT_COUNT * t->nn.sizes.hidden_count;
+    t->nn.sizes.output_weights_count = t->nn.sizes.hidden_count * OUTPUT_COUNT;
+
+    t->hidden_layer = malloc(t->nn.sizes.hidden_count * sizeof(double));
+    t->nn.hidden_bias = calloc(sizeof(double), t->nn.sizes.hidden_bias_count);
+    t->nn.output_bias = calloc(sizeof(double), t->nn.sizes.output_bias_count);
+
+    t->nn.hidden_weights =
+      malloc(t->nn.sizes.hidden_weights_count * sizeof(double));
+    t->nn.output_weights =
+      malloc(t->nn.sizes.output_weights_count * sizeof(double));
+
+    for (size_t i = 0; i < INPUT_COUNT; i++) {
+        for (int j = 0; j < t->nn.sizes.hidden_count; j++) {
+            t->nn.hidden_weights[i * t->nn.sizes.hidden_count + j] =
+              init_weights();
+            // printf("%f\n",t->nn.hidden_weights[i * t->hidden_count + j]);
+        }
+    }
+    for (int i = 0; i < t->nn.sizes.hidden_count; i++) {
+        for (int j = 0; j < OUTPUT_COUNT; j++) {
+            t->nn.output_weights[i * OUTPUT_COUNT + j] = init_weights();
+        }
+    }
+}
+
+void
+train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
+{
+    struct training t = { 0 };
+    t.nn.sizes.hidden_count = hiddenNodesNb;
+
     srand((unsigned int) time(NULL));
+    size_t inputNb;
+    printf("Loading the training set\n");
+    if (!dostuff(trainingsetpath, &t.training_inputs, &t.training_outputs,
+                 &inputNb, &t.training_count)) {
 
-    double hiddenLayer[hiddenNodesNb];
-    double outputLayer[outputNb];
+        init(&t);
 
-    double hiddenLayerBias[hiddenNodesNb];
-    double outputLayerBias[outputNb];
-
-    double hiddenWeights[inputNb][hiddenNodesNb];
-    double outputWeights[hiddenNodesNb][outputNb];
-
-    double training_inputs[trainingSetsNb][inputNb] = {
-        { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }
-    };
-    double training_outputs[trainingSetsNb][outputNb] = {
-        { 0.0f }, { 1.0f }, { 1.0f }, { 0.0f }
-    };
-
-    for (int i = 0; i < inputNb; i++) {
-        for (int j = 0; j < hiddenNodesNb; j++) {
-            hiddenWeights[i][j] = init_weights();
+        t.training_order = malloc(t.training_count * sizeof(int));
+        for (size_t i = 0; i < t.training_count; i++) {
+            t.training_order[i] = i;
         }
-    }
-    for (int i = 0; i < hiddenNodesNb; i++) {
-        for (int j = 0; j < outputNb; j++) {
-            outputWeights[i][j] = init_weights();
-        }
-    }
-    for (int i = 0; i < outputNb; i++) {
-        outputLayerBias[i] = init_weights();
-    }
+        int i = 0;
 
-    int trainingSetOrder[] = { 0, 1, 2, 3 };
+        for (int epoch = 0; epoch < epochNb; epoch++) {
+            printf(
+              " Output (%d): [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f] || Expected "
+              "output : [%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]\n",
+              epoch, t.output_layer[0], t.output_layer[1], t.output_layer[2],
+              t.output_layer[3], t.output_layer[4], t.output_layer[5],
+              t.output_layer[6], t.output_layer[7], t.output_layer[8],
+              t.output_layer[9], t.training_outputs[i * 10 + 0],
+              t.training_outputs[i * 10 + 1], t.training_outputs[i * 10 + 2],
+              t.training_outputs[i * 10 + 3], t.training_outputs[i * 10 + 4],
+              t.training_outputs[i * 10 + 5], t.training_outputs[i * 10 + 6],
+              t.training_outputs[i * 10 + 7], t.training_outputs[i * 10 + 8],
+              t.training_outputs[i * 10 + 9]);
+            // delay(300);
+            shuffle(t.training_order, t.training_count);
 
-    // Train the NN for the defined number of epochs
-    for (int epoch = 0; epoch < epochNb; epoch++) {
-        shuffle(trainingSetOrder, trainingSetsNb);
+            for (size_t x = 0; x < t.training_count; x++) {
+                i = t.training_order[x];
 
-        for (int x = 0; x < trainingSetsNb; x++) {
-            int i = trainingSetOrder[x];
-
-            // Forward pass
-            // Compute hidden layer activation
-            for (int j = 0; j < hiddenNodesNb; j++) {
-                double activation = hiddenLayerBias[j];
-
-                for (int k = 0; k < inputNb; k++) {
-                    activation += training_inputs[i][k] * hiddenWeights[k][j];
-                }
-
-                // /!\ function used on the hidden layer must be called in a way
-                // to be changed in the NN config in NN.h
-                hiddenLayer[j] = sigmoid(activation);
-            }
-            // Compute output layer activation
-            for (int j = 0; j < outputNb; j++) {
-                double activation = outputLayerBias[j];
-                for (int k = 0; k < hiddenNodesNb; k++) {
-                    activation += hiddenLayer[k] * outputWeights[k][j];
-                }
-
-                // /!\ function used on the output layer must be called in a way
-                // to be changed in the NN config in NN.h
-                outputLayer[j] = sigmoid(activation);
-            }
-            printf("Input : %g,%g ==> Output : %g || Expected output : %g\n",
-                   training_inputs[i][0], training_inputs[i][1], outputLayer[0],
-                   training_outputs[i][0]);
-
-            // Retropropagation implem
-
-            // Compute change in output weights
-
-            double deltaOutput[outputNb];
-            for (int j = 0; j < outputNb; j++) {
-                double error = (training_outputs[i][j] - outputLayer[j]);
-                deltaOutput[j] = error * dSigmoid(outputLayer[j]);
-            }
-
-            // Compute change in hidden weights
-            double deltaHidden[hiddenNodesNb];
-            for (int j = 0; j < hiddenNodesNb; j++) {
-                double error = 0.0f;
-                for (int k = 0; k < outputNb; k++) {
-                    error += deltaOutput[k] * outputWeights[j][k];
-                }
-                deltaHidden[j] = error * dSigmoid(hiddenLayer[j]);
-            }
-
-            // Apply change in output weights
-            for (int j = 0; j < outputNb; j++) {
-                outputLayerBias[j] += deltaOutput[j] * learningRate;
-                for (int k = 0; k < hiddenNodesNb; k++) {
-                    outputWeights[k][j] +=
-                      hiddenLayer[k] * deltaOutput[j] * learningRate;
-                }
-            }
-            // Apply change hidden weights
-            for (int j = 0; j < hiddenNodesNb; j++) {
-                hiddenLayerBias[j] += deltaHidden[j] * learningRate;
-                for (int k = 0; k < inputNb; k++) {
-                    hiddenWeights[k][j] +=
-                      training_inputs[i][k] * deltaHidden[j] * learningRate;
-                }
+                forward_propagation(&t, t.training_inputs, i);
+                backward_propagation(&t, i);
             }
         }
+
+        save(&t.nn, path);
+        fscore(t.nn, t.training_inputs, t.training_outputs, t.training_count);
+    } else {
+        errx(EXIT_FAILURE,
+             "The dataset you are trying to load is bullshit mate!");
     }
-    save_model(hiddenLayer, outputLayer, hiddenLayerBias, outputLayerBias,
-               hiddenWeights, outputWeights, path);
 }

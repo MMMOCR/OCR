@@ -1,51 +1,56 @@
 #include "job.h"
 
 #include "NN.h"
-#include "functions.h"
-#include "save.h"
+#include "train.h"
 
-#include <stdio.h>
+#include <stdlib.h>
 
-void
-job(char* path, char* sinput)
+int
+job(neural_network nn, double *input)
 {
-    double inputs[] = { sinput[0] - 48, sinput[1] - 48 };
+    struct training travailfamillepatrie = { 0 };
+    travailfamillepatrie.nn = nn;
+    travailfamillepatrie.hidden_layer =
+      malloc(nn.sizes.hidden_count * sizeof(double));
+    forward_propagation(&travailfamillepatrie, input, -1);
 
-    double hiddenLayer[hiddenNodesNb];
-    double outputLayer[outputNb];
+    size_t max_index = 0;
+    double max = travailfamillepatrie.output_layer[0];
 
-    double hiddenLayerBias[hiddenNodesNb];
-    double outputLayerBias[outputNb];
-
-    double hiddenWeights[inputNb * hiddenNodesNb];
-    double outputWeights[hiddenNodesNb * outputNb];
-
-    load_model(hiddenLayer, outputLayer, hiddenLayerBias, outputLayerBias,
-               (double*) hiddenWeights, (double*) outputWeights, path);
-
-    for (int j = 0; j < hiddenNodesNb; j++) {
-        double activation = hiddenLayerBias[j];
-
-        for (int k = 0; k < inputNb; k++) {
-            activation += inputs[k] * hiddenWeights[k * hiddenNodesNb + j];
+    for (size_t i = 1; i < OUTPUT_COUNT; i++) {
+        double val = travailfamillepatrie.output_layer[i];
+        if (val > max) {
+            max = val;
+            max_index = i;
         }
-
-        // /!\ function used on the hidden layer must be called in a way
-        // to be changed in the NN config in NN.h
-        hiddenLayer[j] = sigmoid(activation);
-    }
-    // Compute output layer activation
-    for (int j = 0; j < outputNb; j++) {
-        double activation = outputLayerBias[j];
-        for (int k = 0; k < hiddenNodesNb; k++) {
-            activation += hiddenLayer[k] * outputWeights[k * outputNb + j];
-        }
-
-        // /!\ function used on the output layer must be called in a way
-        // to be changed in the NN config in NN.h
-        outputLayer[j] = sigmoid(activation);
     }
 
-    printf("I think the result of %c XOR %c is: %g\n", (char) inputs[0] + 48,
-           (char) inputs[1] + 48, outputLayer[0]);
+    return max_index;
+}
+
+int
+real_index(char *real, int index)
+{
+    for (int i = 0; i < 9; ++i) {
+        if (real[index + i] == '\001') { return i; }
+    }
+    return -1;
+}
+
+double
+fscore(neural_network nn, double *inputs, char *real, size_t len)
+{
+    double success = 0;
+    double errors;
+    for (size_t i = 0; i < len; ++i) {
+        int res = job(nn, inputs + i * 784);
+        int realind = real_index(real, i * 10);
+        if (res == realind) { success++; }
+    }
+
+    errors = ((double) len) - success;
+    double fscoree = success / (success + (errors / 2));
+    printf("fscore : %.2f \n", fscoree);
+
+    return fscoree;
 }

@@ -140,13 +140,13 @@ save_result(char *path, int *board)
     if ((file = fopen(savepath, "w")) == NULL) { return 0; }
 
     for (int i = 0; i < WIDTH * HEIGHT; ++i) {
-        if (i > 0) {
+        if (i > 0)
             if (i % 9 == 0) {
                 fprintf(file, "\n");
             } else if (i % 3 == 0) {
                 fprintf(file, " ");
             }
-        }
+
         fprintf(file, "%d", board[i]);
     }
 

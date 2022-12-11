@@ -1,9 +1,6 @@
 #pragma once
 #include <SDL.h>
 
-SDL_Surface *
-load_image(char file[]);
-
 Uint8 *
 pixel_ref(SDL_Surface *surf, size_t x, size_t y);
 
