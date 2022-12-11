@@ -10,7 +10,6 @@ job(neural_network nn, double *input)
 {
     struct training travailfamillepatrie = { 0 };
     travailfamillepatrie.nn = nn;
-    printf("hidden size: %f\n", nn.sizes.hidden_count);
     travailfamillepatrie.hidden_layer =
       malloc(nn.sizes.hidden_count * sizeof(double));
     forward_propagation(&travailfamillepatrie, input, -1);
@@ -25,7 +24,7 @@ job(neural_network nn, double *input)
             max_index = i;
         }
     }
-    printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f]",
+    printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f]\n",
            travailfamillepatrie.output_layer[0],
            travailfamillepatrie.output_layer[1],
            travailfamillepatrie.output_layer[2],
@@ -41,15 +40,17 @@ job(neural_network nn, double *input)
 }
 
 double
-fscore(neural_network nn, double **inputs, int *real, size_t len)
+fscore(neural_network nn, double *inputs, char *real, size_t len)
 {
     int success = 0;
     int errors;
-
     for (size_t i = 0; i < len; ++i) {
-        if (job(nn, inputs[i]) == real[i]) success++;
+        if (job(nn, inputs + i * 784) == real[i] - '0') success++;
     }
 
     errors = len - success;
-    return (success / (success + (errors / 2)));
+    int fscoree = success / (success + (errors / 2));
+    printf("fscore : %i \n",fscoree);
+    printf("%x : %x\n", job(nn, inputs + (len - 1) * 784), real[len - 1]);
+    return (fscoree);
 }

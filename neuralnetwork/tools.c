@@ -80,10 +80,6 @@ PicToList(SDL_Surface* image)
             list[j * width + i] = pixel2;
         }
     }
-    for (size_t i = 0; i < 784; i++) {
-        printf("%f ", list[i]);
-    }
-    printf("\n");
     SDL_FreeSurface(image);
     return list;
 }
