@@ -24,7 +24,7 @@ job(neural_network nn, double *input)
             max_index = i;
         }
     }
-
+    //printf("result : %lu\n",max_index);
     return max_index;
 }
 

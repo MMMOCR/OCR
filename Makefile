@@ -2,7 +2,7 @@
 
 CC := gcc
 
-PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0 sdl SDL_image SDL_ttf
+PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
 GUIPACKAGES := gtk+-3.0 sdl SDL_image SDL_ttf SDL_gfx
 
 ifneq ($(OS),Windows_NT)
@@ -31,9 +31,7 @@ endif
 
 OUT := neuralnetwork solver empty_cell linesdetection imageutils gui
 
-NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c
-
-EMTPY_CELL_SRCS = utils/empty_cell.c
+NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c utils/empty_cell.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c
 
 LINES_SRCS = utils/linesdetection.c utils/rotateutils.c utils/resize.c
 
@@ -50,9 +48,6 @@ neuralnetwork: FORCE
 
 solver: FORCE
 	$(CC) $(SOLVER_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
-
-empty_cell: FORCE
-	$(CC) $(EMTPY_CELL_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
 linesdetection: FORCE
 	$(CC) $(LINES_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
