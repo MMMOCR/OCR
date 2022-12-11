@@ -87,13 +87,12 @@ main(int argc, char **argv)
                     int res = job(load(argv[2]), array);
 
                     if (res == 0) { res = 8; }
-                    printf("res= %i\n",res);
+                    printf("res= %i\n", res);
                     sudoku[i][j] = res;
-                    //return res;
+                    // return res;
                 }
             }
         }
-
 
         FILE *f = fopen(argv[3], "wb");
 
