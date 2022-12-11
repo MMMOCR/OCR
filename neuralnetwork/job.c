@@ -24,33 +24,37 @@ job(neural_network nn, double *input)
             max_index = i;
         }
     }
-    printf(" Output : [%f,%f,%f,%f,%f,%f,%f,%f,%f,%f]\n",
-           travailfamillepatrie.output_layer[0],
-           travailfamillepatrie.output_layer[1],
-           travailfamillepatrie.output_layer[2],
-           travailfamillepatrie.output_layer[3],
-           travailfamillepatrie.output_layer[4],
-           travailfamillepatrie.output_layer[5],
-           travailfamillepatrie.output_layer[6],
-           travailfamillepatrie.output_layer[7],
-           travailfamillepatrie.output_layer[8],
-           travailfamillepatrie.output_layer[9]);
-    printf("result : %lu\n", max_index);
+
     return max_index;
+}
+
+int
+real_index(char *real, int index)
+{
+    for (int i = 0; i < 9; ++i) {
+        if (real[index + i] == '\001') {
+            return i;
+        }
+    }
+    return -1;
 }
 
 double
 fscore(neural_network nn, double *inputs, char *real, size_t len)
 {
-    int success = 0;
-    int errors;
+    double success = 0;
+    double errors;
     for (size_t i = 0; i < len; ++i) {
-        if (job(nn, inputs + i * 784) == real[i] - '0') success++;
+        int res = job(nn, inputs + i * 784);
+        int realind = real_index(real, i * 10);
+        if (res == realind) {
+            success++;
+        }
     }
 
-    errors = len - success;
-    int fscoree = success / (success + (errors / 2));
-    printf("fscore : %i \n", fscoree);
-    printf("%x : %x\n", job(nn, inputs + (len - 1) * 784), real[len - 1]);
-    return (fscoree);
+    errors = ((double) len) - success;
+    double fscoree = success / (success + (errors / 2));
+    printf("fscore : %.2f \n", fscoree);
+
+    return fscoree;
 }
