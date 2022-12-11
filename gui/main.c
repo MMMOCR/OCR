@@ -48,7 +48,7 @@ static int selected_step = 0;
 static char working = 0;
 static char finished = 0;
 
-static enum gui_states current_gui_state = Main;
+static enum gui_states current_gui_state = Load;
 static pthread_t task_thread;
 
 static int circle_step = 0;
@@ -148,6 +148,8 @@ reset_gui()
     current_step = 0;
     selected_step = 0;
     circle_step = 0;
+    load_hide.state = 0;
+    load_hide.current = 0;
     select_button.enabled = 0;
     save_button.enabled = 0;
     save_button.text_color = color_rgb(121, 121, 121);
@@ -192,8 +194,8 @@ execute_task(struct sypbc *ctx)
     }
 
     if (access(pim, F_OK) != 0) {
-        // current_gui_state = Error;
-        // reset_gui();
+        current_gui_state = Error;
+        reset_gui();
     } else if (!working)
         working = 1;
     else if (current_step != Grid) {
@@ -417,7 +419,7 @@ draw_load(struct sypbc *ctx)
     }
 
     if (sypbc_image_button_draw(&website_button, "website.png", 28)) {
-        system("firefox google.com");
+        system("firefox https://la-banquise.fr/ocr");
     }
 
     draw_push_scissors(&ctx->draw, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);

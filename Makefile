@@ -29,7 +29,7 @@ ifeq ($(DEBUG), 1)
 	LDFLAGS += -fsanitize=address
 endif
 
-OUT := neuralnetwork solver empty_cell linesdetection imageutils gui
+OUT := neuralnetwork solver linesdetection imageutils gui
 
 NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c utils/empty_cell.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c
 
