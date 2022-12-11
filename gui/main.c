@@ -173,6 +173,7 @@ execute_task(struct sypbc *ctx)
             strcat(pbin, " ");
             strcat(pbin, image_path);
 
+            printf("imageutils: \"%s\"\n", pbin);
             system(pbin);
             break;
         }
@@ -187,7 +188,7 @@ execute_task(struct sypbc *ctx)
             strcat(pbin, ctx->images_path);
             strcat(pbin, "steps/grayscale.png");
 
-            printf("%s", pbin);
+            printf("%s\n", pbin);
             system(pbin);
             break;
         }

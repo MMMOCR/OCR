@@ -283,9 +283,9 @@ main(int argc, char** argv)
     // SDL_Surface* aaaah = SDL_CreateRGBSurface(0, out->w,
     //     out->h, 32, 0, 0, 0, 0);
     // erode(out->pixels, aaaah->pixels, 2, aaaah->w, aaaah->h);
-    char p2[128];
-    char p1[128];
-    char p3[128];
+    char p2[128] = {0};
+    char p1[128] = {0};
+    char p3[128] = {0};
     strcpy(p3, argv[0]);
     dirname(p3);
     strcat(p1, dirname(argv[0]));
@@ -296,7 +296,7 @@ main(int argc, char** argv)
     IMG_SavePNG(out, p1);
     strcat(p3, "/images/steps/resized.png");
     IMG_SavePNG(cropped, p3);
-    IMG_SavePNG(grayscale, p2);
+    IMG_SavePNG(colored_surface, p2);
     SDL_Texture* grayscale_texture =
       SDL_CreateTextureFromSurface(renderer, out);
     SDL_FreeSurface(colored_surface);
