@@ -1,15 +1,15 @@
 #include "NN.h"
 
+#include "../utils/empty_cell.h"
 #include "job.h"
 #include "tools.h"
 #include "train.h"
-#include "../utils/empty_cell.h"
 
+#include <dirent.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
-#include <libgen.h>
 
 void
 save(neural_network *nn, char *path)
@@ -49,82 +49,70 @@ load(char *path)
 int
 main(int argc, char **argv)
 {
-    if (argc < 3) { exit_usage(); }
+    if (argc < 3) {
+        exit_usage();
+    }
 
-    else if (strcmp(argv[1], "grid") == 0) 
-    {
-    char p[128];
-    strcpy(p, argv[0]);
-    dirname(p);
+    else if (strcmp(argv[1], "grid") == 0) {
+        char p[128];
+        strcpy(p, argv[0]);
+        dirname(p);
 
-    char pa[64] = {'/','c','2','_',0,'_',0,'.','p','n','g'};
-    char pa2[64] = {'/', 'c','_',0,'_',0,'.','p','n','g'};
+        char pa[64] = { '/', 'c', '2', '_', 0, '_', 0, '.', 'p', 'n', 'g' };
+        char pa2[64] = { '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g' };
 
-    for (size_t i = 0; i < 9; i++)
-    {
-        for (size_t j = 0; j < 9; j++)
-        {
-            char pp[128];
-            strcpy(pp, p);
-            pa[4] = i + 0x30;
-            pa[6] = j + 0x30;
-            strcat(pp, "/images/detect");
-            strcat(pp, pa);
-            //printf("%s\n",pp);
-            
-            SDL_Surface * ss = IMG_Load(pp);
-            if (is_empty(ss)) {
-                printf("is not empty\n");
+        for (size_t i = 0; i < 9; i++) {
+            for (size_t j = 0; j < 9; j++) {
+                char pp[128];
                 strcpy(pp, p);
-                pa2[3] = i + 0x30;
-                pa2[5] = j + 0x30;
+                pa[4] = i + 0x30;
+                pa[6] = j + 0x30;
                 strcat(pp, "/images/detect");
-                strcat(pp, pa2);
-                SDL_Surface * sss = IMG_Load(pp);
-                double *array = PicToList(sss);
-            
-                int res = job(load(argv[2]), array);
-                //printf("res= %i\n",res);
-                if (res == 0)
-                {
-                    res = 8;
+                strcat(pp, pa);
+                // printf("%s\n",pp);
+
+                SDL_Surface *ss = IMG_Load(pp);
+                if (is_empty(ss)) {
+                    printf("is not empty\n");
+                    strcpy(pp, p);
+                    pa2[3] = i + 0x30;
+                    pa2[5] = j + 0x30;
+                    strcat(pp, "/images/detect");
+                    strcat(pp, pa2);
+                    SDL_Surface *sss = IMG_Load(pp);
+                    double *array = PicToList(sss);
+
+                    int res = job(load(argv[2]), array);
+                    // printf("res= %i\n",res);
+                    if (res == 0) { res = 8; }
+
+                    return res;
                 }
-                
-                return res;
             }
-
         }
-        
-    }
     }
 
-    else if (strcmp(argv[1], "job") == 0) 
-    {
+    else if (strcmp(argv[1], "job") == 0) {
 
         if (argc != 5) { exit_usage(); }
 
         SDL_Surface *img = IMG_Load(argv[3]);
-            double *array = PicToList(img);
-            
-            int res = job(load(argv[2]), array);
-            if (res == 0)
-            {
-                res = 8;
-            }
-            
-            return res;
+        double *array = PicToList(img);
 
-    } 
-    
-    else if (strcmp(argv[1], "train") == 0) 
-    {
+        int res = job(load(argv[2]), array);
+        if (res == 0) { res = 8; }
+
+        return res;
+
+    }
+
+    else if (strcmp(argv[1], "train") == 0) {
         if (argc != 6) { exit_usage(); }
         train(argv[2], atoi(argv[3]), argv[4], atoi(argv[5]));
-    } 
-    
-    else 
-    {
+    }
+
+    else {
         exit_usage();
     }
     return 0;
-    }
+}
