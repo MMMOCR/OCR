@@ -26,8 +26,9 @@
 #define MAXDIFF(x, y, n) \
     (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
-#define ALED(x, y, angle) \
-  angle < 90 ? (x * cosf((angle * PI) / 180) + y * sinf((angle * PI) /180)) : (x * cosf((angle * PI) / 180) + y * cosf((angle * PI) /180))
+#define ALED(x, y, angle)                                                      \
+    angle < 90 ? (x * cosf((angle * PI) / 180) + y * sinf((angle * PI) / 180)) \
+               : (x * cosf((angle * PI) / 180) + y * cosf((angle * PI) / 180))
 
 typedef struct
 {
