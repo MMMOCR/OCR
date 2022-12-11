@@ -49,7 +49,17 @@ load(char *path)
 int
 main(int argc, char **argv)
 {
-    char sudoku[9][9];
+    int sudoku[9][9];
+    for (size_t i = 0; i < 9; i++)
+    {
+        for (size_t j = 0; j < 9; j++)
+        {
+            sudoku[i][j] = 0;
+        }
+        
+    }
+    
+
 
     if (argc < 3) {
         exit_usage();
@@ -71,10 +81,10 @@ main(int argc, char **argv)
                 pa[6] = j + 0x30;
                 strcat(pp, "/images/detect");
                 strcat(pp, pa);
-                // printf("%s\n",pp);
+                printf("%s\n",pp);
 
                 SDL_Surface *ss = IMG_Load(pp);
-                if (is_empty(ss)) {
+                if (!is_empty(ss)) {
                     printf("is not empty\n");
                     strcpy(pp, p);
                     pa2[3] = i + 0x30;
@@ -95,7 +105,28 @@ main(int argc, char **argv)
         }
 
         FILE *f = fopen(argv[3], "wb");
-
+        int count = 0;
+        for (size_t i = 0; i < 9; i++)
+        {
+            for (size_t j = 0; j < 9; j++)
+            {
+                if (sudoku[i][j] == 0)
+                {
+                    fprintf(f,".");
+                }
+                else
+                {
+                    fprintf(f,"%d",sudoku[i][j]);
+                }
+                if (j == 2 || j == 5)
+                {
+                    fprintf(f," ");
+                }
+                
+            }
+            fprintf(f,"\n");
+        }
+        
         fclose(f);
     }
 

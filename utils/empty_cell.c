@@ -30,11 +30,12 @@ is_empty(SDL_Surface* image)
     /*printf("%d\n", sum);
     printf("%li\n", test);
     printf("%li\n", test2);
-    printf("%li\n", test * test2);
+   
     printf("%d %d\n", height, width);*/
+     printf("%li\n", test * test2);
     sum /= test * test2;
-    // printf("%d\n", sum);
-    long max_average = 255 * 0.90;
+    printf("%d\n", sum);
+    long max_average = 255 * 0.80;
     if (sum < max_average) return 0;
     return 1;
 }
