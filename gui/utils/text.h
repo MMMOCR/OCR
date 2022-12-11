@@ -5,11 +5,12 @@
 #ifndef SYPBC_TEXT_H
 #define SYPBC_TEXT_H
 
-struct sypbc_font {
+struct sypbc_font
+{
     int font_id;
     // TODO: backend agnostic font
     // unsigned char *data;
     // int size;
 };
 
-#endif //SYPBC_TEXT_H
+#endif // SYPBC_TEXT_H

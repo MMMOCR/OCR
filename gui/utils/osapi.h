@@ -5,6 +5,7 @@
 #ifndef SYPBC_TIME_H
 #define SYPBC_TIME_H
 
-unsigned long long get_time();
+unsigned long long
+get_time();
 
-#endif //SYPBC_TIME_H
+#endif // SYPBC_TIME_H

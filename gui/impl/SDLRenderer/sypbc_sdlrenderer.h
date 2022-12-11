@@ -5,25 +5,24 @@
 #ifndef SYPBC_SYPBC_SDLRENDERER_H
 #define SYPBC_SYPBC_SDLRENDERER_H
 
-#include "sypbc_impl.h"
 #include "SDL/SDL_image.h"
+#include "sypbc_impl.h"
+
 #include <err.h>
 
-struct {
+struct
+{
     float position[2];
     float uv[2];
     unsigned char col[4];
 } typedef vertex;
 
-
-static struct sypbc*
+static struct sypbc *
 sdl_init(SDL_Surface *screen, char *current_path)
 {
     sdl.screen = screen;
 
-    if (TTF_Init() == -1){
-        errx(1, "TTF_Init error: %s\n", TTF_GetError());
-    }
+    if (TTF_Init() == -1) { errx(1, "TTF_Init error: %s\n", TTF_GetError()); }
 
     strcpy(context.bin_path, current_path);
     strcat(context.bin_path, "/");
@@ -44,26 +43,28 @@ sdl_init(SDL_Surface *screen, char *current_path)
     context.fonts[ROBOTO_REGULAR32] = TTF_OpenFont(font, 32);
     context.fonts[ROBOTO_REGULAR16] = TTF_OpenFont(font, 16);
 
-
-    context.input = init_sypbc_input(sizeof(SDLKey), 5); // hardcoded mouse size from SDL_mouse.h
+    context.input = init_sypbc_input(
+      sizeof(SDLKey), 5); // hardcoded mouse size from SDL_mouse.h
     return &context;
 }
 
 char
-sdl_event_callback(struct sypbc_input* input_context, SDL_Event *event)
+sdl_event_callback(struct sypbc_input *input_context, SDL_Event *event)
 {
-    switch(event->type) {
+    switch (event->type) {
         case SDL_KEYDOWN:
         case SDL_KEYUP: {
             char pressed = (char) (event->type == SDL_KEYDOWN);
             SDLKey key_code = event->key.keysym.sym;
 
-//            set_key(input_context, key_code, pressed);
-//
-//            for (size_t i = 0; i < input_context->keyboard_hook_count; i++) {
-//                input_context->keyboard_hook[i](key_code, pressed);
-//            }
-//            return 1;
+            //            set_key(input_context, key_code, pressed);
+            //
+            //            for (size_t i = 0; i <
+            //            input_context->keyboard_hook_count; i++) {
+            //                input_context->keyboard_hook[i](key_code,
+            //                pressed);
+            //            }
+            //            return 1;
 
             return -1; // TODO: support keys LOL
         }
@@ -95,33 +96,37 @@ get_text_dim(char *text, int font_id)
 }
 
 static void
-render_surface(int x, int y, SDL_Surface* src)
+render_surface(int x, int y, SDL_Surface *src)
 {
-    SDL_Rect offset = {x, y};
+    SDL_Rect offset = { x, y };
     SDL_BlitSurface(src, NULL, sdl.screen, &offset);
 }
 
 void
-sdl_render(struct sypbc_draw* draw_context, rgba background)
+sdl_render(struct sypbc_draw *draw_context, rgba background)
 {
-    boxRGBA(sdl.screen, 0, 0, (short) sdl.screen->w, (short) sdl.screen->h, background.r, background.g, background.b, background.a);
+    boxRGBA(sdl.screen, 0, 0, (short) sdl.screen->w, (short) sdl.screen->h,
+            background.r, background.g, background.b, background.a);
 
     for (size_t i = 0; i < draw_context->instruction_count; i++) {
         instruction cmd = draw_context->draw_list[i];
         switch (cmd.type) {
             case DRAW_RECT: {
                 struct sypbc_draw_rect *inst = cmd.inst;
-                rect(sdl.screen, inst->x, inst->y, inst->width, inst->height, inst->round, inst->color);
+                rect(sdl.screen, inst->x, inst->y, inst->width, inst->height,
+                     inst->round, inst->color);
                 break;
             }
             case DRAW_FILLED_RECT: {
                 struct sypbc_draw_filled_rect *inst = cmd.inst;
-                fill_rect(sdl.screen, inst->x, inst->y, inst->width, inst->height, inst->round, inst->color);
+                fill_rect(sdl.screen, inst->x, inst->y, inst->width,
+                          inst->height, inst->round, inst->color);
                 break;
             }
             case DRAW_LINE: {
                 struct sypbc_draw_line *inst = cmd.inst;
-                line(sdl.screen, inst->x1, inst->y1, inst->x2, inst->y2, inst->thickness, inst->color);
+                line(sdl.screen, inst->x1, inst->y1, inst->x2, inst->y2,
+                     inst->thickness, inst->color);
                 break;
             }
             case DRAW_CIRCLE: {
@@ -131,18 +136,21 @@ sdl_render(struct sypbc_draw* draw_context, rgba background)
             }
             case DRAW_FILLED_CIRCLE: {
                 struct sypbc_draw_filled_circle *inst = cmd.inst;
-                filled_circle(sdl.screen, inst->x, inst->y, inst->radius, inst->color);
+                filled_circle(sdl.screen, inst->x, inst->y, inst->radius,
+                              inst->color);
                 break;
             }
             case DRAW_SCISSORS: {
                 struct sypbc_scissors *inst = cmd.inst;
-                scissors(sdl.screen, &sdl.clip, inst->x, inst->y, inst->width, inst->height);
+                scissors(sdl.screen, &sdl.clip, inst->x, inst->y, inst->width,
+                         inst->height);
                 break;
             }
             case DRAW_TEXT: {
                 struct sypbc_text *inst = cmd.inst;
-                SDL_Color c = {inst->color.g, inst->color.b,inst->color.b};
-                SDL_Surface *txt = TTF_RenderText_Blended(context.fonts[inst->font_id], inst->text, c);
+                SDL_Color c = { inst->color.g, inst->color.b, inst->color.b };
+                SDL_Surface *txt = TTF_RenderText_Blended(
+                  context.fonts[inst->font_id], inst->text, c);
                 render_surface(inst->x, inst->y, txt);
                 SDL_FreeSurface(txt);
                 break;
@@ -156,7 +164,8 @@ sdl_render(struct sypbc_draw* draw_context, rgba background)
                     strcat(img_path, inst->path);
 
                     img = IMG_Load(img_path);
-                } else img = IMG_Load(inst->path);
+                } else
+                    img = IMG_Load(inst->path);
 
                 render_surface(inst->x, inst->y, img);
                 SDL_FreeSurface(img);
@@ -168,7 +177,7 @@ sdl_render(struct sypbc_draw* draw_context, rgba background)
     }
 
     SDL_UpdateRect(sdl.screen, 0, 0, 0, 0);
-    SDL_Flip( sdl.screen );
+    SDL_Flip(sdl.screen);
     free_draw(draw_context);
 }
 
@@ -178,4 +187,4 @@ sdl_destroy()
     // TODO: free everything here LOL (we're closing anyway :clown:)
 }
 
-#endif //SYPBC_SYPBC_SDLRENDERER_H
+#endif // SYPBC_SYPBC_SDLRENDERER_H

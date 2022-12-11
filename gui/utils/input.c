@@ -2,9 +2,10 @@
 // Created by rigole on 10/10/22.
 //
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "input.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 // private
 
@@ -46,14 +47,16 @@ init_sypbc_input(size_t keys_size, size_t mbuttons_size)
 }
 
 char
-register_keyboard_callback(struct sypbc_input* input_context, keyboard_callback callback)
+register_keyboard_callback(struct sypbc_input* input_context,
+                           keyboard_callback callback)
 {
     if (input_context->keyboard_hook_count >= 0xFF) {
-        fprintf( stderr, "Cannot register more than 255 keyboard hooks\n");
+        fprintf(stderr, "Cannot register more than 255 keyboard hooks\n");
         return 0;
     }
 
-    input_context->keyboard_hook[input_context->keyboard_hook_count++] = callback;
+    input_context->keyboard_hook[input_context->keyboard_hook_count++] =
+      callback;
 }
 
 char
@@ -75,7 +78,11 @@ get_cursor_pos(struct sypbc_input* input_context)
 }
 
 char
-is_cursor_within(struct sypbc_input* input_context, int x, int y, int width, int height)
+is_cursor_within(struct sypbc_input* input_context,
+                 int x,
+                 int y,
+                 int width,
+                 int height)
 {
     int mx = input_context->mouse_pos.x;
     int my = input_context->mouse_pos.y;

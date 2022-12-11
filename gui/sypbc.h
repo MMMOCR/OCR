@@ -5,18 +5,20 @@
 #ifndef SYPBC_SYPBC_H
 #define SYPBC_SYPBC_H
 
-#include "utils/input.h"
 #include "instructions.h"
+#include "utils/input.h"
 
 #define FONT_COUNT 3
 
-enum Fonts {
+enum Fonts
+{
     ROBOTO_BOLD45,
     ROBOTO_REGULAR32,
     ROBOTO_REGULAR16
 };
 
-struct sypbc {
+struct sypbc
+{
     struct sypbc_input *input;
     struct sypbc_draw draw;
     void *fonts[FONT_COUNT];
@@ -25,14 +27,16 @@ struct sypbc {
     char font_path[255];
 };
 
-struct {
+struct
+{
     int x, y, w, z;
 } typedef vec4;
 
-struct {
+struct
+{
     int x, y;
 } typedef vec2;
 
 static struct sypbc context;
 
-#endif //SYPBC_SYPBC_H
+#endif // SYPBC_SYPBC_H

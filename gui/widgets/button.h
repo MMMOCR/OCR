@@ -9,10 +9,11 @@
 #define MAX_PATH 255
 
 #include "../sypbc.h"
-#include "../utils/colors.h"
 #include "../utils/animations/linear.h"
+#include "../utils/colors.h"
 
-struct sypbc_button {
+struct sypbc_button
+{
     struct sypbc *ctx;
     int x, y, width, height, round;
     char enabled;
@@ -25,9 +26,24 @@ struct sypbc_button {
     char pressed;
 };
 
-struct sypbc_button sypbc_button_init(struct sypbc *ctx, char *text, int font, int x, int y, int w, int h, int round, rgba col, rgba text_color);
-char sypbc_button_draw(struct sypbc_button *button);
-char sypbc_image_button_draw(struct sypbc_button *button, char *image, int imagesize);
-char sypbc_button_is_within(struct sypbc_button *button);
+struct sypbc_button
+sypbc_button_init(struct sypbc *ctx,
+                  char *text,
+                  int font,
+                  int x,
+                  int y,
+                  int w,
+                  int h,
+                  int round,
+                  rgba col,
+                  rgba text_color);
+char
+sypbc_button_draw(struct sypbc_button *button);
+char
+sypbc_image_button_draw(struct sypbc_button *button,
+                        char *image,
+                        int imagesize);
+char
+sypbc_button_is_within(struct sypbc_button *button);
 
-#endif //SYPBC_BUTTON_H
+#endif // SYPBC_BUTTON_H
