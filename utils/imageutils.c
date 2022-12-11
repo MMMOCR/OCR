@@ -198,7 +198,7 @@ image_utils(char* filename)
 }
 
 int
-putemain(int argc, char** argv)
+main(int argc, char** argv)
 {
     int h;
     int w;
@@ -257,7 +257,7 @@ putemain(int argc, char** argv)
     // Compute edges with sobel, not used anymore
     // edges(out);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
-    erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
+//    erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(out->pixels, test->pixels, 3, out->w, out->h);
 
@@ -272,25 +272,30 @@ putemain(int argc, char** argv)
     // erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // SDL_Texture* grayscale_texture =
     //   SDL_CreateTextureFromSurface(renderer, out
-    //           );
+//               );
     SDL_Rect src = { 0, 0, 660, 440 };
     SDL_Surface* cropped = SDL_CreateRGBSurface(0, 660, 440, 32, 0, 0, 0, 0);
 
     SDL_BlitScaled(out, NULL, cropped, &src);
 
-    resize_to_image(cropped, 28, 28);
+//    resize_to_image(cropped, 28, 28, "./bin/images/steps/resized.png");
 
     // SDL_Surface* aaaah = SDL_CreateRGBSurface(0, out->w,
     //     out->h, 32, 0, 0, 0, 0);
     // erode(out->pixels, aaaah->pixels, 2, aaaah->w, aaaah->h);
     char p2[128];
     char p1[128];
+    char p3[128];
+    strcpy(p3, argv[0]);
+    dirname(p3);
     strcat(p1, dirname(argv[0]));
     strcpy(p2, p1);
     strcat(p1, "/images/steps/binarization.png");
     // strcat(p2, dirname(argv[0]));
     strcat(p2, "/images/steps/grayscale.png");
-    IMG_SavePNG(cropped, p1);
+    IMG_SavePNG(out, p1);
+    strcat(p3, "/images/steps/resized.png");
+    IMG_SavePNG(cropped, p3);
     IMG_SavePNG(grayscale, p2);
     SDL_Texture* grayscale_texture =
       SDL_CreateTextureFromSurface(renderer, out);

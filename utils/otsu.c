@@ -32,11 +32,6 @@ multiple(long int w, long int h, SDL_Surface* surface)
 {
 
     int global = otsu_treshold(surface->w * surface->h, surface->pixels, 0);
-<<<<<<< HEAD
-    // printf("%li %li\n", w, h);
-=======
-    printf("%li %li\n", w, h);
->>>>>>> lines_detection
     SDL_Rect crop;
     int ret[9];
     int k = 0;
@@ -124,10 +119,5 @@ otsu_treshold(long int len, Uint32* pixels, int override_treshold)
             sumvarfg = 0.0;
         }
     }
-<<<<<<< HEAD
-    // printf("treshold: %d\n", treshold);
-=======
-    printf("treshold: %d\n", treshold);
->>>>>>> lines_detection
     return treshold;
 }

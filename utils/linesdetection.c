@@ -1063,12 +1063,10 @@ get_intersection_points(Points_Array *array,
                             }
                         }
 
-                        //                        printf("oskour tl1: %lu, tr1:
-                        //                        %lu, bl1: %lu, br1: "
-                        //                        "%lu, tl2: %lu, tr2: %lu, bl2:
-                        //                        %lu, br2: %lu, x: %lu, " "y:
-                        //                        %lu\n", tl1, tr1, bl1, br1,
-                        //                        tl2, tr2, bl2, br2, x, y);
+                        printf("oskour tl1: %lu, tr1: %lu, bl1: %lu, br1: "
+                               "%lu, tl2: %lu, tr2: %lu, bl2: %lu, br2: %lu, x: %lu, "
+                               "y: %lu\n", tl1, tr1, bl1, br1,
+                                                tl2, tr2, bl2, br2, x, y);
                         if ((ABS(array->array[p + 1] - array->array[q + 1])) %
                               90 >
                             30) {
@@ -1413,19 +1411,19 @@ get_intersection_points(Points_Array *array,
             }
         }
         offset += 5;
-        // printf("bd: %lu, bg: %lu, hg: %lu, hd: %lu\n", pa->bds, pa->bgs,
-        // pa->hgs, pa->hds); for (size_t i = 0; i < pa->bgs; i++) {
-        //   printf("bgx: %lu, y: %lu\n", pa->bg[i].x, pa->bg[i].y);
-        // }
-        // for (size_t i = 0; i < pa->bds; i++) {
-        //   printf("bd x: %lu, y: %lu\n", pa->bd[i].x, pa->bd[i].y);
-        // }
-        // for (size_t i = 0; i < pa->hgs; i++) {
-        //   printf("hg x: %lu, y: %lu\n", pa->hg[i].x, pa->hg[i].y);
-        // }
-        // for (size_t i = 0; i < pa->hds; i++) {
-        //   printf("hd x: %lu, y: %lu\n", pa->hd[i].x, pa->hd[i].y);
-        // }
+         printf("bd: %lu, bg: %lu, hg: %lu, hd: %lu\n", pa->bds, pa->bgs,
+         pa->hgs, pa->hds); for (size_t i = 0; i < pa->bgs; i++) {
+           printf("bgx: %lu, y: %lu\n", pa->bg[i].x, pa->bg[i].y);
+         }
+         for (size_t i = 0; i < pa->bds; i++) {
+           printf("bd x: %lu, y: %lu\n", pa->bd[i].x, pa->bd[i].y);
+         }
+         for (size_t i = 0; i < pa->hgs; i++) {
+           printf("hg x: %lu, y: %lu\n", pa->hg[i].x, pa->hg[i].y);
+         }
+         for (size_t i = 0; i < pa->hds; i++) {
+           printf("hd x: %lu, y: %lu\n", pa->hd[i].x, pa->hd[i].y);
+         }
         //  errx(2, "suce");
     }
 
@@ -1591,9 +1589,9 @@ clean_surface(SDL_Surface *s, SDL_Surface *ss)
                 pi[(i - nyy) * out->w + (j - nxx)] = pixelse[i * s->w + j];
             }
         }
-        SDL_FreeSurface(ss);
+        // SDL_FreeSurface(ss);
     }
-    SDL_FreeSurface(s);
+    // SDL_FreeSurface(s);
     return out;
 }
 
@@ -1640,8 +1638,8 @@ split_image(SDL_Surface *image, SDL_Surface *oute, char *s)
             strcat(pee, path2);
             resize_to_image(surfe, 28, 28, pe);
             resize_to_image(surfee, 28, 28, pee);
-            SDL_FreeSurface(surfe);
-            SDL_FreeSurface(surfee);
+            // SDL_FreeSurface(surfe);
+            // SDL_FreeSurface(surfee);
         }
     }
 }
@@ -4760,34 +4758,34 @@ main(int argc, char **argv)
 
     Point_arr_o *corners_arr =
       get_intersection_points(arr, image_temp->w, image_temp->h, image_temp);
-    // for (size_t i = 0; i < corners_arr->hgs; i++) {
-    // change_pixel(image_temp, corners_arr->hg[i].x,
-    // corners_arr->hg[i].y,
-    // SDL_MapRGB(image_temp->format, 255, 0, 0));
-    //  printf("hg x: %lu, y: %lu\n", (corners_arr->hg[i]).x,
-    //  (corners_arr->hg[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->hds; i++) {
-    // change_pixel(image_temp, corners_arr->hd[i].x,
-    // corners_arr->hd[i].y,
-    // SDL_MapRGB(image_temp->format, 255, 0, 0));
-    //  printf("hd x: %lu, y: %lu\n", (corners_arr->hd[i]).x,
-    //  (corners_arr->hd[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->bds; i++) {
-    // change_pixel(image_temp, corners_arr->bd[i].x,
-    // corners_arr->bd[i].y,
-    // SDL_MapRGB(image_temp->format, 255, 0, 0));
-    //  printf("bd x: %lu, y: %lu\n", (corners_arr->bd[i]).x,
-    //  (corners_arr->bd[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->bgs; i++) {
-    // change_pixel(image_temp, corners_arr->bg[i].x,
-    // corners_arr->bg[i].y,
-    // SDL_MapRGB(image_temp->format, 255, 0, 0));
-    //  printf("bg x: %lu, y: %lu\n", (corners_arr->bg[i]).x,
-    //  (corners_arr->bg[i]).y);
-    // }
+     for (size_t i = 0; i < corners_arr->hgs; i++) {
+     change_pixel(image_temp, corners_arr->hg[i].x,
+     corners_arr->hg[i].y,
+     SDL_MapRGB(image_temp->format, 255, 0, 0));
+      printf("hg x: %lu, y: %lu\n", (corners_arr->hg[i]).x,
+      (corners_arr->hg[i]).y);
+     }
+     for (size_t i = 0; i < corners_arr->hds; i++) {
+     change_pixel(image_temp, corners_arr->hd[i].x,
+     corners_arr->hd[i].y,
+     SDL_MapRGB(image_temp->format, 255, 0, 0));
+      printf("hd x: %lu, y: %lu\n", (corners_arr->hd[i]).x,
+      (corners_arr->hd[i]).y);
+     }
+     for (size_t i = 0; i < corners_arr->bds; i++) {
+     change_pixel(image_temp, corners_arr->bd[i].x,
+     corners_arr->bd[i].y,
+     SDL_MapRGB(image_temp->format, 255, 0, 0));
+      printf("bd x: %lu, y: %lu\n", (corners_arr->bd[i]).x,
+      (corners_arr->bd[i]).y);
+     }
+     for (size_t i = 0; i < corners_arr->bgs; i++) {
+     change_pixel(image_temp, corners_arr->bg[i].x,
+     corners_arr->bg[i].y,
+     SDL_MapRGB(image_temp->format, 255, 0, 0));
+      printf("bg x: %lu, y: %lu\n", (corners_arr->bg[i]).x,
+      (corners_arr->bg[i]).y);
+     }
     clean_corners_array(corners_arr);
 
     // IMG_SavePNG(image_temp, "testttt.png");
@@ -4805,10 +4803,10 @@ main(int argc, char **argv)
     dirname(ss);
     char sss[128];
     strcpy(sss, ss);
-    strcat(sss, "steps/grid_detection.png");
+    strcat(sss, "/images/steps/grid_detection.png");
     IMG_SavePNG(oute, sss);
     strcpy(sss, ss);
-    strcat(sss, "steps/rotation.png");
+    strcat(sss, "/images/steps/rotation.png");
     IMG_SavePNG(oute, sss);
 
     // IMG_SavePNG(image_temp, "./test6.png");
