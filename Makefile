@@ -2,7 +2,8 @@
 
 CC ?= gcc
 
-PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
+PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0 sdl SDL_image SDL_ttf
+GUIPACKAGES := gtk+-3.0 sdl SDL_image SDL_ttf SDL_gfx
 
 ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
@@ -14,8 +15,10 @@ endif
 LIBS ?= --libs
 
 CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
+GUICFLAGS := -Wall -Wextra $(shell pkg-config $(GUIPACKAGES) --cflags) -g3 #-fsanitize=address
 CPPFLAGS := 
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
+GUILDLIBS := $(shell pkg-config $(GUIPACKAGES) $(LIBS)) -lm
 LDFLAGS :=
 
 ifeq ($(DEBUG), 1)
@@ -24,43 +27,41 @@ ifeq ($(DEBUG), 1)
 	LDFLAGS += -fsanitize=address
 endif
 
-IMG ?= 5
-EXT ?= jpeg
+OUT := neuralnetwork solver empty_cell linesdetection imageutils gui
 
-OUT := utils/linesdetection utils/imageutils gui/interface_rotate solver/solver neuralnetwork/NN
-OBJS := utils/rotateutils.o neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
+NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c
 
-DEPS := $(OUT:%=%.d)
-DEPS += $(OBJS:%.o=%.d)
+EMTPY_CELL_SRCS = utils/empty_cell.c
+
+LINES_SRCS = utils/linesdetection.c utils/rotateutils.c
+
+UTILS_SRCS = utils/gaussian_blur.c utils/resize.c utils/sobel.c utils/erosion_dilation.c utils/imageutils.c utils/otsu.c
+
+SOLVER_SRCS = solver/solver.c
+
+GUI_SRCS = gui/main.c gui/instructions.c gui/impl/SDLRenderer/sypbc_impl.h gui/impl/SDLRenderer/sypbc_sdlrenderer.h gui/utils/input.c gui/utils/colors.c gui/utils/osapi.c gui/utils/animations/linear.c gui/widgets/button.c
 
 all: $(OUT)
 
-gui/interface_rotate utils/linesdetection: utils/rotateutils.o
-neuralnetwork/NN: neuralnetwork/functions.o neuralnetwork/job.o neuralnetwork/save.o neuralnetwork/tools.o neuralnetwork/train.o 
+neuralnetwork: $(NN_SRCS) bin/$@
+	$(CC) $(NN_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-$(OUT):
-	$(CC) $(CFLAGS) $(CPPFLAGS) $@.c $^ $(LDLIBS) $(LDFLAGS) -o $@
+solver: $(SOLVER_SRCS) bin/$@
+	$(CC) $(SOLVER_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-$(OBJ):
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
+empty_cell: $(EMTPY_CELL_SRCS) bin/$@
+	$(CC) $(EMTPY_CELL_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-test_linedetection: utils/linesdetection
-	./$< ./images/ocr-$(IMG).$(EXT)
+linesdetection: $(LINES_SRCS) bin/$@
+	$(CC) $(LINES_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-test_gui: gui/interface_rotate
-	./$< ./images/ocr-1.png
+imageutils: $(UTILS_SRCS) bin/$@
+	$(CC) $(UTILS_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-test_imageutils: utils/imageutils
-	./$< ./images/sudoku3.jpeg
-	
-test_solver: solver/solver
-	./$< ./solver/samples/sample1
+gui: $(GUI_SRCS) bin/$@
+	$(CC) $(GUI_SRCS) $(GUICFLAGS) -o bin/$@ $(GUILDLIBS)
 
 clean:
-	rm -rf $(OUT)
-	rm -rf $(OBJS:%.o:%)
-	rm -rf $(OUT:%=%.o)
-	rm -rf $(DEPS)
-	rm -rf $(DEPS:%.d=%.dSYM)
+	rm -f $(OUT:%=bin/%)
 
-.PHONY: clean test_gui test_linedetection test_imageutils test_solver all
+.PHONY: all clean
