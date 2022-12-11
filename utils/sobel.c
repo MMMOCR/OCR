@@ -110,7 +110,6 @@ edges(SDL_Surface* surface)
                 for (int y = -1; y < 2; y++) {
                     if (i+x < h && i+x > 0 && j+y < w && j+y >0)
                     {
-
                         kx = x+1;
                         ky = y+1;
                         // printf("%d\n", ky);

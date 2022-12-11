@@ -1,6 +1,6 @@
 # Makefile
 
-CC ?= gcc
+CC := gcc
 
 PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0 sdl SDL_image SDL_ttf
 GUIPACKAGES := gtk+-3.0 sdl SDL_image SDL_ttf SDL_gfx
@@ -11,6 +11,8 @@ ifneq ($(OS),Windows_NT)
 		LIBS := --libs-only-l
     endif
 endif
+
+OCR ?= ocr-
 
 LIBS ?= --libs
 
@@ -33,7 +35,7 @@ NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c neuralnetwork/loadset.c 
 
 EMTPY_CELL_SRCS = utils/empty_cell.c
 
-LINES_SRCS = utils/linesdetection.c utils/rotateutils.c
+LINES_SRCS = utils/linesdetection.c utils/rotateutils.c utils/resize.c
 
 UTILS_SRCS = utils/gaussian_blur.c utils/resize.c utils/sobel.c utils/erosion_dilation.c utils/imageutils.c utils/otsu.c
 

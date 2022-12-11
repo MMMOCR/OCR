@@ -1,11 +1,10 @@
 #include "linesdetection.h"
+#include "rotateutils.h"
+#include "resize.h"
 
 #include "SDL_rect.h"
-#include "gaussian_blur.h"
-#include "imageutils.h"
-#include "rotateutils.h"
-#include "sobel.h"
 
+#include <libgen.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <math.h>
@@ -180,6 +179,22 @@ clean_array(Points_Array *arr)
     arr->array = realloc(arr->array, arr->len * sizeof(long int));
 }
 
+void
+yeet_the_bitches (Points_Array * arr, size_t max, size_t * mat) {
+	// printf("%lu \n", max);
+    for (size_t i = 0; i < arr->len; i+=2) {
+//		if (arr->array[i+1] == 45) {
+//                    printf("%lu\n", mat[arr->array[i] * ANGLE + arr->array[i + 1]]);
+//		}
+        if (mat[arr->array[i] * ANGLE + arr->array[i + 1]] < 0.3 * max) {
+             arr->array[i] = 0;
+             arr->array[i+1] = 0;
+	}
+    }
+
+    clean_array(arr);
+}
+
 SDL_Surface *
 detect_lines_and_rotate(int *pixels,
                         long int w,
@@ -301,7 +316,7 @@ detect_lines_and_rotate(int *pixels,
     surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB8888, 0);
     if (moy != 0) { surface = rotate_image(surface, -moy); }
 
-    IMG_SavePNG(surface, "./test3.png");
+    // IMG_SavePNG(surface, "./test3.png");
 
     free(arr->array);
     free(arr);
@@ -359,11 +374,14 @@ detect_lines(SDL_Surface *surface)
     arr->len = 800;
     arr->array = calloc(800 * 2, sizeof(long int));
 
-    // size_t max = 0;
+    size_t max = 0;
 
     for (size_t i = 1; i < max_size; i++) {
         for (size_t j = 0; j < ANGLE; j++) {
             if (mat[i * ANGLE + j] > (unsigned long int) (w + h) / 7) {
+		if (mat[i * ANGLE + j] > max) {
+                    max = mat[i * ANGLE + j];
+		}
                 // m = sin(j * PI / 180);
                 // n = cos(j * PI / 180);
                 // x0 = m * i;
@@ -399,34 +417,36 @@ detect_lines(SDL_Surface *surface)
     restrict_array2(arr, h, mat);
     clean_array(arr);
 
-    // float m, n;
-    // int x0, y0, x1, y1, x2, y2;
+    yeet_the_bitches(arr, max, mat);
+
+//    float m, n;
+//   int x0, y0, x1, y1, x2, y2;
     //
-    for (size_t i = 0; i < arr->len; i += 2) {
+//    for (size_t i = 0; i < arr->len; i += 2) {
         //        printf("r: %lu,theta: %lu\n", arr->array[i],
         //               arr->array[i + 1]);
-        // m = sin(arr->array[i + 1] * PI / 180);
-        // n = cos(arr->array[i + 1] * PI / 180);
-        // x0 = m * arr->array[i];
-        // y0 = n * arr->array[i];
-        // x1 = x0 + 2 * w * (-n);
-        // y1 = y0 + 2 * h * (m);
-        // x2 = x0 - 2 * w * (-n);
-        // y2 = y0 - 2 * h * (m);
-        // draw_line(pixels, w, h, x1, y1, x2, y2,
-        // SDL_MapRGB(format, 0, 255, 0));
-    }
+//        m = sin(arr->array[i + 1] * PI / 180);
+//        n = cos(arr->array[i + 1] * PI / 180);
+//        x0 = m * arr->array[i];
+//        y0 = n * arr->array[i];
+//        x1 = x0 + 2 * w * (-n);
+//        y1 = y0 + 2 * h * (m);
+//        x2 = x0 - 2 * w * (-n);
+//        y2 = y0 - 2 * h * (m);
+//        draw_line(pixels, w, h, x1, y1, x2, y2,
+//        SDL_MapRGB(format, 0, 255, 0));
+//    }
 
     SDL_Surface *tt_surface = SDL_CreateRGBSurfaceFrom(
       (void *) pixels, w, h, 32, format->BytesPerPixel * w, format->Rmask,
       format->Gmask, format->Bmask, format->Amask);
-    IMG_SavePNG(tt_surface, "./test8.png");
+     // IMG_SavePNG(tt_surface, "./test8.png");
 
     end_surface = SDL_CreateRGBSurfaceFrom(
       (void *) pixels, w, h, 32, format->BytesPerPixel * w, format->Rmask,
       format->Gmask, format->Bmask, format->Amask);
 
-    IMG_SavePNG(end_surface, "./test5.png");
+    // IMG_SavePNG(end_surface, "./test5.png");
     SDL_FreeSurface(end_surface);
     SDL_UnlockSurface(surface);
     SDL_FreeSurface(tt_surface);
@@ -533,7 +553,7 @@ get_intersection_points(Points_Array *array,
                         SDL_Surface *surf)
 {
     long int offset = 0;
-    IMG_SavePNG(surf, "test11.png");
+    // IMG_SavePNG(surf, "test11.png");
     Point_arr_o *pa = calloc(1, sizeof(Point_arr_o));
     pa->hg = calloc(100, sizeof(Point));
     pa->hd = calloc(100, sizeof(Point));
@@ -545,6 +565,7 @@ get_intersection_points(Points_Array *array,
     pa->bde = calloc(200, sizeof(size_t));
     Point po;
     int *pixels = surf->pixels;
+    int flag = 0;
     long int x, y;
     int tl1 = 0, tr1 = 0, bl1 = 0, br1 = 0, tl2 = 0, tr2 = 0, bl2 = 0, br2 = 0;
     SDL_PixelFormat *format = surf->format;
@@ -560,7 +581,7 @@ get_intersection_points(Points_Array *array,
                 if (parametricIntersect(array->array[p], array->array[p + 1],
                                         array->array[q], array->array[q + 1],
                                         &x, &y)) {
-                    if (x >= 0 && x < w && y >= 0 && y < h) {
+                    if (x >= 3 && x < w-3 && y >= 3 && y < h- 3) {
                         tr1 = 0;
                         tl1 = 0;
                         br1 = 0;
@@ -612,11 +633,39 @@ get_intersection_points(Points_Array *array,
                         }
                         // }
 
+                        x = m1;
+                        y = m2;
+
+			flag = 0;
+			for (size_t pp = 0; pp < pa->bgs ; pp ++) {
+                            if ((ABS((long int)pa->bg[pp].x - x)) < 20 && (ABS((long int)pa->bg[pp].y - y)) < 20)  {
+                                flag = 1;
+			    }
+			}
+
+			for (size_t pp = 0; pp < pa->bds ; pp ++) {
+                            if ((ABS((long int)pa->bd[pp].x - x)) < 20 && (ABS((long int)pa->bd[pp].y - y)) < 20)  {
+                                flag = 1;
+			    }
+			}
+
+			for (size_t pp = 0; pp < pa->hds ; pp ++) {
+                            if ((ABS((long int)pa->hd[pp].x - x)) < 20 && (ABS((long int)pa->hd[pp].y - y)) < 20)  {
+                                flag = 1;
+			    }
+			}
+
+			for (size_t pp = 0; pp < pa->hgs ; pp ++) {
+                            if ((ABS((long int)pa->hg[pp].x - x)) < 20 && (ABS((long int)pa->hg[pp].y - y)) < 20)  {
+                                flag = 1;
+			    }
+			}
+
+			if (flag) {continue;}
+
                         // printf("m1: %lu, m2: %lu, m3: %lu, m4: %lu\n", m1,
                         // m2,m3, m4);
 
-                        x = m1;
-                        y = m2;
                         for (long int xx = x - 20 - offset; xx < x - 10; xx++) {
                             for (long int yy = y - 20; yy < y - 10; yy++) {
                                 if (xx >= 0 && xx < w && yy >= 0 && yy < h) {
@@ -751,7 +800,7 @@ get_intersection_points(Points_Array *array,
                         }
                         for (long int xx = x - 20 - offset; xx < x - 10; xx++) {
                             for (long int yy = y - 10; yy < y; yy++) {
-                                if (xx >= 0 && xx < w && yy < h) {
+                                if (xx >= 0 && xx < w && yy >= 0 && yy < h) {
                                     size_t t1 = ABS(
                                       (yy *
                                          cosf(array->array[p + 1] * PI / 180) +
@@ -1010,16 +1059,25 @@ get_intersection_points(Points_Array *array,
                             }
                         }
 
-                        // printf("oskour tl1: %lu, tr1: %lu, bl1: %lu, br1:
-                        // %lu, tl2: %lu, tr2: %lu, bl2: %lu, br2: %lu, x: %lu,
-                        // y: %lu\n", tl1, tr1, bl1, br1, tl2, tr2, bl2, br2, x,
-                        // y);
+//                        printf("oskour tl1: %lu, tr1: %lu, bl1: %lu, br1: "
+//                        "%lu, tl2: %lu, tr2: %lu, bl2: %lu, br2: %lu, x: %lu, "
+//                        "y: %lu\n", tl1, tr1, bl1, br1, tl2, tr2, bl2, br2, x,
+//                        y);
+			if ((ABS(array->array[p+1]- array->array[q+1])) % 90 > 30) {
+                             continue;
+			}	
                         if (!((tl1 > 5 && br1 > 5) || (bl1 > 5 && tr1 > 5) ||
                               (tl2 > 5 && br2 > 5) || (tr2 > 5 && bl2 > 5))) {
                             // printf("isok\n");
 
                             // close to the border
-                            if ((ABS(x - w)) <= 15 && (ABS(y - h)) <= 15) {
+			    if ((bl1 >= 30 && br1 >= 30) || (bl1 >= 30 && tl1 >= 30) || (tl1 >= 30 && tr1 >= 30) || (tr1 >= 30 && br1 >= 30) || (bl2 >= 30 && br2 >= 30) || (bl2 >= 30 && tl2 >= 30) || (tl2 >= 30 && tr2 >= 30) || (tr2 >= 30 && br2 >= 30)) {
+                                continue;
+			    }
+			    else if ((bl1 >= 10 && br1 >= 10 && tr2 >= 10 && tl2 >= 10) || (bl1 >= 10 && tl1 >= 10 && tr2 >= 10 && br2 >= 10) || (tl1 >= 10 && tr1 >= 10 && br2 >= 10 && bl2 >= 10) || (tr1 >= 10 && br1 >= 10 && tl2 >= 10 && bl2 >= 10)) {
+                                continue;
+			    }
+			    else if ((ABS(x - w)) <= 15 && (ABS(y - h)) <= 15) {
                                 po.x = x;
                                 po.y = y;
                                 pa->bde[pa->bds * 4] = array->array[p];
@@ -1112,149 +1170,176 @@ get_intersection_points(Points_Array *array,
                                 pa->hd[pa->hds++] = po;
                             }
                             // corner classico
-                            else if (tl1 > 5 && tr2 > 5 && br1 < 5 && tr1 < 5 &&
-                                     br2 < 5 && bl2 < 5 && tl2 < 5) {
+                            else if (tl1 > 5 && tr2 > 5 && br1 < 5 && bl2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
+				// printf("tl1 tr2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
                                 pa->bde[pa->bds * 4] = array->array[p];
                                 pa->bde[1 + pa->bds * 4] = array->array[p + 1];
                                 pa->bde[2 + pa->bds * 4] = array->array[q];
                                 pa->bde[3 + pa->bds * 4] = array->array[q + 1];
                                 pa->bd[pa->bds++] = po;
-                            } else if (tl1 > 5 && bl2 > 5 && bl1 < 5 &&
-                                       br1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && tl2 < 5) {
+                            } else if (tl1 > 5 && bl2 > 5 && br1 < 5 && tr2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
+				// printf("tl1 bl2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
                                 pa->hde[pa->hds * 4] = array->array[p];
                                 pa->hde[1 + pa->hds * 4] = array->array[p + 1];
                                 pa->hde[2 + pa->hds * 4] = array->array[q];
                                 pa->hde[3 + pa->hds * 4] = array->array[q + 1];
                                 pa->hd[pa->hds++] = po;
-                            } else if (tr1 > 5 && tr2 > 5 && br1 < 5 &&
-                                       tl1 < 5 && bl1 < 5 && tl2 < 5 &&
-                                       bl2 < 5 && br2 < 5) {
+                            } else if (tr1 > 5 && tr2 > 5 && bl1 < 5 && bl2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
-                                pa->bde[pa->bds * 4] = array->array[p];
-                                pa->bde[1 + pa->bds * 4] = array->array[p + 1];
-                                pa->bde[2 + pa->bds * 4] = array->array[q];
-                                pa->bde[3 + pa->bds * 4] = array->array[q + 1];
-                                pa->bd[pa->bds++] = po;
-                            } else if (br1 > 5 && br2 > 5 && bl1 < 5 &&
-                                       tl1 < 5 && tr1 < 5 && tl2 < 5 &&
-                                       tr2 < 5 && bl2 < 5) {
+				// printf("tr1 tr2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
+				if (array->array[q + 1] < 44 ) {
+                                  pa->bde[pa->bds * 4] = array->array[p];
+                                  pa->bde[1 + pa->bds * 4] = array->array[p + 1];
+                                  pa->bde[2 + pa->bds * 4] = array->array[q];
+                                  pa->bde[3 + pa->bds * 4] = array->array[q + 1];
+                                  pa->bd[pa->bds++] = po;
+				}
+				else {
+                                  pa->bge[pa->bgs * 4] = array->array[p];
+                                  pa->bge[1 + pa->bgs * 4] = array->array[p + 1];
+                                  pa->bge[2 + pa->bgs * 4] = array->array[q];
+                                  pa->bge[3 + pa->bgs * 4] = array->array[q + 1];
+                                  pa->bg[pa->bgs++] = po;
+				}
+                            } else if (br1 > 5 && br2 > 5 && tl1 < 5 && tl2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
+				// printf("br1 br2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
                                 pa->hge[pa->hgs * 4] = array->array[p];
                                 pa->hge[1 + pa->hgs * 4] = array->array[p + 1];
                                 pa->hge[2 + pa->hgs * 4] = array->array[q];
                                 pa->hge[3 + pa->hgs * 4] = array->array[q + 1];
                                 pa->hg[pa->hgs++] = po;
-                            } else if (bl1 > 5 && bl2 > 5 && tl1 < 5 &&
-                                       br1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && tl2 < 5) {
+                            } else if (bl1 > 5 && bl2 > 5 && tr1 < 5 && tr2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
+				// printf("bl1 bl2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
                                 pa->hde[pa->hds * 4] = array->array[p];
                                 pa->hde[1 + pa->hds * 4] = array->array[p + 1];
                                 pa->hde[2 + pa->hds * 4] = array->array[q];
                                 pa->hde[3 + pa->hds * 4] = array->array[q + 1];
                                 pa->hd[pa->hds++] = po;
-                            } else if (tl1 > 5 && tl2 > 5 && bl1 < 5 &&
-                                       br1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && bl2 < 5) {
+                            } else if (tl1 > 5 && tl2 > 5 && br1 < 5 && br2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
+				// printf("tl1 tl2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
                                 pa->bde[pa->bds * 4] = array->array[p];
                                 pa->bde[1 + pa->bds * 4] = array->array[p + 1];
                                 pa->bde[2 + pa->bds * 4] = array->array[q];
                                 pa->bde[3 + pa->bds * 4] = array->array[q + 1];
                                 pa->bd[pa->bds++] = po;
-                            } else if (tr1 > 5 && br2 > 5 && bl1 < 5 &&
-                                       br1 < 5 && tl1 < 5 && tl2 < 5 &&
-                                       tr2 < 5 && bl2 < 5) {
+                            } else if (tr1 > 5 && br2 > 5 && bl1 < 5 && tl2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
-                                pa->bge[pa->bgs * 4] = array->array[p];
-                                pa->bge[1 + pa->bgs * 4] = array->array[p + 1];
-                                pa->bge[2 + pa->bgs * 4] = array->array[q];
-                                pa->bge[3 + pa->bgs * 4] = array->array[q + 1];
-                                pa->bg[pa->bgs++] = po;
-                            } else if (tr1 > 5 && tl2 > 5 && bl1 < 5 &&
-                                       br1 < 5 && tl1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && bl2 < 5) {
-                                // printf("(%lu, %lu)\n", x, y);
-                                po.x = x;
-                                po.y = y;
-                                pa->bde[pa->bds * 4] = array->array[p];
-                                pa->bde[1 + pa->bds * 4] = array->array[p + 1];
-                                pa->bde[2 + pa->bds * 4] = array->array[q];
-                                pa->bde[3 + pa->bds * 4] = array->array[q + 1];
-                                pa->bd[pa->bds++] = po;
-                            } else if (br1 > 5 && bl2 > 5 && bl1 < 5 &&
-                                       tl1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && tl2 < 5) {
-                                // printf("(%lu, %lu)\n", x, y);
-                                po.x = x;
-                                po.y = y;
-                                pa->hge[pa->hgs * 4] = array->array[p];
-                                pa->hge[1 + pa->hgs * 4] = array->array[p + 1];
-                                pa->hge[2 + pa->hgs * 4] = array->array[q];
-                                pa->hge[3 + pa->hgs * 4] = array->array[q + 1];
-                                pa->hg[pa->hgs++] = po;
-                            } else if (br1 > 5 && tr2 > 5 && bl1 < 5 &&
-                                       tl1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       bl2 < 5 && tl2 < 5) {
-                                // printf("(%lu, %lu)\n", x, y);
-                                po.x = x;
-                                po.y = y;
-                                pa->bge[pa->bgs * 4] = array->array[p];
-                                pa->bge[1 + pa->bgs * 4] = array->array[p + 1];
-                                pa->bge[2 + pa->bgs * 4] = array->array[q];
-                                pa->bge[3 + pa->bgs * 4] = array->array[q + 1];
-                                pa->bg[pa->bgs++] = po;
-                            } else if (bl1 > 5 && br2 > 5 && tl1 < 5 &&
-                                       br1 < 5 && tr1 < 5 && bl2 < 5 &&
-                                       tr2 < 5 && tl2 < 5) {
-                                // printf("(%lu, %lu)\n", x, y);
-                                po.x = x;
-                                po.y = y;
-                                if (!(ISVERT(array->array[p]))) {
-                                    pa->hde[pa->hds * 4] = array->array[p];
-                                    pa->hde[1 + pa->hds * 4] =
-                                      array->array[p + 1];
-                                    pa->hde[2 + pa->hds * 4] = array->array[q];
-                                    pa->hde[3 + pa->hds * 4] =
-                                      array->array[q + 1];
-                                    pa->hd[pa->hds++] = po;
+				// printf("tr1 br2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
+                                if (array->array[p+1] > 44) {
+                                  pa->bge[pa->bgs * 4] = array->array[p];
+                                  pa->bge[1 + pa->bgs * 4] = array->array[p + 1];
+                                  pa->bge[2 + pa->bgs * 4] = array->array[q];
+                                  pa->bge[3 + pa->bgs * 4] = array->array[q + 1];
+                                  pa->bg[pa->bgs++] = po;
                                 } else {
-                                    pa->hge[pa->hgs * 4] = array->array[p];
-                                    pa->hge[1 + pa->hgs * 4] =
-                                      array->array[p + 1];
-                                    pa->hge[2 + pa->hgs * 4] = array->array[q];
-                                    pa->hge[3 + pa->hgs * 4] =
-                                      array->array[q + 1];
-                                    pa->hg[pa->hgs++] = po;
+                                  pa->bde[pa->bds * 4] = array->array[q];
+                                  pa->bde[1 + pa->bds * 4] = array->array[q + 1];
+                                  pa->bde[2 + pa->bds * 4] = array->array[p];
+                                  pa->bde[3 + pa->bds * 4] = array->array[p + 1];
+                                  pa->bd[pa->bds++] = po;
                                 }
-                            } else if (bl1 > 5 && tl2 > 5 && tl1 < 5 &&
-                                       br1 < 5 && tr1 < 5 && br2 < 5 &&
-                                       tr2 < 5 && bl2 < 5) {
+                            } else if (tr1 > 5 && tl2 > 5 && bl1 < 5 && br2 < 5) {
                                 // printf("(%lu, %lu)\n", x, y);
                                 po.x = x;
                                 po.y = y;
-                                pa->hde[pa->hds * 4] = array->array[p];
-                                pa->hde[1 + pa->hds * 4] = array->array[p + 1];
-                                pa->hde[2 + pa->hds * 4] = array->array[q];
-                                pa->hde[3 + pa->hds * 4] = array->array[q + 1];
-                                pa->hd[pa->hds++] = po;
+				// printf("tr1 tl2 %lu, %lu\n", array->array[p+1], array->array[q+1]);
+                                pa->bde[pa->bds * 4] = array->array[p];
+                                pa->bde[1 + pa->bds * 4] = array->array[p + 1];
+                                pa->bde[2 + pa->bds * 4] = array->array[q];
+                                pa->bde[3 + pa->bds * 4] = array->array[q + 1];
+                                pa->bd[pa->bds++] = po;
+                            } else if (br1 > 5 && bl2 > 5 && tl1 < 5 && tr2 < 5) {
+                                // printf("(%lu, %lu)\n", x, y);
+                                po.x = x;
+                                po.y = y;
+//				// printf("%lu, %lu\n", array->array[p+1], array->array[q+1]);
+                                if (array->array[q+1] > 44) {
+                                  pa->hge[pa->hgs * 4] = array->array[q];
+                                  pa->hge[1 + pa->hgs * 4] = array->array[q + 1];
+                                  pa->hge[2 + pa->hgs * 4] = array->array[p];
+                                  pa->hge[3 + pa->hgs * 4] = array->array[p + 1];
+                                  pa->hg[pa->hgs++] = po;
+                                } else {
+                                  pa->hde[pa->hds * 4] = array->array[p];
+                                  pa->hde[1 + pa->hds * 4] = array->array[p + 1];
+                                  pa->hde[2 + pa->hds * 4] = array->array[q];
+                                  pa->hde[3 + pa->hds * 4] = array->array[q + 1];
+                                  pa->hd[pa->hds++] = po;
+                                }
+                            } else if (br1 > 5 && tr2 > 5 && tl1 < 5 && bl2 < 5) {
+                                // printf("(%lu, %lu)\n", x, y);
+                                po.x = x;
+                                po.y = y;
+				// printf("%lu, %lu\n", array->array[p+1], array->array[q+1]);
+                                if (array->array[q+1] > 44) {
+                                  pa->hde[pa->hds * 4] = array->array[q];
+                                  pa->hde[1 + pa->hds * 4] = array->array[q + 1];
+                                  pa->hde[2 + pa->hds * 4] = array->array[p];
+                                  pa->hde[3 + pa->hds * 4] = array->array[p + 1];
+                                  pa->hd[pa->hds++] = po;
+                                } else {
+                                  pa->hge[pa->hgs * 4] = array->array[p];
+                                  pa->hge[1 + pa->hgs * 4] = array->array[p + 1];
+                                  pa->hge[2 + pa->hgs * 4] = array->array[q];
+                                  pa->hge[3 + pa->hgs * 4] = array->array[q + 1];
+                                  pa->hg[pa->hgs++] = po;
+                                }
+                            } else if (bl1 > 5 && br2 > 5 && tr1 < 5 && tl2 < 5) {
+                                // printf("(%lu, %lu)\n", x, y);
+                                po.x = x;
+                                po.y = y;
+//				// printf("%lu, %lu\n", array->array[p+1], array->array[q+1]);
+                                if (array->array[q+1] > 44) {
+                                  pa->hde[pa->hds * 4] = array->array[q];
+                                  pa->hde[1 + pa->hds * 4] = array->array[q + 1];
+                                  pa->hde[2 + pa->hds * 4] = array->array[p];
+                                  pa->hde[3 + pa->hds * 4] = array->array[p + 1];
+                                  pa->hd[pa->hds++] = po;
+                                } else {
+                                  pa->hge[pa->hgs * 4] = array->array[p];
+                                  pa->hge[1 + pa->hgs * 4] = array->array[p + 1];
+                                  pa->hge[2 + pa->hgs * 4] = array->array[q];
+                                  pa->hge[3 + pa->hgs * 4] = array->array[q + 1];
+                                  pa->hg[pa->hgs++] = po;
+                                }
+                            } else if (bl1 > 5 && tl2 > 5 && tr1 < 5 && br2 < 5) {
+                                // printf("(%lu, %lu)\n", x, y);
+                                po.x = x;
+                                po.y = y;
+//				printf("%lu, %lu", array->array[p+1], array->array[q+1]);
+				if (array->array[q + 1] > 44 ) {
+                                  pa->bde[pa->bds * 4] = array->array[q];
+                                  pa->bde[1 + pa->bds * 4] = array->array[q + 1];
+                                  pa->bde[2 + pa->bds * 4] = array->array[p];
+                                  pa->bde[3 + pa->bds * 4] = array->array[p + 1];
+                                  pa->bd[pa->bds++] = po;
+				}
+				else {
+                                  pa->hde[pa->hds * 4] = array->array[p];
+                                  pa->hde[1 + pa->hds * 4] = array->array[p + 1];
+                                  pa->hde[2 + pa->hds * 4] = array->array[q];
+                                  pa->hde[3 + pa->hds * 4] = array->array[q + 1];
+                                  pa->hd[pa->hds++] = po;
+				}
                             }
                         }
                     }
@@ -1262,19 +1347,19 @@ get_intersection_points(Points_Array *array,
             }
         }
         offset += 5;
-        // printf("bd: %lu, bg: %lu, hg: %lu, hd: %lu\n", pa->bds, pa->bgs,
-        // pa->hgs, pa->hds); for (size_t i = 0; i < pa->bgs; i++) { printf("bg
-        // x: %lu, y: %lu\n", pa->bg[i].x, pa->bg[i].y);
-        // }
-        // for (size_t i = 0; i < pa->bds; i++) {
-        // printf("bd x: %lu, y: %lu\n", pa->bd[i].x, pa->bd[i].y);
-        // }
-        // for (size_t i = 0; i < pa->hgs; i++) {
-        // printf("hg x: %lu, y: %lu\n", pa->hg[i].x, pa->hg[i].y);
-        // }
-        // for (size_t i = 0; i < pa->hds; i++) {
-        // printf("hd x: %lu, y: %lu\n", pa->hd[i].x, pa->hd[i].y);
-        // }
+        //printf("bd: %lu, bg: %lu, hg: %lu, hd: %lu\n", pa->bds, pa->bgs, pa->hgs, pa->hds); 
+        //for (size_t i = 0; i < pa->bgs; i++) { 
+        //  printf("bgx: %lu, y: %lu\n", pa->bg[i].x, pa->bg[i].y);
+        //}
+        //for (size_t i = 0; i < pa->bds; i++) {
+        //  printf("bd x: %lu, y: %lu\n", pa->bd[i].x, pa->bd[i].y);
+        //}
+        //for (size_t i = 0; i < pa->hgs; i++) {
+        //  printf("hg x: %lu, y: %lu\n", pa->hg[i].x, pa->hg[i].y);
+        //}
+        //for (size_t i = 0; i < pa->hds; i++) {
+        //  printf("hd x: %lu, y: %lu\n", pa->hd[i].x, pa->hd[i].y);
+        //}
         // errx(2, "suce");
     }
 
@@ -1290,11 +1375,10 @@ get_intersection_points(Points_Array *array,
 }
 
 SDL_Surface *
-clean_suface(SDL_Surface *s, SDL_Surface *ss)
+clean_surface2(SDL_Surface *s)
 {
     int *pixels = s->pixels;
-    int *pixelse = ss->pixels;
-    SDL_Surface *out = ss;
+    SDL_Surface *out = s;
     size_t nx = 0, ny = 0, nxx = 0, nyy = 0, nxxx = 0, nyyy = 0;
     Uint8 r = 0, g = 0, b = 0;
     int flag = 0;
@@ -1354,6 +1438,84 @@ clean_suface(SDL_Surface *s, SDL_Surface *ss)
         }
     }
 
+//    if (nxx != 0 || nyy != 0 || nxxx != 0 || nyyy != 0) {
+        out = SDL_CreateRGBSurfaceWithFormat(
+          0, s->w - nxx - nxxx, s->h - nyy - nyyy, 32, s->format->format);
+        int *pi = out->pixels;
+        for (size_t i = nyy; i < s->h - nyyy; i++) {
+            for (size_t j = nxx; j < s->w - nxxx; j++) {
+                pi[(i - nyy) * out->w + (j - nxx)] = pixels[i * s->w + j];
+            }
+        }
+//        SDL_FreeSurface(s);
+//    }
+    return out;
+}
+SDL_Surface *
+clean_surface(SDL_Surface *s, SDL_Surface * ss)
+{
+    int *pixels = s->pixels;
+    int *pixelse = ss->pixels;
+    SDL_Surface *out = ss;
+    size_t nx = 0, ny = 0, nxx = 0, nyy = 0, nxxx = 0, nyyy = 0;
+    Uint8 r = 0, g = 0, b = 0;
+    int flag = 0;
+    for (size_t i = 0; i < 20; i++) {
+        nx = 0;
+        for (long int j = 0; j < s->w; j++) {
+            SDL_GetRGB(pixels[i * s->w + j], s->format, &r, &g, &b);
+            if (r == 0 && g == 0 && b == 0) { nx++; }
+        }
+        if (nx >= 0.7 * s->w) {
+            flag = 1;
+        } else if (flag) {
+            nyy = i;
+            break;
+        }
+    }
+    flag = 0;
+    for (size_t j = 0; j < 20; j++) {
+        ny = 0;
+        for (long int i = 0; i < s->h; i++) {
+            SDL_GetRGB(pixels[i * s->w + j], s->format, &r, &g, &b);
+            if (r == 0 && g == 0 && b == 0) { ny++; }
+        }
+        if (ny >= 0.7 * s->h) {
+            flag = 1;
+        } else if (flag) {
+            nxx = j;
+            break;
+        }
+    }
+    flag = 0;
+    for (int i = s->h - 20; i < s->h; i++) {
+        nx = 0;
+        for (int j = 0; j < s->w; j++) {
+            SDL_GetRGB(pixels[i * s->w + j], s->format, &r, &g, &b);
+            if (r == 0 && g == 0 && b == 0) { nx++; }
+        }
+        if (nx >= 0.7 * s->w) {
+            flag = 1;
+        } else if (flag) {
+            nyyy = s->h - i;
+            break;
+        }
+    }
+    flag = 0;
+    for (int j = s->w - 20; j < s->w; j++) {
+        ny = 0;
+        for (int i = 0; i < s->h; i++) {
+            SDL_GetRGB(pixels[i * s->w + j], s->format, &r, &g, &b);
+            if (r == 0 && g == 0 && b == 0) { ny++; }
+        }
+        if (ny >= 0.7 * s->h) {
+            flag = 1;
+        } else if (flag) {
+            nxxx = s->w - j;
+            break;
+        }
+    }
+
     if (nxx != 0 || nyy != 0 || nxxx != 0 || nyyy != 0) {
         out = SDL_CreateRGBSurfaceWithFormat(
           0, s->w - nxx - nxxx, s->h - nyy - nyyy, 32, s->format->format);
@@ -1370,14 +1532,18 @@ clean_suface(SDL_Surface *s, SDL_Surface *ss)
 }
 
 void
-split_image(SDL_Surface *image, SDL_Surface *oute)
+split_image(SDL_Surface *image, SDL_Surface *oute, char * s)
 {
-    SDL_Surface *surf, *surfe;
+    SDL_Surface *surf, *surfe, *surfee;
     size_t w = image->w, h = image->h, ww = w / 9, hh = h / 9;
     int *pixels = (int *) image->pixels;
     int *pixels_4 = (int *) oute->pixels;
     int *pixels_2, *pixels_3;
-    char path[12] = { '.', '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
+    char p[128];
+    strcpy(p, s);
+    strcat(p, "/images/detect/");
+    char path[12] = { 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
+    char path2[64] = { 'c', '2', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
             surf = SDL_CreateRGBSurfaceWithFormat(
@@ -1394,11 +1560,22 @@ split_image(SDL_Surface *image, SDL_Surface *oute)
                       pixels_4[k * image->w + l];
                 }
             }
-            surfe = clean_suface(surf, surfe);
-            path[4] = i + 0x30;
-            path[6] = j + 0x30;
-            IMG_SavePNG(surf, path);
+            char pe[128];
+            char pee[128];
+	    strcpy(pe, p);
+	    strcpy(pee, p);
+            surfee = clean_surface2(surf);
+            surfe = clean_surface(surf, surfe);
+            path[2] = i + 0x30;
+            path[4] = j + 0x30;
+            path2[3] = i + 0x30;
+            path2[5] = j + 0x30;
+            strcat(pe, path);
+            strcat(pee, path2);
+            resize_to_image(surfe, 28, 28, pe);
+            resize_to_image(surfee, 28, 28, pee);
             SDL_FreeSurface(surfe);
+            SDL_FreeSurface(surfee);
         }
     }
 }
@@ -1730,7 +1907,7 @@ clean_corners_array(Point_arr_o *corners)
     while (!bg || !bd || !hg || !hd) {
         flag = (bg ? 1 : 0) << 1 | (bd ? 1 : 0) << 2 | (hg ? 1 : 0) << 3 |
           (hd ? 1 : 0) << 4;
-        printf("fl:  %i, nf: %i, sf: %u\n", flag, new_flag, save_flag);
+        // printf("fl:  %i, nf: %i, sf: %u\n", flag, new_flag, save_flag);
         if (bg && bd && hg) {
             for (size_t i = 0; i < corners->hds; i++) {
                 if (r3 == corners->hde[i * 4] &&
@@ -3835,6 +4012,7 @@ clean_corners_array(Point_arr_o *corners)
         } else if (hg && bg) {
             if (r3 == r1 && t3 == t1) {
                 for (size_t i = 0; i < corners->hds; i++) {
+                  for (size_t i = 0; i < corners->bds; i++) {
                     if (r32 == corners->hde[i * 4] &&
                         t32 == corners->hde[i * 4 + 1]) {
                         r4 = corners->hde[i * 4];
@@ -3855,6 +4033,7 @@ clean_corners_array(Point_arr_o *corners)
                         ibd = i;
                         break;
                     }
+		  }
                 }
                 for (size_t i = 0; i < corners->bds; i++) {
                     if (r12 == corners->bde[i * 4] &&
@@ -4114,6 +4293,7 @@ clean_corners_array(Point_arr_o *corners)
             }
         } else if (bg) {
             for (size_t i = 0; i < corners->hgs; i++) {
+		    // printf("%lu, %lu, %lu, %lu\n", t1, t12, r1, r12);
                 if (r1 == corners->hge[i * 4] &&
                     t1 == corners->hge[i * 4 + 1]) {
                     r3 = corners->hge[i * 4];
@@ -4285,31 +4465,32 @@ clean_corners_array(Point_arr_o *corners)
                 }
             }
         }
+	// printf("flags: %lu, %lu, %lu\n", flag, new_flag, save_flag);
         if (flag == save_flag) {
             switch (save_flag ^ new_flag) {
                 case 0:
-                    if (bg) {
+                    if (bg && corners->bgs > ibg + 1) {
                         bg = &corners->bg[ibg + 1];
                         r1 = corners->bge[(ibg + 1) * 4];
                         t1 = corners->bge[(ibg + 1) * 4 + 1];
                         r12 = corners->bge[(ibg + 1) * 4 + 2];
                         t12 = corners->bge[(ibg + 1) * 4 + 3];
                         ibg++;
-                    } else if (bd) {
+                    } else if (bd && corners->bds > ibd + 1) {
                         bd = &corners->bd[ibd + 1];
                         r2 = corners->bde[(ibd + 1) * 4];
                         t2 = corners->bde[(ibd + 1) * 4 + 1];
                         r22 = corners->bde[(ibd + 1) * 4 + 2];
                         t22 = corners->bde[(ibd + 1) * 4 + 3];
                         ibd++;
-                    } else if (hg) {
+                    } else if (hg && corners->hgs > ihg + 1) {
                         hg = &corners->hg[ihg + 1];
                         r3 = corners->hge[(ihg + 1) * 4];
                         t3 = corners->hge[(ihg + 1) * 4 + 1];
                         r32 = corners->hge[(ihg + 1) * 4 + 2];
                         t32 = corners->hge[(ihg + 1) * 4 + 3];
                         ihg++;
-                    } else {
+                    } else if (corners->hds > ihd + 1) {
                         hd = &corners->hd[ihd + 1];
                         r4 = corners->hde[(ihd + 1) * 4];
                         t4 = corners->hde[(ihd + 1) * 4 + 1];
@@ -4396,17 +4577,17 @@ clean_corners_array(Point_arr_o *corners)
         }
         new_flag = (bg ? 1 : 0) << 1 | (bd ? 1 : 0) << 2 | (hg ? 1 : 0) << 3 |
           (hd ? 1 : 0) << 4;
-        printf("$$$$$$$$$$$$$$$$$$\n");
-        if (bg) printf("bg: x: %lu, y: %lu\n", bg->x, bg->y);
-        if (bd) printf("bd: x: %lu, y: %lu\n", bd->x, bd->y);
-        if (hg) printf("hg: x: %lu, y: %lu\n", hg->x, hg->y);
-        if (hd) printf("hd: x: %lu, y: %lu\n", hd->x, hd->y);
+        // printf("$$$$$$$$$$$$$$$$$$\n");
+//        if (bg) printf("bg: x: %lu, y: %lu\n", bg->x, bg->y);
+//        if (bd) printf("bd: x: %lu, y: %lu\n", bd->x, bd->y);
+//        if (hg) printf("hg: x: %lu, y: %lu\n", hg->x, hg->y);
+//        if (hd) printf("hd: x: %lu, y: %lu\n", hd->x, hd->y);
     }
-    printf("##################\n");
-    printf("bg: x: %lu, y: %lu\n", bg->x, bg->y);
-    printf("bd: x: %lu, y: %lu\n", bd->x, bd->y);
-    printf("hg: x: %lu, y: %lu\n", hg->x, hg->y);
-    printf("hd: x: %lu, y: %lu\n", hd->x, hd->y);
+//    printf("##################\n");
+//    printf("bg: x: %lu, y: %lu\n", bg->x, bg->y);
+//    printf("bd: x: %lu, y: %lu\n", bd->x, bd->y);
+//    printf("hg: x: %lu, y: %lu\n", hg->x, hg->y);
+//    printf("hd: x: %lu, y: %lu\n", hd->x, hd->y);
 
     corners->bg[0] = *bg;
     corners->bd[0] = *bd;
@@ -4509,27 +4690,41 @@ main(int argc, char **argv)
     // }
     // }
 
-    IMG_SavePNG(image_temp, "./test9.png");
+    // IMG_SavePNG(image_temp, "./test9.png");
 
     Point_arr_o *corners_arr =
       get_intersection_points(arr, image_temp->w, image_temp->h, image_temp);
-    // for (size_t i = 0; i < corners_arr->hgs; i++) {
+    //for (size_t i = 0; i < corners_arr->hgs; i++) {
+    //change_pixel(image_temp, corners_arr->hg[i].x,
+    //corners_arr->hg[i].y,
+    //SDL_MapRGB(image_temp->format, 255, 0, 0));
     // printf("hg x: %lu, y: %lu\n", (corners_arr->hg[i]).x,
     // (corners_arr->hg[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->hds; i++) {
+    //}
+    //for (size_t i = 0; i < corners_arr->hds; i++) {
+    //change_pixel(image_temp, corners_arr->hd[i].x,
+    //corners_arr->hd[i].y,
+    //SDL_MapRGB(image_temp->format, 255, 0, 0));
     // printf("hd x: %lu, y: %lu\n", (corners_arr->hd[i]).x,
     // (corners_arr->hd[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->bds; i++) {
+    //}
+    //for (size_t i = 0; i < corners_arr->bds; i++) {
+    //change_pixel(image_temp, corners_arr->bd[i].x,
+    //corners_arr->bd[i].y,
+    //SDL_MapRGB(image_temp->format, 255, 0, 0));
     // printf("bd x: %lu, y: %lu\n", (corners_arr->bd[i]).x,
     // (corners_arr->bd[i]).y);
-    // }
-    // for (size_t i = 0; i < corners_arr->bgs; i++) {
+    //}
+    //for (size_t i = 0; i < corners_arr->bgs; i++) {
+    //change_pixel(image_temp, corners_arr->bg[i].x,
+    //corners_arr->bg[i].y,
+    //SDL_MapRGB(image_temp->format, 255, 0, 0));
     // printf("bg x: %lu, y: %lu\n", (corners_arr->bg[i]).x,
     // (corners_arr->bg[i]).y);
-    // }
+    //}
     clean_corners_array(corners_arr);
+    
+    // IMG_SavePNG(image_temp, "testttt.png");
 
     SDL_Surface *out =
       flatten_image(image_temp, corners_arr->hg, corners_arr->hd,
@@ -4539,12 +4734,21 @@ main(int argc, char **argv)
       flatten_image(image_tempe, corners_arr->hg, corners_arr->hd,
                     corners_arr->bg, corners_arr->bd);
 
-    IMG_SavePNG(out, "test-done.png");
+    char ss[128] = {0};
+    strcpy(ss, argv[0]);
+    dirname(ss);
+    char sss[128];
+    strcpy(sss,ss);
+    strcat(sss, "steps/grid_detection.png");
+    IMG_SavePNG(oute, sss);
+    strcpy(sss,ss);
+    strcat(sss, "steps/rotation.png");
+    IMG_SavePNG(oute, sss);
 
-    IMG_SavePNG(image_temp, "./test6.png");
+    // IMG_SavePNG(image_temp, "./test6.png");
     SDL_UnlockSurface(image_temp);
 
-    split_image(out, oute);
+    split_image(out, oute, ss);
 
     free(arr->array);
     free(arr);

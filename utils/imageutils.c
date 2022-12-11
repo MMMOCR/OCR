@@ -198,7 +198,7 @@ image_utils(char* filename)
 }
 
 int
-main(int argc, char** argv)
+putemain(int argc, char** argv)
 {
     int h;
     int w;
