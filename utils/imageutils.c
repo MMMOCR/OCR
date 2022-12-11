@@ -8,6 +8,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_video.h>
 #include <libgen.h>
 #include <string.h>
 #include <unistd.h>
@@ -159,9 +160,8 @@ image_utils(char* filename)
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window =
-      SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
-                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640,
+                                          400, SDL_WINDOW_HIDDEN);
     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Renderer* renderer =
@@ -190,7 +190,7 @@ image_utils(char* filename)
 
     SDL_FreeSurface(colored_surface);
 
-    event_loop(renderer, texture, grayscale_texture);
+    // event_loop(renderer, texture, grayscale_texture);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -208,9 +208,8 @@ putemain(int argc, char** argv)
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window =
-      SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400,
-                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640,
+                                          400, SDL_WINDOW_HIDDEN);
     if (window == NULL) errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Renderer* renderer =
@@ -297,7 +296,7 @@ putemain(int argc, char** argv)
       SDL_CreateTextureFromSurface(renderer, out);
     SDL_FreeSurface(colored_surface);
 
-    event_loop(renderer, texture, grayscale_texture);
+    // event_loop(renderer, texture, grayscale_texture);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
