@@ -26,6 +26,9 @@
 #define MAXDIFF(x, y, n) \
     (((x - y) >= 0 && (x - y) <= n) || ((y - x) >= 0 && (y - x) <= n)) ? 1 : 0
 
+#define ALED(x, y, angle) \
+  angle < 90 ? (x * cosf((angle * PI) / 180) + y * sinf((angle * PI) /180)) : (x * cosf((angle * PI) / 180) + y * cosf((angle * PI) /180))
+
 typedef struct
 {
     long double *data;
@@ -38,6 +41,22 @@ typedef struct
     size_t x;
     size_t y;
 } Point;
+
+typedef struct
+{
+    size_t *bge;
+    size_t *bde;
+    size_t *hge;
+    size_t *hde;
+    Point *bg;
+    Point *bd;
+    Point *hg;
+    Point *hd;
+    size_t bgs;
+    size_t bds;
+    size_t hgs;
+    size_t hds;
+} Point_arr_o;
 
 typedef struct
 {
