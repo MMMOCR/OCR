@@ -43,16 +43,16 @@ compute(SDL_Surface* surface,
     Uint32* pixelsOut = out->pixels;
     SDL_PixelFormat* format = surface->format;
     long int Gx_compute = 0;
-    for (size_t i = 2; i < h-2; i++) {
-        for (size_t j = 2; j < w-2; j++) {
+    for (size_t i = 2; i < h - 2; i++) {
+        for (size_t j = 2; j < w - 2; j++) {
             Gx_compute = 0;
             for (int x = -2; x < 3; x++) {
                 for (int y = -2; y < 3; y++) {
                     // if (i + y >= 0 && i + y < h && j + x >= 0 && j + x < w) {
-                        int kx = x + 2;
-                        int ky = y + 2;
-                        int val = pixels[(i + y) * w + (j + x)] >> 16 & 0xff;
-                        Gx_compute += val * gauss[kx][ky];
+                    int kx = x + 2;
+                    int ky = y + 2;
+                    int val = pixels[(i + y) * w + (j + x)] >> 16 & 0xff;
+                    Gx_compute += val * gauss[kx][ky];
                     // }
                 }
             }

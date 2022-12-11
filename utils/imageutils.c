@@ -1,14 +1,16 @@
 #include "imageutils.h"
-#include <unistd.h>
+
 #include "gaussian_blur.h"
 #include "otsu.h"
+#include "resize.h"
 #include "sobel.h"
-#include <libgen.h>
+
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_surface.h>
+#include <libgen.h>
 #include <string.h>
-#include "resize.h"
+#include <unistd.h>
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -107,7 +109,8 @@ surface_to_grayscale(SDL_Surface* surface)
         Uint32 average = pixel_to_grayscale(pixels[i], format);
         pixels[i] = average;
     }
-    // IMG_SavePNG(surface, "bin/images/steps/grayscale.png");//strcat("bin", "/images/steps/grayscale.png"));
+    // IMG_SavePNG(surface, "bin/images/steps/grayscale.png");//strcat("bin",
+    // "/images/steps/grayscale.png"));
     SDL_UnlockSurface(surface);
 }
 
@@ -224,12 +227,11 @@ main(int argc, char** argv)
     SDL_Texture* texture =
       SDL_CreateTextureFromSurface(renderer, colored_surface);
 
-    SDL_Surface* grayscale = SDL_CreateRGBSurface(0, colored_surface->w, colored_surface->h, 32, 0, 0, 0, 0);
-    SDL_Rect gray_rect ={ 0, 0, colored_surface->w, colored_surface->h}; 
+    SDL_Surface* grayscale = SDL_CreateRGBSurface(
+      0, colored_surface->w, colored_surface->h, 32, 0, 0, 0, 0);
+    SDL_Rect gray_rect = { 0, 0, colored_surface->w, colored_surface->h };
     SDL_BlitSurface(colored_surface, NULL, grayscale, &gray_rect);
     surface_to_grayscale(colored_surface);
-
-
 
     // int treshold = otsu_treshold(colored_surface->w * colored_surface->h,
     // colored_surface->pixels, 0);
@@ -246,9 +248,10 @@ main(int argc, char** argv)
     // SDL_Surface* out = colored_surface;
     // edges(colored_surface);
     SDL_Surface* out = SDL_CreateRGBSurface(0, colored_surface->w,
-            colored_surface->h, 32, 0, 0, 0, 0);
-    SDL_Rect out_src = { 0, 0, colored_surface->w, colored_surface->h};
-    SDL_FillRect(out, &out_src, SDL_MapRGB(colored_surface->format, 255, 255, 255));
+                                            colored_surface->h, 32, 0, 0, 0, 0);
+    SDL_Rect out_src = { 0, 0, colored_surface->w, colored_surface->h };
+    SDL_FillRect(out, &out_src,
+                 SDL_MapRGB(colored_surface->format, 255, 255, 255));
 
     compute(colored_surface, gauss, 0, out);
 
@@ -258,8 +261,6 @@ main(int argc, char** argv)
     erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(out->pixels, test->pixels, 3, out->w, out->h);
-
-
 
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
     multiple(out->w, out->h, out);
@@ -273,7 +274,7 @@ main(int argc, char** argv)
     // SDL_Texture* grayscale_texture =
     //   SDL_CreateTextureFromSurface(renderer, out
     //           );
-    SDL_Rect src = { 0, 0, 660, 440};
+    SDL_Rect src = { 0, 0, 660, 440 };
     SDL_Surface* cropped = SDL_CreateRGBSurface(0, 660, 440, 32, 0, 0, 0, 0);
 
     SDL_BlitScaled(out, NULL, cropped, &src);
@@ -290,9 +291,10 @@ main(int argc, char** argv)
     strcat(p1, "/images/steps/binarization.png");
     // strcat(p2, dirname(argv[0]));
     strcat(p2, "/images/steps/grayscale.png");
-    IMG_SavePNG(cropped,p1); 
-    IMG_SavePNG(grayscale, p2); 
-    SDL_Texture* grayscale_texture = SDL_CreateTextureFromSurface(renderer, out);
+    IMG_SavePNG(cropped, p1);
+    IMG_SavePNG(grayscale, p2);
+    SDL_Texture* grayscale_texture =
+      SDL_CreateTextureFromSurface(renderer, out);
     SDL_FreeSurface(colored_surface);
 
     event_loop(renderer, texture, grayscale_texture);
