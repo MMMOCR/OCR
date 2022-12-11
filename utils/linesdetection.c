@@ -599,7 +599,8 @@ get_intersection_points(Points_Array *array,
                                             }
                                         }
                                         if (m3 > m4 &&
-                                            (ABS(i - x)) <= (long int)(ABS(i - m1)) &&
+                                            (ABS(i - x)) <=
+                                              (long int) (ABS(i - m1)) &&
                                             (ABS(j - y)) && (ABS(j - m2))) {
                                             m1 = i;
                                             m2 = j;
@@ -1289,7 +1290,7 @@ get_intersection_points(Points_Array *array,
 }
 
 SDL_Surface *
-clean_suface(SDL_Surface *s, SDL_Surface * ss)
+clean_suface(SDL_Surface *s, SDL_Surface *ss)
 {
     int *pixels = s->pixels;
     int *pixelse = ss->pixels;
@@ -1369,7 +1370,7 @@ clean_suface(SDL_Surface *s, SDL_Surface * ss)
 }
 
 void
-split_image(SDL_Surface *image, SDL_Surface * oute)
+split_image(SDL_Surface *image, SDL_Surface *oute)
 {
     SDL_Surface *surf, *surfe;
     size_t w = image->w, h = image->h, ww = w / 9, hh = h / 9;
@@ -1678,7 +1679,7 @@ clean_corners_array(Point_arr_o *corners)
     Point *hd = NULL;
     size_t ibg, ibd, ihg, ihd;
     size_t t1 = 0, r1 = 0;
-    size_t t2 = 0, r2= 0;
+    size_t t2 = 0, r2 = 0;
     size_t t3 = 0, r3 = 0;
     size_t t4 = 0, r4 = 0;
     size_t t12 = 0, r12 = 0;
@@ -4424,7 +4425,9 @@ main(int argc, char **argv)
     Points_Array *arr;
 
     if (argc != 3) {
-        printf("Usage: %s <path_to_binarized_image> <path_to_grayscale_image>\n", argv[0]);
+        printf(
+          "Usage: %s <path_to_binarized_image> <path_to_grayscale_image>\n",
+          argv[0]);
         return 1;
     }
 
