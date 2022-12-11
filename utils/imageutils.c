@@ -257,7 +257,7 @@ main(int argc, char** argv)
     // Compute edges with sobel, not used anymore
     // edges(out);
     // multiple(colored_surface->w, colored_surface->h, colored_surface);
-//    erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
+    //    erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // dilate(out->pixels, test->pixels, 3, out->w, out->h);
 
@@ -272,13 +272,13 @@ main(int argc, char** argv)
     // erode(colored_surface->pixels, out->pixels, 1, out->w, out->h);
     // SDL_Texture* grayscale_texture =
     //   SDL_CreateTextureFromSurface(renderer, out
-//               );
+    //               );
     SDL_Rect src = { 0, 0, 660, 440 };
     SDL_Surface* cropped = SDL_CreateRGBSurface(0, 660, 440, 32, 0, 0, 0, 0);
 
     SDL_BlitScaled(out, NULL, cropped, &src);
 
-//    resize_to_image(cropped, 28, 28, "./bin/images/steps/resized.png");
+    //    resize_to_image(cropped, 28, 28, "./bin/images/steps/resized.png");
 
     // SDL_Surface* aaaah = SDL_CreateRGBSurface(0, out->w,
     //     out->h, 32, 0, 0, 0, 0);
