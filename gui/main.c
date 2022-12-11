@@ -78,12 +78,12 @@ static char *images[] = {
     "steps/rotation.png",     "steps/numbers_detection.png",
     "steps/solving.png",      "steps/output.png"
 };
-static char *bins[] = { "binarization",      "grid_detection", "rotation",
+static char *bins[] = { "imageutils",      "grid_detection", "rotation",
                         "numbers_detection", "solving",        "output" };
 
 static char *weigths_path;
 static char *image_path =
-  "/home/rigole/Documents/rescue/sypbc/bin/images/steps/binarization.png";
+  "/home/rigole/Documents/FinalOCR/test1.png";
 
 enum dialog_type
 {
@@ -164,15 +164,26 @@ reset_gui()
 void
 execute_task(struct sypbc *ctx)
 {
-    char pbin[512];
-    strcpy(pbin, ctx->bin_path);
-    strcat(pbin, bins[current_step]);
-
     char pim[512];
     strcpy(pim, ctx->images_path);
     strcat(pim, images[current_step]);
 
-    system(pbin);
+    switch(current_step) {
+        case 0: {
+            char pbin[512];
+            strcpy(pbin, ctx->bin_path);
+            strcat(pbin, bins[current_step]);
+            strcat(pbin, " ");
+            strcat(pbin, image_path);
+            
+            system(pbin);
+            break;
+        }
+        case 1: {
+
+        }
+    }
+
     if (access(pim, F_OK) != 0) {
         current_gui_state = Error;
         reset_gui();

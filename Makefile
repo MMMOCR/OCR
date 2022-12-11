@@ -43,23 +43,25 @@ GUI_SRCS = gui/main.c gui/instructions.c gui/impl/SDLRenderer/sypbc_impl.h gui/i
 
 all: $(OUT)
 
-neuralnetwork: $(NN_SRCS) bin/$@
+neuralnetwork: FORCE
 	$(CC) $(NN_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-solver: $(SOLVER_SRCS) bin/$@
+solver: FORCE
 	$(CC) $(SOLVER_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-empty_cell: $(EMTPY_CELL_SRCS) bin/$@
+empty_cell: FORCE
 	$(CC) $(EMTPY_CELL_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-linesdetection: $(LINES_SRCS) bin/$@
+linesdetection: FORCE
 	$(CC) $(LINES_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-imageutils: $(UTILS_SRCS) bin/$@
+imageutils: FORCE
 	$(CC) $(UTILS_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
-gui: $(GUI_SRCS) bin/$@
+gui: FORCE
 	$(CC) $(GUI_SRCS) $(GUICFLAGS) -o bin/$@ $(GUILDLIBS)
+
+FORCE:
 
 clean:
 	rm -f $(OUT:%=bin/%)
