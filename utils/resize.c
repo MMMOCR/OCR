@@ -4,7 +4,7 @@
 #include <libgen.h>
 
 void
-resize_to_image(SDL_Surface* surface, int w, int h, char * s)
+resize_to_image(SDL_Surface* surface, int w, int h, char* s)
 {
     // SDL_Surface* out = SDL_CreateRGBSurface(0, surface->w,
     //     surface->h, 32, 0, 0, 0, 0);
