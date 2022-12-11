@@ -49,6 +49,8 @@ load(char *path)
 int
 main(int argc, char **argv)
 {
+    char sudoku[9][9];
+
     if (argc < 3) {
         exit_usage();
     }
@@ -83,13 +85,19 @@ main(int argc, char **argv)
                     double *array = PicToList(sss);
 
                     int res = job(load(argv[2]), array);
-                    // printf("res= %i\n",res);
-                    if (res == 0) { res = 8; }
 
-                    return res;
+                    if (res == 0) { res = 8; }
+                    printf("res= %i\n",res);
+                    sudoku[i][j] = res;
+                    //return res;
                 }
             }
         }
+
+
+        FILE *f = fopen(argv[3], "wb");
+
+        fclose(f);
     }
 
     else if (strcmp(argv[1], "job") == 0) {
