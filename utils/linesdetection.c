@@ -599,7 +599,7 @@ get_intersection_points(Points_Array *array,
                                             }
                                         }
                                         if (m3 > m4 &&
-                                            (ABS(i - x)) <= (ABS(i - m1)) &&
+                                            (ABS(i - x)) <= (long int)(ABS(i - m1)) &&
                                             (ABS(j - y)) && (ABS(j - m2))) {
                                             m1 = i;
                                             m2 = j;
@@ -1289,10 +1289,11 @@ get_intersection_points(Points_Array *array,
 }
 
 SDL_Surface *
-clean_suface(SDL_Surface *s)
+clean_suface(SDL_Surface *s, SDL_Surface * ss)
 {
     int *pixels = s->pixels;
-    SDL_Surface *out = s;
+    int *pixelse = ss->pixels;
+    SDL_Surface *out = ss;
     size_t nx = 0, ny = 0, nxx = 0, nyy = 0, nxxx = 0, nyyy = 0;
     Uint8 r = 0, g = 0, b = 0;
     int flag = 0;
@@ -1358,38 +1359,45 @@ clean_suface(SDL_Surface *s)
         int *pi = out->pixels;
         for (size_t i = nyy; i < s->h - nyyy; i++) {
             for (size_t j = nxx; j < s->w - nxxx; j++) {
-                pi[(i - nyy) * out->w + (j - nxx)] = pixels[i * s->w + j];
+                pi[(i - nyy) * out->w + (j - nxx)] = pixelse[i * s->w + j];
             }
         }
-        SDL_FreeSurface(s);
+        SDL_FreeSurface(ss);
     }
+    SDL_FreeSurface(s);
     return out;
 }
 
 void
-split_image(SDL_Surface *image)
+split_image(SDL_Surface *image, SDL_Surface * oute)
 {
-    SDL_Surface *surf;
+    SDL_Surface *surf, *surfe;
     size_t w = image->w, h = image->h, ww = w / 9, hh = h / 9;
     int *pixels = (int *) image->pixels;
-    int *pixels_2;
+    int *pixels_4 = (int *) oute->pixels;
+    int *pixels_2, *pixels_3;
     char path[12] = { '.', '/', 'c', '_', 0, '_', 0, '.', 'p', 'n', 'g', 0 };
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
             surf = SDL_CreateRGBSurfaceWithFormat(
               0, (size_t) w / 9, (size_t) h / 9, 32, image->format->format);
+            surfe = SDL_CreateRGBSurfaceWithFormat(
+              0, (size_t) w / 9, (size_t) h / 9, 32, image->format->format);
             pixels_2 = (int *) surf->pixels;
+            pixels_3 = (int *) surfe->pixels;
             for (size_t k = i * hh; k < (i + 1) * hh; k++) {
                 for (size_t l = j * ww; l < (j + 1) * ww; l++) {
                     pixels_2[(k - i * hh) * ww + (l - j * ww)] =
                       pixels[k * image->w + l];
+                    pixels_3[(k - i * hh) * ww + (l - j * ww)] =
+                      pixels_4[k * image->w + l];
                 }
             }
-            surf = clean_suface(surf);
+            surfe = clean_suface(surf, surfe);
             path[4] = i + 0x30;
             path[6] = j + 0x30;
             IMG_SavePNG(surf, path);
-            SDL_FreeSurface(surf);
+            SDL_FreeSurface(surfe);
         }
     }
 }
@@ -1669,14 +1677,14 @@ clean_corners_array(Point_arr_o *corners)
     Point *hg = NULL;
     Point *hd = NULL;
     size_t ibg, ibd, ihg, ihd;
-    size_t t1, r1;
-    size_t t2, r2;
-    size_t t3, r3;
-    size_t t4, r4;
-    size_t t12, r12;
-    size_t t22, r22;
-    size_t t32, r32;
-    size_t t42, r42;
+    size_t t1 = 0, r1 = 0;
+    size_t t2 = 0, r2= 0;
+    size_t t3 = 0, r3 = 0;
+    size_t t4 = 0, r4 = 0;
+    size_t t12 = 0, r12 = 0;
+    size_t t22 = 0, r22 = 0;
+    size_t t32 = 0, r32 = 0;
+    size_t t42 = 0, r42 = 0;
     int flag = 0, new_flag = 0, save_flag = 0;
     if (corners->bgs == 1) {
         bg = corners->bg;
@@ -4415,20 +4423,29 @@ main(int argc, char **argv)
 
     Points_Array *arr;
 
-    if (argc != 2) {
-        printf("Usage: %s <path_to_binarized_image>\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s <path_to_binarized_image> <path_to_grayscale_image>\n", argv[0]);
         return 1;
     }
 
     SDL_Surface *imagee = IMG_Load(argv[1]);
+    SDL_Surface *imageee = IMG_Load(argv[2]);
 
     if (imagee == NULL) {
         printf("Image %s is not valid\n", argv[1]);
         return 1;
     }
 
+    if (imageee == NULL) {
+        printf("Image %s is not valid\n", argv[3]);
+        return 1;
+    }
+
     SDL_Surface *image_temp =
       SDL_ConvertSurfaceFormat(imagee, SDL_PIXELFORMAT_RGB888, 0);
+
+    SDL_Surface *image_tempe =
+      SDL_ConvertSurfaceFormat(imageee, SDL_PIXELFORMAT_RGB888, 0);
 
     arr = detect_lines(image_temp);
 
@@ -4515,12 +4532,16 @@ main(int argc, char **argv)
       flatten_image(image_temp, corners_arr->hg, corners_arr->hd,
                     corners_arr->bg, corners_arr->bd);
 
+    SDL_Surface *oute =
+      flatten_image(image_tempe, corners_arr->hg, corners_arr->hd,
+                    corners_arr->bg, corners_arr->bd);
+
     IMG_SavePNG(out, "test-done.png");
 
     IMG_SavePNG(image_temp, "./test6.png");
     SDL_UnlockSurface(image_temp);
 
-    split_image(out);
+    split_image(out, oute);
 
     free(arr->array);
     free(arr);
@@ -4535,7 +4556,11 @@ main(int argc, char **argv)
     free(corners_arr->bge);
     free(corners_arr);
     SDL_FreeSurface(out);
+    SDL_FreeSurface(oute);
     SDL_FreeSurface(image_temp);
+    SDL_FreeSurface(image_tempe);
+    SDL_FreeSurface(imagee);
+    SDL_FreeSurface(imageee);
 
     return 0;
 }

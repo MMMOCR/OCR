@@ -15,7 +15,7 @@ OCR ?= ocr-
 
 LIBS ?= --libs
 
-CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 #-fsanitize=address
+CFLAGS := -Wall -Wextra $(shell pkg-config $(PACKAGES) --cflags) -g3 -Ofast #-fsanitize=address
 CPPFLAGS := 
 LDLIBS := $(shell pkg-config $(PACKAGES) $(LIBS)) -lm
 LDFLAGS :=
@@ -48,7 +48,7 @@ $(OBJ):
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(@:%.o=%.c) -o $@
 
 test_linedetection: utils/linesdetection
-	./$< ./images/$(OCR)$(IMG).$(EXT)
+	./$< ./images/$(OCR)$(IMG).$(EXT) ./images/$(OCR)$(IMG2).$(EXT)
 
 test_gui: gui/interface_rotate
 	./$< ./images/ocr-1.png
