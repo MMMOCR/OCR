@@ -32,9 +32,7 @@ int
 real_index(char *real, int index)
 {
     for (int i = 0; i < 9; ++i) {
-        if (real[index + i] == '\001') {
-            return i;
-        }
+        if (real[index + i] == '\001') { return i; }
     }
     return -1;
 }
@@ -47,9 +45,7 @@ fscore(neural_network nn, double *inputs, char *real, size_t len)
     for (size_t i = 0; i < len; ++i) {
         int res = job(nn, inputs + i * 784);
         int realind = real_index(real, i * 10);
-        if (res == realind) {
-            success++;
-        }
+        if (res == realind) { success++; }
     }
 
     errors = ((double) len) - success;
