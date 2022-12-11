@@ -73,11 +73,9 @@ static struct sypbc_button rotate_left;
 static struct sypbc_button rotate_right;
 static struct sypbc_button validate_rotation;
 
-static char *images[] = {
-    "steps/resized.png", "steps/grid_detection.png",
-    "steps/rotation.png",     "steps/rotation.png",
-    "steps/rotation.png",      "steps/output.png"
-};
+static char *images[] = { "steps/resized.png",  "steps/grid_detection.png",
+                          "steps/rotation.png", "steps/rotation.png",
+                          "steps/rotation.png", "steps/output.png" };
 
 static char *weigths_path;
 static char *image_path = "/home/rigole/Documents/FinalOCR/test1.jpg";
@@ -194,8 +192,8 @@ execute_task(struct sypbc *ctx)
     }
 
     if (access(pim, F_OK) != 0) {
-        //current_gui_state = Error;
-        //reset_gui();
+        // current_gui_state = Error;
+        // reset_gui();
     } else if (!working)
         working = 1;
     else if (current_step != Grid) {
