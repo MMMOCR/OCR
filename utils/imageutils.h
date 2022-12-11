@@ -7,6 +7,7 @@
 #include <err.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "erosion_dilation.h"
 
 void
 draw(SDL_Renderer* renderer, SDL_Texture* texture);

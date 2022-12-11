@@ -32,16 +32,16 @@ edges(SDL_Surface* surface)
     int h = surface->h;
     int w = surface->w;
     Uint32* pixels = surface->pixels;
-    int Gx[5][5] = { { 2, 2, 4, 2, 2 },
-                     { 1, 1, 2, 1, 1 },
-                     { 0, 0, 0, 0, 0 },
-                     { -1, -1, -2, -1, -1 },
-                     { -2, -2, -4, -2, -2 } };
-    int Gy[5][5] = { { 2, 1, 0, -1, -2 },
-                     { 2, 1, 0, -1, -2 },
-                     { 4, 2, 0, -2, -4 },
-                     { 2, 1, 0, -1, -2 },
-                     { 2, 1, 0, -1, -2 } };
+    // int Gx[5][5] = { { 2, 2, 4, 2, 2 },
+                     // { 1, 1, 2, 1, 1 },
+                     // { 0, 0, 0, 0, 0 },
+                     // { -1, -1, -2, -1, -1 },
+                     // { -2, -2, -4, -2, -2 } };
+    // int Gy[5][5] = { { 2, 1, 0, -1, -2 },
+    //                  { 2, 1, 0, -1, -2 },
+    //                  { 4, 2, 0, -2, -4 },
+    //                  { 2, 1, 0, -1, -2 },
+    //                  { 2, 1, 0, -1, -2 } };
     // int Gx[5][5] = { {-5, -4, 0, 4, 5}, {-8, -10, 0, 10, 8},
     // {-10, -20, 0, 20, 10}, {-8, -10, 0, 10, 8}, {-5, -4, 0, 4, 5}};
     // int Gy[5][5] = { {-5, -8, -10, -8, -5}, {-4, -10, -20, -10, -4},
@@ -54,7 +54,7 @@ edges(SDL_Surface* surface)
     int Gy_compute = 0;
     int valx = 0;
     int valy = 0;
-    int kx, ky;
+    // int kx, ky;
     int max = -9999999, min = 9999999;
 
     for (size_t i = 2; i < h - 2; i++) { // begining at 2 because of the kernel
@@ -93,9 +93,9 @@ edges(SDL_Surface* surface)
     for (size_t i = 0; i < h; i++) {
         for (size_t j = 0; j < w; j++) {
             int val = result_pixels[i * w + j];
-            if (val > 3 * med) val = 255; // decide if pixel black, or white
+            if (val > 3 * med) val = 0; // decide if pixel black, or white
             else
-                val = 0;
+                val = 255;
             pixels[i * w + j] = SDL_MapRGB(format, val, val, val);
         }
     }
