@@ -50,7 +50,7 @@ fscore(neural_network nn, double *inputs, char *real, size_t len)
 
     errors = len - success;
     int fscoree = success / (success + (errors / 2));
-    printf("fscore : %i \n",fscoree);
+    printf("fscore : %i \n", fscoree);
     printf("%x : %x\n", job(nn, inputs + (len - 1) * 784), real[len - 1]);
     return (fscoree);
 }

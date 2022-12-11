@@ -1,8 +1,8 @@
 #include "train.h"
 
+#include "job.h"
 #include "loadset.h"
 #include "tools.h"
-#include "job.h"
 
 #include <err.h>
 #include <stdio.h>
@@ -159,7 +159,7 @@ train(char *path, int hiddenNodesNb, char *trainingsetpath, int epochNb)
         }
 
         save(&t.nn, path);
-        fscore(t.nn,t.training_inputs,t.training_outputs,t.training_count);
+        fscore(t.nn, t.training_inputs, t.training_outputs, t.training_count);
     } else {
         errx(EXIT_FAILURE,
              "The dataset you are trying to load is bullshit mate!");
