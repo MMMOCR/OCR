@@ -74,15 +74,13 @@ static struct sypbc_button rotate_right;
 static struct sypbc_button validate_rotation;
 
 static char *images[] = {
-    "steps/binarization.png", "steps/grid_detection.png",
-    "steps/rotation.png",     "steps/numbers_detection.png",
-    "steps/solving.png",      "steps/output.png"
+    "steps/resized.png", "steps/grid_detection.png",
+    "steps/rotation.png",     "steps/rotation.png",
+    "steps/rotation.png",      "steps/output.png"
 };
-static char *bins[] = { "imageutils",        "grid_detection", "rotation",
-                        "numbers_detection", "solving",        "output" };
 
 static char *weigths_path;
-static char *image_path = "/home/rigole/Documents/FinalOCR/test1.png";
+static char *image_path = "/home/rigole/Documents/FinalOCR/test1.jpg";
 
 enum dialog_type
 {
@@ -165,13 +163,13 @@ execute_task(struct sypbc *ctx)
 {
     char pim[512];
     strcpy(pim, ctx->images_path);
-    strcat(pim, images[current_step]);
+    strcat(pim, images[selected_step]);
 
-    switch (current_step) {
+    switch (selected_step) {
         case 0: {
             char pbin[512];
             strcpy(pbin, ctx->bin_path);
-            strcat(pbin, bins[current_step]);
+            strcat(pbin, "imageutils");
             strcat(pbin, " ");
             strcat(pbin, image_path);
 
@@ -179,12 +177,25 @@ execute_task(struct sypbc *ctx)
             break;
         }
         case 1: {
+            char pbin[512];
+            strcpy(pbin, ctx->bin_path);
+            strcat(pbin, "linesdetection");
+            strcat(pbin, " ");
+            strcat(pbin, ctx->images_path);
+            strcat(pbin, "steps/binarization.png");
+            strcat(pbin, " ");
+            strcat(pbin, ctx->images_path);
+            strcat(pbin, "steps/grayscale.png");
+
+            printf("%s", pbin);
+            system(pbin);
+            break;
         }
     }
 
     if (access(pim, F_OK) != 0) {
-        current_gui_state = Error;
-        reset_gui();
+        //current_gui_state = Error;
+        //reset_gui();
     } else if (!working)
         working = 1;
     else if (current_step != Grid) {
