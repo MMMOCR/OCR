@@ -20,13 +20,13 @@ is_empty(SDL_Surface* image)
     size_t i, j;
     for (i = ratiox; i < width - ratiox; i++) {
         for (j = ratioy; j < height - ratioy; j++) {
-            long pos = width / 20;
-            int pixel = pixels[i * (width - pos) + j] >> 16 & 0xff;
+            double pos = width - 4;
+            int pixel = pixels[(int) (i * (width - pos) + j)] >> 16 & 0xff;
             sum += pixel;
         }
     }
-    long test = width - (width * 0.2);
-    long test2 = height - (height * 0.2);
+    double test = width - (width * 0.2);
+    double test2 = height - (height * 0.2);
     /*printf("%d\n", sum);
     printf("%li\n", test);
     printf("%li\n", test2);
@@ -35,7 +35,7 @@ is_empty(SDL_Surface* image)
     printf("%li\n", test * test2);
     sum /= test * test2;
     printf("%d\n", sum);
-    long max_average = 255 * 0.80;
+    double max_average = 255 * 0.90;
     if (sum < max_average) return 0;
     return 1;
 }
