@@ -13,29 +13,19 @@ is_empty(SDL_Surface* image)
 {
     int height = image->h;
     int width = image->w;
-    Uint32* pixels = image->pixels;
-    long sum = 0;
-    size_t ratiox = (width * 0.1);
-    size_t ratioy = (height * 0.1);
+    int* pixels = (int*)image->pixels;
+    long double sum = 0;
+    size_t kafesum = 0;
+    size_t ratiox = (width * 0.4);
+    size_t ratioy = (height * 0.4);
     size_t i, j;
-    for (i = ratiox; i < width - ratiox; i++) {
-        for (j = ratioy; j < height - ratioy; j++) {
-            double pos = width - 4;
-            int pixel = pixels[(int) (i * (width - pos) + j)] >> 16 & 0xff;
-            sum += pixel;
+    long double count = 0;
+    for (i = ratioy; i < height - ratioy; i++) {
+        for (j = ratiox; j < width - ratiox; j++) {
+            if (pixels[i * width + j] != -1) kafesum+=255;
+            else sum += 255;
+            count++;
         }
     }
-    double test = width - (width * 0.2);
-    double test2 = height - (height * 0.2);
-    /*printf("%d\n", sum);
-    printf("%li\n", test);
-    printf("%li\n", test2);
-
-    printf("%d %d\n", height, width);*/
-    printf("%li\n", test * test2);
-    sum /= test * test2;
-    printf("%d\n", sum);
-    double max_average = 255 * 0.90;
-    if (sum < max_average) return 0;
-    return 1;
+    return (sum * 100 / (count * 255)) >= 100;
 }

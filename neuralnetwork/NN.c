@@ -76,11 +76,10 @@ main(int argc, char **argv)
                 pa[6] = j + 0x30;
                 strcat(pp, "/images/detect");
                 strcat(pp, pa);
-                printf("%s\n", pp);
+                //printf("%s\n", pp);
 
                 SDL_Surface *ss = IMG_Load(pp);
                 if (!is_empty(ss)) {
-                    printf("is not empty\n");
                     strcpy(pp, p);
                     pa2[3] = i + 0x30;
                     pa2[5] = j + 0x30;
@@ -92,7 +91,6 @@ main(int argc, char **argv)
                     int res = job(load(argv[2]), array);
 
                     if (res == 0) { res = 8; }
-                    printf("res= %i\n", res);
                     sudoku[i][j] = res;
                     // return res;
                 }
