@@ -2,7 +2,7 @@
 
 CC := gcc
 
-PACKAGES := gtk+-3.0 sdl2 SDL2_image gdk-3.0 gdk-x11-3.0
+PACKAGES := gtk+-3.0 sdl2 SDL2_image SDL2_ttf gdk-3.0 gdk-x11-3.0
 GUIPACKAGES := gtk+-3.0 sdl SDL_image SDL_ttf SDL_gfx
 
 ifneq ($(OS),Windows_NT)
@@ -31,9 +31,11 @@ endif
 
 OUT := neuralnetwork solver linesdetection imageutils gui
 
-NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c utils/empty_cell.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c
+NN_SRCS = neuralnetwork/functions.c neuralnetwork/job.c utils/empty_cell.c neuralnetwork/loadset.c neuralnetwork/NN.c neuralnetwork/tools.c neuralnetwork/train.c 
 
 LINES_SRCS = utils/linesdetection.c utils/rotateutils.c utils/resize.c
+
+WRITE_SRCS = utils/writeonim.c
 
 UTILS_SRCS = utils/gaussian_blur.c utils/resize.c utils/sobel.c utils/erosion_dilation.c utils/imageutils.c utils/otsu.c
 
@@ -54,6 +56,9 @@ linesdetection: FORCE
 
 imageutils: FORCE
 	$(CC) $(UTILS_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
+
+writeonim: FORCE
+	$(CC) $(WRITE_SRCS) $(CFLAGS) -o bin/$@ $(LDLIBS)
 
 gui: FORCE
 	$(CC) $(GUI_SRCS) $(GUICFLAGS) -o bin/$@ $(GUILDLIBS)

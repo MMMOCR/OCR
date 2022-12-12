@@ -7,13 +7,10 @@
 #include <string.h>
 
 int
-extract_path(char* path, int* board){};
+extract_path(char* path, int* board);
 
 SDL_Surface*
-load_image(const char* path){};
+load_image(const char* path);
 
 void
-apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination){};
-
-void
-WriteOnIm(char* path, char* path2, char* empty, char* solved){};
+apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination);

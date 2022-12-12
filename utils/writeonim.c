@@ -1,4 +1,4 @@
-#include "WriteonIm.h"
+#include "writeonim.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
+
 
 int
 extract_path(char* path, int* board)
@@ -56,7 +58,7 @@ apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination)
 }
 
 void
-write_on_im(char* path, char* path2, char* empty, char* solved)
+write_on_im(char* path, char* path2, char* empty, char* solved, char* pp)
 {
     if (TTF_Init() == -1) { printf("SDL_ttf init fail: %s\n", TTF_GetError()); }
 
@@ -70,7 +72,13 @@ write_on_im(char* path, char* path2, char* empty, char* solved)
     int width = image->w;
     SDL_Color color = { 0, 255, 0 };
     int h = height / 9;
-    TTF_Font* font = TTF_OpenFont("Roboto-Black.ttf", h / 2);
+    char ss[128] = {0};
+    strcpy(ss,pp);
+    dirname(ss);
+    strcat(ss, "/fonts/");
+    strcat(ss,"Roboto-Black.ttf");
+
+    TTF_Font* font = TTF_OpenFont(ss, h / 2);
     int w = width / 9;
     int coordx = (width / 9) / 3;
     int coordy = (height / 9) / 4;
@@ -79,18 +87,25 @@ write_on_im(char* path, char* path2, char* empty, char* solved)
         for (int j = 0; j < 9; j++) {
             if (emptygrid[i * 9 + j] == 0) {
                 char c = solvedgrid[i * 9 + j] + '0';
-                char* str = &c;
+                char str[2];
+                str[0] = c;
+                str[1] = 0;
                 SDL_Surface* surface = TTF_RenderText_Solid(font, str, color);
                 apply_surface(j * w + coordx, i * h + coordy, surface, image);
+                SDL_FreeSurface(surface);
             }
         }
     }
     IMG_SavePNG(image, path2);
     TTF_CloseFont(font);
+    SDL_FreeSurface(image);
+    free(emptygrid);
+    free(solvedgrid);
 }
 
 int
 main(int argc, char** argv)
 {
-    write_on_im(argv[1], argv[2], argv[3], argv[4]);
+    write_on_im(argv[1], argv[2], argv[3], argv[4], argv[0]);
+    return 0;
 }
