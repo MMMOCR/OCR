@@ -567,7 +567,7 @@ get_intersection_points(Points_Array *array,
     int *pixels = surf->pixels;
     int flag = 0;
     long int x, y;
-    int tl1 = 0, tr1 = 0, bl1 = 0, br1 = 0, tl2 = 0, tr2 = 0, bl2 = 0, br2 = 0;
+    long int tl1 = 0, tr1 = 0, bl1 = 0, br1 = 0, tl2 = 0, tr2 = 0, bl2 = 0, br2 = 0;
     SDL_PixelFormat *format = surf->format;
     Uint8 r, g, b;
     size_t m1 = 0, m2 = 0, m3 = 0, m4 = 0;
@@ -1064,9 +1064,9 @@ get_intersection_points(Points_Array *array,
                         }
 
                         // printf("oskour tl1: %lu, tr1: %lu, bl1: %lu, br1: "
-                        //        "%lu, tl2: %lu, tr2: %lu, bl2: %lu, br2: %lu,
-                        //        " "x: %lu, " "y: %lu\n", tl1, tr1, bl1, br1,
-                        //        tl2, tr2, bl2, br2, x, y);
+                               // "%lu, tl2: %lu, tr2: %lu, bl2: %lu, br2: %lu,"
+                               // "x: %lu, " "y: %lu\n", tl1, tr1, bl1, br1,
+                               // tl2, tr2, bl2, br2, x, y);
                         if ((ABS(array->array[p + 1] - array->array[q + 1])) %
                               90 >
                             30) {
@@ -4801,16 +4801,16 @@ main(int argc, char **argv)
 
     char ss[128] = { 0 };
     strcpy(ss, argv[0]);
-    dirname(ss);
-    char sss[128];
-    strcpy(sss, ss);
+    char sss[128] = {0};
+    strcpy(sss, dirname(ss));
     strcat(sss, "/images/steps/grid_detection.png");
     SDL_Rect src = { 0, 0, 660, 440 };
     SDL_Surface *cropped = SDL_CreateRGBSurface(0, 660, 440, 32, 0, 0, 0, 0);
 
     SDL_BlitScaled(oute, NULL, cropped, &src);
     IMG_SavePNG(cropped, sss);
-    strcpy(sss, ss);
+    strcpy(sss, dirname(ss));
+    dirname(sss);
     strcat(sss, "/images/steps/rotation.png");
 
     IMG_SavePNG(cropped, sss);
